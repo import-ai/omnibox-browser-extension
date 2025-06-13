@@ -32,13 +32,25 @@
     "message": "Saved successfully"
   },
   "collect_submit": {
-    "message": "Collect"
+    "message": "Collect full page"
   },
   "config_first": {
     "message": "Please configure first"
   },
   "alert_built": {
     "message": "The browser built-in page cannot be used"
+  },
+  "collect_article": {
+    "message": "Collect full page+extract main content"
+  },
+  "choose_area": {
+    "message": "Select area manually"
+  },
+  "choose_start": {
+    "message": "Select an area with the mouse"
+  },
+  "choose_cancel": {
+    "message": "Cancel selection"
   },
   "http_error": {
     "message": "HTTP error! status: $STATUS$",

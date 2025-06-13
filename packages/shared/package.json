@@ -21,7 +21,11 @@
     "prettier": "prettier . --write --ignore-path ../../.prettierignore",
     "type-check": "tsc --noEmit"
   },
+  "dependencies": {
+    "lodash-es": "^4.17.21"
+  },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
     "@extension/i18n": "workspace:*",
     "@extension/storage": "workspace:*",
     "@extension/tsconfig": "workspace:*"

@@ -32,13 +32,25 @@
     "message": "保存成功"
   },
   "collect_submit": {
-    "message": "采集"
+    "message": "采集全网页"
   },
   "config_first": {
     "message": "请先完成配置"
   },
   "alert_built": {
     "message": "浏览器内置页面无法使用"
+  },
+  "collect_article": {
+    "message": "采集全网页+提取正文"
+  },
+  "choose_area": {
+    "message": "自己选择区域"
+  },
+  "choose_start": {
+    "message": "划选鼠标选择区域"
+  },
+  "choose_cancel": {
+    "message": "取消划选"
   },
   "http_error": {
     "message": "HTTP 错误！状态：$STATUS$",

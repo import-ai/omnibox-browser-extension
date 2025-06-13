@@ -1,4 +1,7 @@
 import { ready } from '@src/utils/ready';
+import choose from '@extension/shared/lib/utils/choose';
+
+let destoryChoose: (() => void) | null = null;
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // 保存内容
@@ -17,6 +20,37 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       },
       sendResponse,
     );
+  } else if (request.action === 'choose') {
+    const { apiBaseUrl, apiKey, namespaceId, spaceType } = request.option;
+    if (destoryChoose) {
+      destoryChoose();
+      destoryChoose = null;
+    }
+    destoryChoose = choose(node => {
+      if (destoryChoose) {
+        destoryChoose();
+        destoryChoose = null;
+      }
+      chrome.runtime.sendMessage(
+        {
+          apiKey,
+          spaceType,
+          namespaceId,
+          action: 'collect',
+          baseUrl: apiBaseUrl,
+          data: node.innerHTML,
+          pageUrl: document.URL,
+          pageTitle: document.title,
+        },
+        sendResponse,
+      );
+    });
+  } else if (request.action === 'cancel-choose') {
+    if (destoryChoose) {
+      destoryChoose();
+      destoryChoose = null;
+    }
+    sendResponse();
   }
   return true;
 });

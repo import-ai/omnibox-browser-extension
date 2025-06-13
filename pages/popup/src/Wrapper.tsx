@@ -1,4 +1,3 @@
-// import { Toaster } from 'sonner';
 import { t } from '@extension/i18n';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@extension/ui';
 
@@ -15,10 +14,7 @@ export default function Wrapper(props: IProps) {
         <CardTitle className="text-2xl">{t('extensionName')}</CardTitle>
         <CardDescription>{t('extensionDescription')}</CardDescription>
       </CardHeader>
-      <CardContent>
-        {/* <Toaster /> */}
-        {children}
-      </CardContent>
+      <CardContent>{children}</CardContent>
     </Card>
   );
 }
