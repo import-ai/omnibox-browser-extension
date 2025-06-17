@@ -10,8 +10,8 @@ import { X, LoaderCircle, ChevronRight, File, Link, Settings, LassoSelect } from
 export default function Page() {
   const { value, refetch } = useOption();
   const [tabId, onTabId] = useState(-1);
-  const [loading, setLoading] = useState(false);
   const [choosing, setChoosing] = useState(false);
+  const [collecting, setCollecting] = useState(false);
   const handleOption = () => {
     chrome.runtime.openOptionsPage();
   };
@@ -35,14 +35,17 @@ export default function Page() {
       }
     });
     toast.success(t('choose_start'), { position: 'top-center' });
+    setTimeout(() => {
+      window.close();
+    }, 1000);
   };
   const handleCollect = () => {
     if (tabId <= 0) {
       return;
     }
-    setLoading(true);
-    chrome.tabs.sendMessage(tabId, { action: 'save', option: value }, response => {
-      setLoading(false);
+    setCollecting(true);
+    chrome.tabs.sendMessage(tabId, { action: 'collect', option: value }, response => {
+      setCollecting(false);
       if (response && response.error) {
         toast.error(response.error, { position: 'top-center' });
         refetch();
@@ -63,7 +66,53 @@ export default function Page() {
         return;
       }
       onTabId(tabs[0].id);
+      chrome.runtime.sendMessage(
+        {
+          action: 'status',
+        },
+        response => {
+          console.log('recevied', response);
+          if (!response.data) {
+            return;
+          }
+          if (response.data === 'collect') {
+            setCollecting(true);
+          } else {
+            setChoosing(true);
+          }
+        },
+      );
     });
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const messageFN = (request: any, sender: chrome.runtime.MessageSender, sendResponse: (response: any) => void) => {
+      if (request.action === 'sync-status') {
+        if (request.type === 'collect') {
+          setCollecting(false);
+          if (request.error) {
+            toast.error(request.error, { position: 'top-center' });
+          } else {
+            toast.success(t('collect_done'), { position: 'top-center' });
+          }
+          onTabId(-1);
+        } else if (request.type === 'choose') {
+          setChoosing(false);
+          if (request.error) {
+            toast.error(request.error, { position: 'top-center' });
+          } else {
+            toast.success(t('collect_done'), { position: 'top-center' });
+          }
+        }
+        sendResponse({});
+      }
+      return true;
+    };
+    chrome.runtime.onMessage.addListener(messageFN);
+    return () => {
+      chrome.runtime.onMessage.removeListener(messageFN);
+    };
   }, []);
 
   if (!value.apiBaseUrl) {
@@ -99,7 +148,7 @@ export default function Page() {
             <Link className="size-6" />
             <span>{t('collect_submit')}</span>
           </div>
-          {loading ? (
+          {collecting ? (
             <LoaderCircle className="transition-transform animate-spin" />
           ) : (
             <ChevronRight className="size-5" />
