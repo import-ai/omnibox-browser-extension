@@ -40,9 +40,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           action: 'collect',
           type: request.action,
           baseUrl: apiBaseUrl,
-          data: node.outerHTML,
           pageUrl: document.URL,
           pageTitle: document.title,
+          data: `<html><head><title>${document.title}</title></head><body>${node.outerHTML}</body></html>`,
         },
         sendResponse,
       );
@@ -89,3 +89,32 @@ if (location.search === '?from=extension') {
     });
   });
 }
+
+useEffect(() => {
+  if (data && data.selector) {
+    setVal(data.selector);
+  }
+  destory.current && destory.current();
+  destory.current = choose(
+    document.body,
+    (node: any) => {
+      if (!node) {
+        return;
+      }
+      destory.current && destory.current();
+      setVal(selector(node));
+    },
+    (node: any) => {
+      if (!node) {
+        return true;
+      }
+      if (data && data.tag) {
+        return node.tagName !== data.tag;
+      }
+      return false;
+    },
+  );
+  return () => {
+    destory.current && destory.current();
+  };
+}, [data]);

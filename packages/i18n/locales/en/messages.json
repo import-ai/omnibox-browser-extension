@@ -5,7 +5,7 @@
   },
   "extensionName": {
     "description": "Extension name",
-    "message": "OmniBox Collector"
+    "message": "Save to OmniBox"
   },
   "setting_title": {
     "message": "Extension Settings"
@@ -32,7 +32,7 @@
     "message": "Saved successfully"
   },
   "collect_submit": {
-    "message": "Collect full page"
+    "message": "Collect web page"
   },
   "config_first": {
     "message": "Please configure first"
@@ -40,11 +40,8 @@
   "alert_built": {
     "message": "The browser built-in page cannot be used"
   },
-  "collect_article": {
-    "message": "Collect full page+extract main content"
-  },
   "choose_area": {
-    "message": "Select area manually"
+    "message": "Collect selected area"
   },
   "choose_start": {
     "message": "Select an area with the mouse"
@@ -60,5 +57,20 @@
         "example": "401"
       }
     }
+  },
+  "language": {
+    "message": "Language"
+  },
+  "appearance": {
+    "message": "Appearance"
+  },
+  "light": {
+    "message": "Light"
+  },
+  "dark": {
+    "message": "Dark"
+  },
+  "system": {
+    "message": "System"
   }
 }
