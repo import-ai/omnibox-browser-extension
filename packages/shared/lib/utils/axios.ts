@@ -34,6 +34,7 @@ const getRedirectURL = (url: string, options: RequestInit): Promise<string> => {
 export default function axios(
   url: string,
   opts: {
+    apiKey: string;
     format?: 'json' | 'text' | 'blob';
     query?: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

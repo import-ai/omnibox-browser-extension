@@ -23,13 +23,10 @@
     "message": "团队"
   },
   "apikey_done": {
-    "message": "已获取 API Key"
+    "message": "已登陆"
   },
   "apikey_submit": {
-    "message": "登录来获取 API Key"
-  },
-  "collect_done": {
-    "message": "保存成功"
+    "message": "登陆"
   },
   "collect_submit": {
     "message": "收藏网页"
@@ -57,6 +54,15 @@
         "example": "401"
       }
     }
+  },
+  "untitled": {
+    "message": "未命名"
+  },
+  "private": {
+    "message": "私人"
+  },
+  "teamspace": {
+    "message": "团队"
   },
   "language": {
     "message": "语言"

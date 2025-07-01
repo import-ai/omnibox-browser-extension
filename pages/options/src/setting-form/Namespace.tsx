@@ -1,44 +1,49 @@
 import { useState } from 'react';
-import { t } from '@extension/i18n';
-import { Check, ChevronDown, Home } from 'lucide-react';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@extension/ui';
+// import { t } from '@extension/i18n';
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  Namespace,
+  ChooseNamespace,
+} from '@extension/ui';
 
-export default function Namespace() {
-  const [theme, onToggleTheme] = useState('light');
-  const data: Array<{
-    label: string;
-    value: 'light' | 'system' | 'dark';
-  }> = [
-    { label: t('light'), value: 'light' },
-    { label: t('dark'), value: 'dark' },
-    { label: t('system'), value: 'system' },
-  ];
+interface IProps {
+  apiKey: string;
+  baseUrl: string;
+  namespaceId: string;
+  onChange: (val: string | { [index: string]: string }, key?: string) => void;
+}
+
+export default function FormNamespace(props: IProps) {
+  const { apiKey, baseUrl, namespaceId, onChange } = props;
+  const [open, setOpen] = useState(false);
+  const handleCancel = () => {
+    setOpen(false);
+  };
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center space-x-3">
-        <Home className="size-4" />
-        <span className="text-sm">默认空间</span>
-      </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="font-normal w-48 justify-between">
-            {data.find(item => item.value === theme)?.label}
-            <ChevronDown className="size-4 ml-2" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {data.map(item => (
-            <DropdownMenuItem
-              key={item.value}
-              className="flex justify-between"
-              onClick={() => onToggleTheme(item.value)}>
-              {item.label}
-              {item.value === theme && <Check className="size-4" />}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Namespace modal apiKey={apiKey} label="默认空间" baseUrl={baseUrl} namespaceId={namespaceId} />
+      </DialogTrigger>
+      <DialogContent className="w-[90%] sm:w-1/2 max-w-7xl px-0 pt-10 pb-0">
+        <DialogHeader className="hidden">
+          <DialogTitle></DialogTitle>
+          <DialogDescription></DialogDescription>
+        </DialogHeader>
+        <ChooseNamespace
+          modal
+          apiKey={apiKey}
+          baseUrl={baseUrl}
+          onChange={onChange}
+          onCancel={handleCancel}
+          namespaceId={namespaceId}
+        />
+      </DialogContent>
+    </Dialog>
   );
 }
