@@ -1,11 +1,16 @@
-import { useState } from 'react';
 import { t } from '@extension/i18n';
+import type { Theme } from '@extension/shared';
 import { Check, PanelTop, ChevronDown } from 'lucide-react';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@extension/ui';
 
-export default function Theme() {
-  const [theme, onToggleTheme] = useState('light');
-  const data: Array<{
+interface IProps {
+  data: Theme;
+  onChange: (val: string | { [index: string]: string }, key?: string) => void;
+}
+
+export default function FieldTheme(props: IProps) {
+  const { data, onChange } = props;
+  const dataSource: Array<{
     label: string;
     value: 'light' | 'system' | 'dark';
   }> = [
@@ -23,18 +28,18 @@ export default function Theme() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="font-normal w-36 justify-between">
-            {data.find(item => item.value === theme)?.label}
+            <span>{dataSource.find(item => item.value === data)?.label}</span>
             <ChevronDown className="size-4 ml-2" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          {data.map(item => (
+          {dataSource.map(item => (
             <DropdownMenuItem
               key={item.value}
               className="flex justify-between"
-              onClick={() => onToggleTheme(item.value)}>
+              onClick={() => onChange(item.value, 'theme')}>
               {item.label}
-              {item.value === theme && <Check className="size-4" />}
+              {item.value === data && <Check className="size-4" />}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

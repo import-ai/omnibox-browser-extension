@@ -1,22 +1,25 @@
-import Resource from './Resource';
-import Namespace from './Namespace';
-import Wrapper from '@src/Wrapper';
+import Done from './Done';
+import Config from './Config';
+import Choose from './Choose';
+import Collect from './Collect';
+import BuiltIn from './BuiltIn';
+import Setting from './Setting';
 import { t } from '@extension/i18n';
 import { toast, Toaster } from 'sonner';
 import { useState, useEffect } from 'react';
 import { useOption } from '@extension/shared';
-import { Button, Separator } from '@extension/ui';
+import { cn } from '@extension/ui/lib/utils';
 import extPage from '@extension/shared/lib/utils/ext-page';
-import { X, LoaderCircle, ChevronRight, Link, Settings, SquareMousePointer } from 'lucide-react';
+import { Separator, Resource, ChooseResource, Namespace, ChooseNamespace } from '@extension/ui';
 
 export default function Page() {
-  const { value, refetch } = useOption();
+  const { data, onChange } = useOption();
   const [tabId, onTabId] = useState(-1);
+  const [done, setDone] = useState(false);
   const [choosing, setChoosing] = useState(false);
   const [collecting, setCollecting] = useState(false);
-  const handleOption = () => {
-    chrome.runtime.openOptionsPage();
-  };
+  const [chooseResource, onChooseResource] = useState(false);
+  const [chooseNamespace, onChooseNamespace] = useState(false);
   const handleChoose = () => {
     if (tabId <= 0) {
       return;
@@ -33,7 +36,7 @@ export default function Page() {
       if (response && response.error) {
         toast.error(response.error, { position: 'top-center' });
       } else {
-        toast.success(t('collect_done'), { position: 'top-center' });
+        setDone(true);
       }
     });
     toast.success(t('choose_start'), { position: 'top-center' });
@@ -50,12 +53,23 @@ export default function Page() {
       setCollecting(false);
       if (response && response.error) {
         toast.error(response.error, { position: 'top-center' });
-        refetch();
       } else {
-        toast.success(t('collect_done'), { position: 'top-center' });
+        setDone(true);
       }
       onTabId(-1);
     });
+  };
+  const handleNamespace = () => {
+    onChooseNamespace(true);
+  };
+  const cancelNamespace = () => {
+    onChooseNamespace(false);
+  };
+  const handleResource = () => {
+    onChooseResource(true);
+  };
+  const cancelResource = () => {
+    onChooseResource(false);
   };
 
   useEffect(() => {
@@ -95,7 +109,7 @@ export default function Page() {
           if (request.error) {
             toast.error(request.error, { position: 'top-center' });
           } else {
-            toast.success(t('collect_done'), { position: 'top-center' });
+            setDone(true);
           }
           onTabId(-1);
         } else if (request.type === 'choose') {
@@ -103,7 +117,7 @@ export default function Page() {
           if (request.error) {
             toast.error(request.error, { position: 'top-center' });
           } else {
-            toast.success(t('collect_done'), { position: 'top-center' });
+            setDone(true);
           }
         }
         sendResponse({});
@@ -116,82 +130,65 @@ export default function Page() {
     };
   }, []);
 
-  if (!value.apiBaseUrl) {
-    return (
-      <Wrapper>
-        <Button className="w-full" onClick={handleOption}>
-          {t('config_first')}
-        </Button>
-      </Wrapper>
-    );
+  if (!data.apiKey) {
+    return <Config />;
   }
 
   if (tabId === 0) {
-    return (
-      <Wrapper>
-        <Button variant="destructive" className="w-full" disabled>
-          {t('alert_built')}
-        </Button>
-      </Wrapper>
-    );
+    return <BuiltIn />;
   }
 
   return (
     <div className="max-w-md">
       <Toaster />
-      <div className="flex flex-col">
-        <Button
-          variant="ghost"
-          disabled={tabId < 0}
-          onClick={handleCollect}
-          className="w-full flex items-center justify-between rounded-none font-normal h-12">
-          <div className="flex items-center space-x-3">
-            <Link />
-            <span>{t('collect_submit')}</span>
-          </div>
-          {collecting ? (
-            <LoaderCircle className="transition-transform animate-spin" />
-          ) : (
-            <ChevronRight />
-            // <div className="bg-gray-100 px-3 py-1 rounded-md">
-            //   <span className="text-gray-700 opacity-80">0</span>
-            // </div>
+      {done ? (
+        <Done />
+      ) : (
+        <>
+          {chooseNamespace && (
+            <ChooseNamespace
+              onChange={onChange}
+              apiKey={data.apiKey}
+              baseUrl={data.apiBaseUrl}
+              onCancel={cancelNamespace}
+              namespaceId={data.namespaceId}
+            />
           )}
-        </Button>
-        <Separator />
-        <Button
-          variant="ghost"
-          disabled={tabId < 0}
-          onClick={handleChoose}
-          className="w-full flex items-center justify-between rounded-none font-normal h-12">
-          {choosing ? (
-            <div className="flex items-center space-x-3">
-              <X />
-              <span>{t('choose_cancel')}</span>
-            </div>
-          ) : (
-            <div className="flex items-center space-x-3">
-              <SquareMousePointer />
-              <span>{t('choose_area')}</span>
-            </div>
+          {chooseResource && (
+            <ChooseResource
+              onChange={onChange}
+              apiKey={data.apiKey}
+              onCancel={cancelResource}
+              baseUrl={data.apiBaseUrl}
+              resourceId={data.resourceId}
+              namespaceId={data.namespaceId}
+            />
           )}
-          <ChevronRight />
-        </Button>
-        <Separator />
-        <Button
-          variant="ghost"
-          onClick={handleOption}
-          className="w-full flex items-center justify-between rounded-none font-normal h-12">
-          <div className="flex items-center space-x-3">
-            <Settings />
-            <span>{t('setting_title')}</span>
+          <div className={cn('flex flex-col', { hidden: chooseNamespace || chooseResource })}>
+            <Collect disabled={tabId < 0} loading={collecting} onClick={handleCollect} />
+            <Separator />
+            <Choose disabled={tabId < 0} loading={choosing} onClick={handleChoose} />
+            <Separator />
+            <Setting />
+            <Separator />
+            <Namespace
+              label="空间"
+              apiKey={data.apiKey}
+              onClick={handleNamespace}
+              baseUrl={data.apiBaseUrl}
+              namespaceId={data.namespaceId}
+            />
+            <Resource
+              label="收藏至"
+              apiKey={data.apiKey}
+              onClick={handleResource}
+              baseUrl={data.apiBaseUrl}
+              resourceId={data.resourceId}
+              namespaceId={data.namespaceId}
+            />
           </div>
-          <ChevronRight />
-        </Button>
-        <Separator />
-        <Namespace />
-        <Resource />
-      </div>
+        </>
+      )}
     </div>
   );
 }

@@ -1,24 +1,41 @@
 import { useState, useEffect } from 'react';
+import type { Storage } from '../utils/shared-types.js';
 
 export function useOption() {
-  const [value, onData] = useState({
+  const [data, onData] = useState<Storage>({
     apiKey: '',
-    apiBaseUrl: '',
     namespaceId: '',
-    spaceType: '',
+    resourceId: '',
+    theme: 'light',
+    language: 'zh-CN',
+    apiBaseUrl: 'https://omnibox.pro',
   });
   const refetch = () => {
-    chrome.storage.sync.get(['apiKey', 'apiBaseUrl', 'namespaceId', 'spaceType'], onData);
+    chrome.storage.sync.get(['apiKey', 'apiBaseUrl', 'namespaceId', 'resourceId', 'language', 'theme'], response => {
+      onData({
+        apiKey: response.apiKey || '',
+        resourceId: response.resourceId || '',
+        namespaceId: response.namespaceId || '',
+        theme: response.theme || 'light',
+        language: response.language || 'zh-CN',
+        apiBaseUrl: response.apiBaseUrl || 'https://omnibox.pro',
+      });
+    });
   };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onChange = (val: any, key?: string) => {
-    const newVal = key ? { [key]: val } : val;
+  const onChange = (val: string | { [index: string]: string }, key?: string) => {
+    const newVal = key ? { [key]: val } : (val as { [index: string]: string });
     return chrome.storage.sync.set(newVal).then(() => {
       onData(prev => ({ ...prev, ...newVal }));
     });
   };
 
-  useEffect(refetch, []);
+  useEffect(() => {
+    refetch();
+    window.addEventListener('focus', refetch);
+    return () => {
+      window.removeEventListener('focus', refetch);
+    };
+  }, []);
 
-  return { value, refetch, onChange };
+  return { data, refetch, onChange };
 }

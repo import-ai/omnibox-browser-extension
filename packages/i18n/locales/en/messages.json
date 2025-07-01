@@ -23,13 +23,10 @@
     "message": "Teamspace"
   },
   "apikey_done": {
-    "message": "API key obtained"
+    "message": "Logged in"
   },
   "apikey_submit": {
-    "message": "Log in to get your API Key"
-  },
-  "collect_done": {
-    "message": "Saved successfully"
+    "message": "Log in"
   },
   "collect_submit": {
     "message": "Collect web page"
@@ -57,6 +54,15 @@
         "example": "401"
       }
     }
+  },
+  "untitled": {
+    "message": "Untitled"
+  },
+  "private": {
+    "message": "Private"
+  },
+  "teamspace": {
+    "message": "Teamspace"
   },
   "language": {
     "message": "Language"

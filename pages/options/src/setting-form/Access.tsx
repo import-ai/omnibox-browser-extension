@@ -1,7 +1,33 @@
+import { t } from '@extension/i18n';
 import { ServerIcon } from 'lucide-react';
-import { Input, Button } from '@extension/ui';
+import { LazyInput, Button } from '@extension/ui';
+import { isValidStrictHttpRootDomain } from '@src/utils';
 
-export default function Access() {
+interface IProps {
+  baseUrl?: string;
+  apiKey?: string;
+  onChange: (val: string | { [index: string]: string }, key?: string) => void;
+}
+
+export default function Access(props: IProps) {
+  const { apiKey, onChange, baseUrl = '' } = props;
+  const handleLogin = () => {
+    if (!baseUrl || !isValidStrictHttpRootDomain(baseUrl)) {
+      return;
+    }
+    chrome.tabs.create({
+      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/user/login?from=extension`,
+    });
+  };
+  const handleChange = (val: string) => {
+    onChange({
+      apiKey: '',
+      namespaceId: '',
+      resourceId: '',
+      apiBaseUrl: val,
+    });
+  };
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-3">
@@ -9,8 +35,14 @@ export default function Access() {
         <span className="text-sm">正在访问</span>
       </div>
       <div className="flex gap-2">
-        <Input className="w-64" value="https://omnibox.pro" />
-        <Button>登陆</Button>
+        <LazyInput className="w-64" value={baseUrl} onChange={handleChange} />
+        {apiKey ? (
+          <Button disabled>{t('apikey_done')}</Button>
+        ) : (
+          <Button onClick={handleLogin} disabled={!isValidStrictHttpRootDomain(baseUrl)}>
+            {t('apikey_submit')}
+          </Button>
+        )}
       </div>
     </div>
   );
