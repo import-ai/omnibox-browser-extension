@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { t } from '@extension/i18n';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { LazyInput } from '../lazyInput';
@@ -55,9 +56,14 @@ export function ChooseNamespace(props: IProps) {
         ) : (
           <Search className="absolute left-6 top-[10px] size-4 opacity-50" />
         )}
-        <LazyInput value={search} onChange={onSearch} className="pl-8 rounded-sm" placeholder="Search for namespaces" />
+        <LazyInput
+          value={search}
+          onChange={onSearch}
+          className="pl-8 rounded-sm"
+          placeholder={t('search_for_namespace')}
+        />
       </div>
-      <div className="pb-2 min-h-[130px] max-h-80 overflow-y-auto">
+      <div className="pb-2 min-h-60 max-h-80 overflow-y-auto">
         {data
           .filter(item => (search ? item.name.includes(search) : true))
           .map(item => {

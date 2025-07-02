@@ -1,5 +1,5 @@
 import { useState } from 'react';
-// import { t } from '@extension/i18n';
+import { t } from '@extension/i18n';
 import {
   Dialog,
   DialogTrigger,
@@ -28,7 +28,7 @@ export default function FormNamespace(props: IProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Namespace modal apiKey={apiKey} label="默认空间" baseUrl={baseUrl} namespaceId={namespaceId} />
+        <Namespace modal apiKey={apiKey} label={t('default_space')} baseUrl={baseUrl} namespaceId={namespaceId} />
       </DialogTrigger>
       <DialogContent className="w-[90%] sm:w-1/2 max-w-7xl px-0 pt-10 pb-0">
         <DialogHeader className="hidden">
