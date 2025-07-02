@@ -32,7 +32,7 @@ export default function Access(props: IProps) {
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-3">
         <ServerIcon className="size-4" />
-        <span className="text-sm">正在访问</span>
+        <span className="text-sm">{t('access')}</span>
       </div>
       <div className="flex gap-2">
         <LazyInput className="w-64" value={baseUrl} onChange={handleChange} />

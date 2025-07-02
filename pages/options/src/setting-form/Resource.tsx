@@ -1,5 +1,5 @@
 import { useState } from 'react';
-// import { t } from '@extension/i18n';
+import { t } from '@extension/i18n';
 import {
   Dialog,
   DialogTrigger,
@@ -32,10 +32,10 @@ export default function FormResource(props: IProps) {
         <Resource
           modal
           apiKey={apiKey}
-          label="默认收藏至"
           baseUrl={baseUrl}
-          namespaceId={namespaceId}
           resourceId={resourceId}
+          namespaceId={namespaceId}
+          label={t('default_collect_to')}
         />
       </DialogTrigger>
       <DialogContent className="w-[90%] sm:w-1/2 max-w-7xl px-0 pt-10 pb-0">

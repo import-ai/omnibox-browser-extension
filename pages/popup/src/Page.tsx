@@ -31,7 +31,7 @@ export default function Page() {
       return;
     }
     setChoosing(true);
-    chrome.tabs.sendMessage(tabId, { action: 'choose', option: value }, response => {
+    chrome.tabs.sendMessage(tabId, { action: 'choose', option: data }, response => {
       setChoosing(false);
       if (response && response.error) {
         toast.error(response.error, { position: 'top-center' });
@@ -49,7 +49,7 @@ export default function Page() {
       return;
     }
     setCollecting(true);
-    chrome.tabs.sendMessage(tabId, { action: 'collect', option: value }, response => {
+    chrome.tabs.sendMessage(tabId, { action: 'collect', option: data }, response => {
       setCollecting(false);
       if (response && response.error) {
         toast.error(response.error, { position: 'top-center' });
@@ -130,6 +130,15 @@ export default function Page() {
     };
   }, []);
 
+  useEffect(() => {
+    let state = data.theme;
+    if (data.theme === 'system') {
+      state = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(state);
+  }, [data.theme]);
+
   if (!data.apiKey) {
     return <Config />;
   }
@@ -172,14 +181,14 @@ export default function Page() {
             <Setting />
             <Separator />
             <Namespace
-              label="空间"
+              label={t('space')}
               apiKey={data.apiKey}
               onClick={handleNamespace}
               baseUrl={data.apiBaseUrl}
               namespaceId={data.namespaceId}
             />
             <Resource
-              label="收藏至"
+              label={t('collect_to')}
               apiKey={data.apiKey}
               onClick={handleResource}
               baseUrl={data.apiBaseUrl}

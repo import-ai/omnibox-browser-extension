@@ -78,5 +78,38 @@
   },
   "system": {
     "message": "系统"
+  },
+  "space": {
+    "message": "空间"
+  },
+  "collect_to": {
+    "message": "收藏至"
+  },
+  "default_space": {
+    "message": "默认空间"
+  },
+  "default_collect_to": {
+    "message": "默认收藏至"
+  },
+  "open_in_ominibox": {
+    "message": "在 Ominibox 中打开"
+  },
+  "enter": {
+    "message": "进入"
+  },
+  "setting": {
+    "message": "配置设置"
+  },
+  "common": {
+    "message": "通用设置"
+  },
+  "access": {
+    "message": "正在访问"
+  },
+  "search_for_resource": {
+    "message": "搜索资源"
+  },
+  "search_for_namespace": {
+    "message": "搜索空间"
   }
 }
