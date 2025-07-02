@@ -6,7 +6,7 @@ export interface IBase {
   deleted_at?: string;
 }
 
-export type Language = 'zh-CN' | 'en-US';
+export type Language = 'zh' | 'en';
 export type Theme = 'system' | 'dark' | 'light';
 
 export interface Storage {

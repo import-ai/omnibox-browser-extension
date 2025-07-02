@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { Storage } from '../utils/shared-types.js';
 
 export function useOption() {
@@ -7,35 +7,31 @@ export function useOption() {
     namespaceId: '',
     resourceId: '',
     theme: 'light',
-    language: 'zh-CN',
+    language: 'en',
     apiBaseUrl: 'https://omnibox.pro',
   });
-  const refetch = () => {
+  const refetch = useCallback(() => {
     chrome.storage.sync.get(['apiKey', 'apiBaseUrl', 'namespaceId', 'resourceId', 'language', 'theme'], response => {
       onData({
         apiKey: response.apiKey || '',
         resourceId: response.resourceId || '',
         namespaceId: response.namespaceId || '',
         theme: response.theme || 'light',
-        language: response.language || 'zh-CN',
+        language: response.language || 'en',
         apiBaseUrl: response.apiBaseUrl || 'https://omnibox.pro',
       });
     });
-  };
-  const onChange = (val: string | { [index: string]: string }, key?: string) => {
+  }, []);
+  const onChange = useCallback((val: string | { [index: string]: string }, key?: string) => {
     const newVal = key ? { [key]: val } : (val as { [index: string]: string });
-    return chrome.storage.sync.set(newVal).then(() => {
+    chrome.storage.sync.set(newVal).then(() => {
       onData(prev => ({ ...prev, ...newVal }));
     });
-  };
+  }, []);
 
   useEffect(() => {
     refetch();
-    window.addEventListener('focus', refetch);
-    return () => {
-      window.removeEventListener('focus', refetch);
-    };
-  }, []);
+  }, [refetch]);
 
   return { data, refetch, onChange };
 }

@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils';
-import { t } from '@extension/i18n';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { LazyInput } from '../lazyInput';
@@ -11,15 +10,16 @@ import axios from '@extension/shared/lib/utils/axios';
 
 interface IProps {
   apiKey: string;
-  modal?: boolean;
   baseUrl?: string;
+  backText?: string;
   namespaceId: string;
+  placeholder: string;
   onCancel: () => void;
   onChange: (val: string | { [index: string]: string }, key?: string) => void;
 }
 
 export function ChooseNamespace(props: IProps) {
-  const { modal, apiKey, baseUrl, namespaceId, onCancel, onChange } = props;
+  const { backText, apiKey, baseUrl, namespaceId, placeholder, onCancel, onChange } = props;
   const [search, onSearch] = useState('');
   const [loading, onLoading] = useState(false);
   const [data, onData] = useState<Array<Namespace>>([]);
@@ -40,11 +40,11 @@ export function ChooseNamespace(props: IProps) {
 
   return (
     <div>
-      {!modal && (
+      {backText && (
         <>
           <div className="py-1">
             <Button variant="ghost" className="hover:bg-transparent" onClick={onCancel}>
-              Back
+              {backText}
             </Button>
           </div>
           <Separator className="mb-4" />
@@ -56,12 +56,7 @@ export function ChooseNamespace(props: IProps) {
         ) : (
           <Search className="absolute left-6 top-[10px] size-4 opacity-50" />
         )}
-        <LazyInput
-          value={search}
-          onChange={onSearch}
-          className="pl-8 rounded-sm"
-          placeholder={t('search_for_namespace')}
-        />
+        <LazyInput value={search} onChange={onSearch} className="pl-8 rounded-sm" placeholder={placeholder} />
       </div>
       <div className="pb-2 min-h-60 max-h-80 overflow-y-auto">
         {data

@@ -1,16 +1,17 @@
-import { t } from '@extension/i18n';
 import { ServerIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { LazyInput, Button } from '@extension/ui';
 import { isValidStrictHttpRootDomain } from '@src/utils';
 
 interface IProps {
-  baseUrl?: string;
-  apiKey?: string;
+  baseUrl: string;
+  apiKey: string;
   onChange: (val: string | { [index: string]: string }, key?: string) => void;
 }
 
 export default function Access(props: IProps) {
-  const { apiKey, onChange, baseUrl = '' } = props;
+  const { apiKey, onChange, baseUrl } = props;
+  const { t } = useTranslation();
   const handleLogin = () => {
     if (!baseUrl || !isValidStrictHttpRootDomain(baseUrl)) {
       return;

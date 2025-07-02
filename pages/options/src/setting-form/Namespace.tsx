@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { t } from '@extension/i18n';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogTrigger,
@@ -20,6 +20,7 @@ interface IProps {
 
 export default function FormNamespace(props: IProps) {
   const { apiKey, baseUrl, namespaceId, onChange } = props;
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const handleCancel = () => {
     setOpen(false);
@@ -36,12 +37,12 @@ export default function FormNamespace(props: IProps) {
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <ChooseNamespace
-          modal
           apiKey={apiKey}
           baseUrl={baseUrl}
           onChange={onChange}
           onCancel={handleCancel}
           namespaceId={namespaceId}
+          placeholder={t('search_for_namespace')}
         />
       </DialogContent>
     </Dialog>

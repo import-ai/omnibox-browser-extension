@@ -6,11 +6,11 @@ let destoryChoose: (() => void) | null = null;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // 保存内容
   if (request.action === 'collect') {
-    const { apiBaseUrl, apiKey, namespaceId, spaceType } = request.option;
+    const { apiBaseUrl, apiKey, namespaceId, resourceId } = request.option;
     chrome.runtime.sendMessage(
       {
         apiKey,
-        spaceType,
+        resourceId,
         namespaceId,
         action: 'collect',
         baseUrl: apiBaseUrl,
@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse,
     );
   } else if (request.action === 'choose') {
-    const { apiBaseUrl, apiKey, namespaceId, spaceType } = request.option;
+    const { apiBaseUrl, apiKey, namespaceId, resourceId } = request.option;
     if (destoryChoose) {
       destoryChoose();
       destoryChoose = null;
@@ -35,7 +35,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       chrome.runtime.sendMessage(
         {
           apiKey,
-          spaceType,
+          resourceId,
           namespaceId,
           action: 'collect',
           type: request.action,

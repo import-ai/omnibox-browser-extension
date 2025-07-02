@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { t } from '@extension/i18n';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogTrigger,
@@ -21,6 +21,7 @@ interface IProps {
 
 export default function FormResource(props: IProps) {
   const { apiKey, baseUrl, resourceId, namespaceId, onChange } = props;
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const handleCancel = () => {
     setOpen(false);
@@ -33,8 +34,11 @@ export default function FormResource(props: IProps) {
           modal
           apiKey={apiKey}
           baseUrl={baseUrl}
+          untitled={t('untitled')}
           resourceId={resourceId}
           namespaceId={namespaceId}
+          privateText={t('private')}
+          teamspaceText={t('teamspace')}
           label={t('default_collect_to')}
         />
       </DialogTrigger>
@@ -44,13 +48,16 @@ export default function FormResource(props: IProps) {
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <ChooseResource
-          modal
           apiKey={apiKey}
           baseUrl={baseUrl}
           onChange={onChange}
+          untitled={t('untitled')}
           onCancel={handleCancel}
           resourceId={resourceId}
           namespaceId={namespaceId}
+          privateText={t('private')}
+          teamspaceText={t('teamspace')}
+          placeholder={t('search_for_resource')}
         />
       </DialogContent>
     </Dialog>

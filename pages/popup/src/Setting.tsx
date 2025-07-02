@@ -1,8 +1,9 @@
-import { t } from '@extension/i18n';
 import { Button } from '@extension/ui';
+import { useTranslation } from 'react-i18next';
 import { ChevronRight, Settings } from 'lucide-react';
 
 export default function Setting() {
+  const { t } = useTranslation();
   const handleOption = () => {
     chrome.runtime.openOptionsPage();
   };

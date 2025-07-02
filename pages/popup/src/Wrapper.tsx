@@ -1,4 +1,4 @@
-import { t } from '@extension/i18n';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@extension/ui';
 
 interface IProps {
@@ -7,6 +7,7 @@ interface IProps {
 
 export default function Wrapper(props: IProps) {
   const { children } = props;
+  const { t } = useTranslation();
 
   return (
     <Card className="border-none shadow-none">

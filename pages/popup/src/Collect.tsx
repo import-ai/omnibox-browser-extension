@@ -1,5 +1,5 @@
-import { t } from '@extension/i18n';
 import { Button } from '@extension/ui';
+import { useTranslation } from 'react-i18next';
 import { LoaderCircle, ChevronRight, Link } from 'lucide-react';
 
 interface IProps {
@@ -10,6 +10,7 @@ interface IProps {
 
 export default function Collect(props: IProps) {
   const { loading, disabled, onClick } = props;
+  const { t } = useTranslation();
 
   return (
     <Button

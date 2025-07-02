@@ -24,7 +24,9 @@
     "@extension/shared": "workspace:*",
     "@extension/storage": "workspace:*",
     "@extension/ui": "workspace:*",
+    "i18next": "^25.3.0",
     "lucide-react": "^0.507.0",
+    "react-i18next": "^15.5.3",
     "sonner": "^2.0.3"
   },
   "devDependencies": {
