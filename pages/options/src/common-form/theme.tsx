@@ -24,6 +24,10 @@ export default function FieldTheme(props: IProps) {
     { label: t('system'), value: 'system' },
   ];
   const handleTheme = (theme: Theme) => {
+    if (!baseUrl || !apiKey) {
+      onChange(theme, 'theme');
+      return;
+    }
     axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/user/option`, {
       apiKey,
       data: {
