@@ -21,6 +21,10 @@ export default function FieldLanguage(props: IProps) {
   ];
   const toggleLanguage = (lng: string) => {
     i18n.changeLanguage(lng).then(() => {
+      if (!baseUrl || !apiKey) {
+        onChange(lng, 'language');
+        return;
+      }
       axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/user/option`, {
         apiKey,
         data: {
