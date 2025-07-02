@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         html: request.data,
         url: request.pageUrl,
         title: request.pageTitle,
-        space_type: request.spaceType,
+        parentId: request.resourceId,
         namespace_id: request.namespaceId,
       },
     })

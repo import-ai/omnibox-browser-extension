@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils';
-import { t } from '@extension/i18n';
 import { Button } from '../ui/button';
 import { useState, useEffect } from 'react';
 import type { Resource } from '@extension/shared';
@@ -11,13 +10,17 @@ interface IProps {
   modal?: boolean;
   baseUrl?: string;
   label: string;
+  untitled: string;
+  privateText: string;
+  teamspaceText: string;
   resourceId: string;
   namespaceId: string;
   onClick?: () => void;
 }
 
 export function Resource(props: IProps) {
-  const { apiKey, modal, baseUrl, label, namespaceId, resourceId, onClick } = props;
+  const { apiKey, modal, untitled, baseUrl, label, privateText, teamspaceText, namespaceId, resourceId, onClick } =
+    props;
   const [loading, setLoading] = useState(false);
   const [data, onData] = useState<Resource>({
     id: '',
@@ -38,19 +41,21 @@ export function Resource(props: IProps) {
       { apiKey },
     )
       .then(response => {
-        const resourceName = response.name || t('untitled');
+        const resourceName = response.name || untitled;
         onData({
           id: response.id,
           name:
             response.parent_id && response.parent_id !== '0'
               ? resourceName
-              : t(response.space_type as 'private' | 'teamspace'),
+              : response.space_type === 'private'
+                ? privateText
+                : teamspaceText,
         });
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [baseUrl, apiKey, namespaceId, resourceId]);
+  }, [baseUrl, apiKey, namespaceId, resourceId, privateText, teamspaceText, untitled]);
 
   return (
     <div

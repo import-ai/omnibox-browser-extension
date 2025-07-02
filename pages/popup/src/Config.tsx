@@ -1,8 +1,9 @@
 import Wrapper from '@src/Wrapper';
-import { t } from '@extension/i18n';
 import { Button } from '@extension/ui';
+import { useTranslation } from 'react-i18next';
 
 export default function Config() {
+  const { t } = useTranslation();
   const handleOption = () => {
     chrome.runtime.openOptionsPage();
   };

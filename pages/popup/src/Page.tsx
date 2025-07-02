@@ -4,18 +4,19 @@ import Choose from './Choose';
 import Collect from './Collect';
 import BuiltIn from './BuiltIn';
 import Setting from './Setting';
-import { t } from '@extension/i18n';
 import { toast, Toaster } from 'sonner';
 import { useState, useEffect } from 'react';
-import { useOption } from '@extension/shared';
 import { cn } from '@extension/ui/lib/utils';
+import { useOption } from '@extension/shared';
+import { useTranslation } from 'react-i18next';
 import extPage from '@extension/shared/lib/utils/ext-page';
 import { Separator, Resource, ChooseResource, Namespace, ChooseNamespace } from '@extension/ui';
 
 export default function Page() {
+  const { t, i18n } = useTranslation();
   const { data, onChange } = useOption();
   const [tabId, onTabId] = useState(-1);
-  const [done, setDone] = useState(false);
+  const [doneUrl, setDoneUrl] = useState('');
   const [choosing, setChoosing] = useState(false);
   const [collecting, setCollecting] = useState(false);
   const [chooseResource, onChooseResource] = useState(false);
@@ -36,7 +37,7 @@ export default function Page() {
       if (response && response.error) {
         toast.error(response.error, { position: 'top-center' });
       } else {
-        setDone(true);
+        setDoneUrl(response.data.resource_id);
       }
     });
     toast.success(t('choose_start'), { position: 'top-center' });
@@ -54,7 +55,7 @@ export default function Page() {
       if (response && response.error) {
         toast.error(response.error, { position: 'top-center' });
       } else {
-        setDone(true);
+        setDoneUrl(response.data.resource_id);
       }
       onTabId(-1);
     });
@@ -109,7 +110,7 @@ export default function Page() {
           if (request.error) {
             toast.error(request.error, { position: 'top-center' });
           } else {
-            setDone(true);
+            setDoneUrl(request.data.resource_id);
           }
           onTabId(-1);
         } else if (request.type === 'choose') {
@@ -117,7 +118,7 @@ export default function Page() {
           if (request.error) {
             toast.error(request.error, { position: 'top-center' });
           } else {
-            setDone(true);
+            setDoneUrl(request.data.resource_id);
           }
         }
         sendResponse({});
@@ -139,7 +140,13 @@ export default function Page() {
     document.documentElement.classList.add(state);
   }, [data.theme]);
 
-  if (!data.apiKey) {
+  useEffect(() => {
+    if (data.language !== i18n.language) {
+      i18n.changeLanguage(data.language);
+    }
+  }, [i18n, data.language]);
+
+  if (!data.apiKey || !data.namespaceId || !data.resourceId) {
     return <Config />;
   }
 
@@ -150,8 +157,8 @@ export default function Page() {
   return (
     <div className="max-w-md">
       <Toaster />
-      {done ? (
-        <Done />
+      {doneUrl ? (
+        <Done resourceId={doneUrl} namespaceId={data.namespaceId} baseUrl={data.apiBaseUrl} />
       ) : (
         <>
           {chooseNamespace && (
@@ -161,6 +168,7 @@ export default function Page() {
               baseUrl={data.apiBaseUrl}
               onCancel={cancelNamespace}
               namespaceId={data.namespaceId}
+              placeholder={t('search_for_namespace')}
             />
           )}
           {chooseResource && (
@@ -171,6 +179,10 @@ export default function Page() {
               baseUrl={data.apiBaseUrl}
               resourceId={data.resourceId}
               namespaceId={data.namespaceId}
+              untitled={t('untitled')}
+              privateText={t('private')}
+              teamspaceText={t('teamspace')}
+              placeholder={t('search_for_resource')}
             />
           )}
           <div className={cn('flex flex-col', { hidden: chooseNamespace || chooseResource })}>
@@ -188,10 +200,13 @@ export default function Page() {
               namespaceId={data.namespaceId}
             />
             <Resource
-              label={t('collect_to')}
               apiKey={data.apiKey}
+              untitled={t('untitled')}
+              label={t('collect_to')}
               onClick={handleResource}
               baseUrl={data.apiBaseUrl}
+              privateText={t('private')}
+              teamspaceText={t('teamspace')}
               resourceId={data.resourceId}
               namespaceId={data.namespaceId}
             />

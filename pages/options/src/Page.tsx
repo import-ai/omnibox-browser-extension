@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import { Toaster } from 'sonner';
-import { t } from '@extension/i18n';
 import CommonForm from './common-form';
 import SettingForm from './setting-form';
 import { useOption } from '@extension/shared';
+import { useTranslation } from 'react-i18next';
 
 export default function Page() {
-  const { data, onChange } = useOption();
+  const { data, onChange, refetch } = useOption();
+  const { t } = useTranslation();
 
   useEffect(() => {
     let state = data.theme;
@@ -16,6 +17,13 @@ export default function Page() {
     document.documentElement.classList.remove('light', 'dark');
     document.documentElement.classList.add(state);
   }, [data.theme]);
+
+  useEffect(() => {
+    window.addEventListener('focus', refetch);
+    return () => {
+      window.removeEventListener('focus', refetch);
+    };
+  }, [refetch]);
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-2xl">

@@ -1,4 +1,3 @@
-import { t } from '@extension/i18n';
 import { Button } from '../ui/button';
 import { LazyInput } from '../lazyInput';
 import FormResource from './FormResource';
@@ -10,16 +9,32 @@ import { Search, LoaderCircle } from 'lucide-react';
 
 interface IProps {
   apiKey: string;
-  modal?: boolean;
+  untitled: string;
+  privateText: string;
+  teamspaceText: string;
   baseUrl?: string;
+  backText?: string;
   resourceId: string;
   namespaceId: string;
+  placeholder: string;
   onCancel: () => void;
   onChange: (val: string | { [index: string]: string }, key?: string) => void;
 }
 
 export function ChooseResource(props: IProps) {
-  const { apiKey, modal, baseUrl, resourceId, namespaceId, onCancel, onChange } = props;
+  const {
+    apiKey,
+    untitled,
+    privateText,
+    teamspaceText,
+    backText,
+    baseUrl,
+    placeholder,
+    resourceId,
+    namespaceId,
+    onCancel,
+    onChange,
+  } = props;
   const [search, onSearch] = useState('');
   const [loading, onLoading] = useState(false);
   const [data, onData] = useState<{
@@ -85,11 +100,11 @@ export function ChooseResource(props: IProps) {
 
   return (
     <div className="w-full">
-      {!modal && (
+      {backText && (
         <>
           <div className="py-1">
             <Button variant="ghost" className="hover:bg-transparent" onClick={onCancel}>
-              Back
+              {backText}
             </Button>
           </div>
           <Separator className="mb-4" />
@@ -101,12 +116,7 @@ export function ChooseResource(props: IProps) {
         ) : (
           <Search className="absolute left-6 top-[10px] size-4 opacity-50" />
         )}
-        <LazyInput
-          value={search}
-          onChange={onSearch}
-          className="pl-8 rounded-sm"
-          placeholder={t('search_for_resource')}
-        />
+        <LazyInput value={search} onChange={onSearch} className="pl-8 rounded-sm" placeholder={placeholder} />
       </div>
       <div className="pb-2 min-h-60 max-h-80 overflow-y-auto">
         {data.root.length > 0 && (
@@ -121,10 +131,13 @@ export function ChooseResource(props: IProps) {
               <FormResource
                 data={item}
                 key={item.id}
+                untitled={untitled}
                 onCancel={onCancel}
                 onSearch={onSearch}
                 onChange={onChange}
                 resourceId={resourceId}
+                privateText={privateText}
+                teamspaceText={teamspaceText}
               />
             ))}
           </>
@@ -141,10 +154,13 @@ export function ChooseResource(props: IProps) {
               <FormResource
                 data={item}
                 key={item.id}
+                untitled={untitled}
                 onCancel={onCancel}
                 onSearch={onSearch}
                 onChange={onChange}
                 resourceId={resourceId}
+                privateText={privateText}
+                teamspaceText={teamspaceText}
               />
             ))}
           </>

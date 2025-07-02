@@ -1,36 +1,3 @@
-import { t } from '@extension/i18n';
-
-const getRedirectURL = (url: string, options: RequestInit): Promise<string> => {
-  return new Promise(resolve => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', url);
-    const { headers = {} } = options;
-    Object.keys(headers).forEach(key => {
-      if (typeof key === 'string') {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        xhr.setRequestHeader(key, headers[key]);
-      }
-    });
-    xhr.send();
-    xhr.onreadystatechange = function () {
-      if (this.readyState === this.DONE) {
-        if (this.responseURL && this.responseURL !== url) {
-          resolve(this.responseURL);
-          this.abort();
-          return;
-        }
-        console.log('未发生重定向，responseUR 的值为：', this.responseURL);
-        resolve('');
-      }
-    };
-    xhr.onerror = function (e) {
-      console.log('请求失败', e);
-      resolve('');
-    };
-  });
-};
-
 export default function axios(
   url: string,
   opts: {
@@ -89,19 +56,10 @@ export default function axios(
   return fetch(params.url, options).then(response => {
     if (!response.ok) {
       if (response.status === 401) {
-        chrome.storage.sync.remove(['apiKey', 'namespaceId', 'spaceType']);
+        chrome.storage.sync.remove(['apiKey', 'namespaceId', 'resourceId']);
       }
-      return Promise.reject(new Error(t('http_error', `${response.status}`)));
+      return Promise.reject(new Error(`HTTP error! status: ${response.status}`));
     } else {
-      if (response.type === 'opaqueredirect') {
-        return getRedirectURL(params.url, options).then(redirectURL => {
-          if (!redirectURL) {
-            throw new Error('未获取到重定向 URL');
-          }
-          // 自动对重定向的 URL 发起请求
-          return fetch(redirectURL, options);
-        });
-      }
       return response.json();
     }
   });
