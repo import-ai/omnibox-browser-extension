@@ -48,19 +48,48 @@ export default function axios(
   }
   params.headers.Authorization = `Bearer ${params.apiKey}`;
   const options: RequestInit = {
-    redirect: 'manual',
     body: params.body,
-    method: params.method,
+    redirect: 'manual',
     headers: params.headers,
+    method: params.method || 'GET',
   };
   return fetch(params.url, options).then(response => {
     if (!response.ok) {
+      if (response.type === 'opaqueredirect') {
+        const parsedUrl = new URL(params.url);
+        parsedUrl.hostname = `www.${parsedUrl.hostname}`;
+        return fetch(parsedUrl.toString(), options).then(innerResponse => {
+          if (!innerResponse.ok) {
+            return Promise.reject(new Error(`HTTP error! status: ${innerResponse.status}`));
+          } else {
+            return innerResponse.text().then(data => {
+              if (!data) {
+                return null;
+              }
+              try {
+                return JSON.parse(data);
+              } catch {
+                return null;
+              }
+            });
+          }
+        });
+      }
       if (response.status === 401) {
         chrome.storage.sync.remove(['apiKey', 'namespaceId', 'resourceId']);
       }
       return Promise.reject(new Error(`HTTP error! status: ${response.status}`));
     } else {
-      return response.json();
+      return response.text().then(data => {
+        if (!data) {
+          return null;
+        }
+        try {
+          return JSON.parse(data);
+        } catch {
+          return null;
+        }
+      });
     }
   });
 }

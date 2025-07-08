@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 import { useState, useEffect } from 'react';
 import type { Resource } from '@extension/shared';
+import each from '@extension/shared/lib/utils/each';
 import axios from '@extension/shared/lib/utils/axios';
 import { ChevronDown, FolderClosed, LoaderCircle } from 'lucide-react';
 
@@ -41,15 +42,25 @@ export function Resource(props: IProps) {
       { apiKey },
     )
       .then(response => {
-        const resourceName = response.name || untitled;
-        onData({
-          id: response.id,
-          name:
-            response.parent_id && response.parent_id !== '0'
-              ? resourceName
-              : response.space_type === 'private'
-                ? privateText
-                : teamspaceText,
+        if (response.parent_id && response.parent_id !== '0') {
+          onData({
+            id: response.id,
+            name: response.name || untitled,
+          });
+          return;
+        }
+        axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/root`, {
+          apiKey,
+          query: { namespace_id: namespaceId },
+        }).then(root => {
+          each(Object.keys(root), spaceType => {
+            const item = root[spaceType];
+            if (item.id === response.id) {
+              onData({ id: response.id, name: spaceType === 'private' ? privateText : teamspaceText });
+              return true;
+            }
+            return;
+          });
         });
       })
       .finally(() => {

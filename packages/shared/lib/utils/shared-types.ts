@@ -42,7 +42,6 @@ export interface Resource extends IBase {
   id: string;
   current_level?: Permission;
 
-  namespace?: { id: string };
   resource_type?: ResourceType;
   space_type?: SpaceType;
 

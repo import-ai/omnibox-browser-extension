@@ -17,12 +17,10 @@ interface IProps {
 export default function FormResource(props: IProps) {
   const { data, untitled, privateText, teamspaceText, resourceId, onCancel, onSearch, onChange } = props;
   const resourceName = data.name || untitled;
-  const name =
-    data.parent_id && data.parent_id !== '0'
-      ? resourceName
-      : data.space_type === 'private'
-        ? privateText
-        : teamspaceText;
+  let name = resourceName;
+  if ((!data.parent_id || data.parent_id === '0') && data.space_type) {
+    name = data.space_type === 'private' ? privateText : teamspaceText;
+  }
 
   return (
     <Button
