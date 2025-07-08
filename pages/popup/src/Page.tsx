@@ -146,7 +146,7 @@ export default function Page() {
     }
   }, [i18n, data.language]);
 
-  if (!data.apiKey || !data.namespaceId || !data.resourceId) {
+  if (!data.apiKey || !data.namespaceId) {
     return <Config />;
   }
 

@@ -51,22 +51,19 @@ export function ChooseResource(props: IProps) {
     }
     onLoading(true);
     if (!search) {
-      Promise.all(
-        ['private', 'teamspace'].map(spaceType =>
-          axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/root`, {
-            apiKey,
-            query: { namespace_id: namespaceId, space_type: spaceType },
-          }),
-        ),
-      )
+      axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/root`, {
+        apiKey,
+        query: { namespace_id: namespaceId },
+      })
         .then(response => {
           const root: Array<Resource> = [];
           const resources: Array<Resource> = [];
-          response.forEach(item => {
+          Object.keys(response).forEach(spaceType => {
+            const item = response[spaceType];
             if (!item.id) {
               return;
             }
-            root.push(item);
+            root.push({ ...item, space_type: spaceType });
             if (Array.isArray(item.children) && item.children.length > 0) {
               resources.push(...item.children);
             }
@@ -124,7 +121,7 @@ export function ChooseResource(props: IProps) {
             <Button
               disabled
               variant="ghost"
-              className="w-full h-auto whitespace-normal justify-start items-start rounded-none pb-0 h-7">
+              className="w-full whitespace-normal justify-start items-start rounded-none pb-0 h-7">
               Root
             </Button>
             {data.root.map(item => (
@@ -147,7 +144,7 @@ export function ChooseResource(props: IProps) {
             <Button
               disabled
               variant="ghost"
-              className="w-full h-auto whitespace-normal justify-start items-start rounded-none pb-0 h-7">
+              className="w-full whitespace-normal justify-start items-start rounded-none pb-0 h-7">
               Resource
             </Button>
             {data.resources.map(item => (
