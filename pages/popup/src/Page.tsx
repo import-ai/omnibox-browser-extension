@@ -163,6 +163,7 @@ export default function Page() {
         <>
           {chooseNamespace && (
             <ChooseNamespace
+              backText={t('back')}
               onChange={onChange}
               apiKey={data.apiKey}
               baseUrl={data.apiBaseUrl}
@@ -173,6 +174,7 @@ export default function Page() {
           )}
           {chooseResource && (
             <ChooseResource
+              backText={t('back')}
               onChange={onChange}
               apiKey={data.apiKey}
               onCancel={cancelResource}
