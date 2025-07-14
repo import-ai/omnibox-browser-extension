@@ -1,0 +1,48 @@
+import chooseFN from '../utils/choose';
+
+let destoryChoose: (() => void) | null = null;
+
+export function choose(
+  option: {
+    [index: string]: string;
+  },
+  callback: () => void,
+  doneCallback: () => void,
+) {
+  const { action, apiBaseUrl, apiKey, namespaceId, resourceId } = option;
+  if (destoryChoose) {
+    destoryChoose();
+    destoryChoose = null;
+  }
+  destoryChoose = chooseFN(node => {
+    if (destoryChoose) {
+      destoryChoose();
+      destoryChoose = null;
+    }
+    doneCallback();
+    chrome.runtime.sendMessage(
+      {
+        apiKey,
+        resourceId,
+        namespaceId,
+        type: action,
+        action: 'collect',
+        baseUrl: apiBaseUrl,
+        pageUrl: document.URL,
+        pageTitle: document.title,
+        data: `<html><head><title>${document.title}</title></head><body>${node.outerHTML}</body></html>`,
+      },
+      callback,
+    );
+  });
+}
+
+export function cancelChoose(callback?: () => void) {
+  if (destoryChoose) {
+    destoryChoose();
+    destoryChoose = null;
+  }
+  if (callback) {
+    callback();
+  }
+}
