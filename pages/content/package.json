@@ -20,13 +20,25 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@extension/env": "workspace:*",
     "@extension/shared": "workspace:*",
     "@extension/storage": "workspace:*",
-    "@extension/env": "workspace:*"
+    "@extension/ui": "workspace:*",
+    "i18next": "^25.3.0",
+    "lucide-react": "^0.507.0",
+    "react-i18next": "^15.5.3",
+    "sonner": "^2.0.3"
   },
   "devDependencies": {
     "@extension/hmr": "workspace:*",
+    "@extension/tailwindcss-config": "workspace:^",
     "@extension/tsconfig": "workspace:*",
     "@extension/vite-config": "workspace:*"
+  },
+  "postcss": {
+    "plugins": {
+      "tailwindcss": {},
+      "autoprefixer": {}
+    }
   }
 }
