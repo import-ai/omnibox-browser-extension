@@ -1,6 +1,6 @@
 {
   "name": "omnibox-client-chrome",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Collect HTML content from web pages",
   "license": "MIT",
   "private": true,
