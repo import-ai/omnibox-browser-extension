@@ -1,6 +1,6 @@
 import { Button } from '@extension/ui';
 import { useTranslation } from 'react-i18next';
-import { X, ChevronRight, SquareMousePointer } from 'lucide-react';
+import { LoaderCircle, ChevronRight, SquareMousePointer } from 'lucide-react';
 
 interface IProps {
   disabled: boolean;
@@ -18,18 +18,11 @@ export default function Choose(props: IProps) {
       onClick={onClick}
       disabled={disabled}
       className="w-full flex items-center justify-between rounded-none font-normal h-12">
-      {loading ? (
-        <div className="flex items-center space-x-3">
-          <X />
-          <span>{t('choose_cancel')}</span>
-        </div>
-      ) : (
-        <div className="flex items-center space-x-3">
-          <SquareMousePointer />
-          <span>{t('choose_area')}</span>
-        </div>
-      )}
-      <ChevronRight />
+      <div className="flex items-center space-x-3">
+        <SquareMousePointer />
+        <span>{t('choose_area')}</span>
+      </div>
+      {loading ? <LoaderCircle className="transition-transform animate-spin" /> : <ChevronRight />}
     </Button>
   );
 }

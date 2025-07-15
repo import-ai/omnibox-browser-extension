@@ -40,10 +40,7 @@ export default function Page() {
         setDoneUrl(response.data.resource_id);
       }
     });
-    toast.success(t('choose_start'), { position: 'top-center' });
-    setTimeout(() => {
-      window.close();
-    }, 1000);
+    window.close();
   };
   const handleCollect = () => {
     if (tabId <= 0) {

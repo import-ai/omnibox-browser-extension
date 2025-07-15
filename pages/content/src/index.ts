@@ -1,91 +1,21 @@
-import { ready } from '@src/utils/ready';
-import choose from '@extension/shared/lib/utils/choose';
+import '@src/utils/login';
+import { init } from '@src/page';
+import { choose, collect, cancelChoose } from '@src/actions';
 
-let destoryChoose: (() => void) | null = null;
+const app = init();
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // 保存内容
+app.on('cancel-choose', cancelChoose);
+
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.action === 'collect') {
-    const { apiBaseUrl, apiKey, namespaceId, resourceId } = request.option;
-    chrome.runtime.sendMessage(
-      {
-        apiKey,
-        resourceId,
-        namespaceId,
-        action: 'collect',
-        baseUrl: apiBaseUrl,
-        type: request.action,
-        pageUrl: document.URL,
-        pageTitle: document.title,
-        data: document.documentElement.outerHTML,
-      },
-      sendResponse,
-    );
+    collect({ ...request.option, action: request.action }, sendResponse);
   } else if (request.action === 'choose') {
-    const { apiBaseUrl, apiKey, namespaceId, resourceId } = request.option;
-    if (destoryChoose) {
-      destoryChoose();
-      destoryChoose = null;
-    }
-    destoryChoose = choose(node => {
-      if (destoryChoose) {
-        destoryChoose();
-        destoryChoose = null;
-      }
-      chrome.runtime.sendMessage(
-        {
-          apiKey,
-          resourceId,
-          namespaceId,
-          action: 'collect',
-          type: request.action,
-          baseUrl: apiBaseUrl,
-          pageUrl: document.URL,
-          pageTitle: document.title,
-          data: `<html><head><title>${document.title}</title></head><body>${node.outerHTML}</body></html>`,
-        },
-        sendResponse,
-      );
+    app.fire('choose', true);
+    choose({ ...request.option, action: request.action }, sendResponse, () => {
+      app.fire('choose', false);
     });
   } else if (request.action === 'cancel-choose') {
-    if (destoryChoose) {
-      destoryChoose();
-      destoryChoose = null;
-    }
-    sendResponse();
+    cancelChoose(sendResponse);
   }
   return true;
 });
-
-// 登录页面
-if (location.search === '?from=extension') {
-  ready(() => {
-    chrome.storage.sync.get('apiKey', data => {
-      if (data.apiKey) {
-        return;
-      }
-      document.body.setAttribute('data-from-extension', 'true');
-      const observer = new MutationObserver(mutations => {
-        for (const mutation of mutations) {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'data-token') {
-            const token = document.body.getAttribute('data-token');
-            if (token) {
-              observer.disconnect();
-              document.body.removeAttribute('data-from-extension');
-              document.body.removeAttribute('data-token');
-              chrome.runtime.sendMessage({
-                action: 'saveToken',
-                token,
-              });
-            }
-          }
-        }
-      });
-      observer.observe(document.body, {
-        subtree: false,
-        attributes: true,
-        attributeFilter: ['data-token'],
-      });
-    });
-  });
-}
