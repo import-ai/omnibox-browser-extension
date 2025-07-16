@@ -1,10 +1,10 @@
 {
-  "extensionDescription": {
-    "description": "Extension description",
-    "message": "Collect HTML content from web pages"
-  },
   "extensionName": {
     "description": "Extension name",
     "message": "Save to OmniBox"
+  },
+  "extensionDescription": {
+    "description": "Extension description",
+    "message": "With a single click, save the page and turn your browser into a personal knowledge hub."
   }
 }

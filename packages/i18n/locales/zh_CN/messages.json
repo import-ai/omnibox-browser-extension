@@ -1,10 +1,10 @@
 {
-  "extensionDescription": {
-    "description": "扩展描述",
-    "message": "从网页采集内容"
-  },
   "extensionName": {
     "description": "扩展名",
     "message": "告诉小黑"
+  },
+  "extensionDescription": {
+    "description": "扩展描述",
+    "message": "一键收藏整页/选区，支持自定义空间与文件夹、主题切换、中英双语，让你的浏览器秒变个人知识管家。"
   }
 }

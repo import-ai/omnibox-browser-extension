@@ -1,6 +1,6 @@
 {
-  "extensionDescription": "Collect HTML content from web pages",
   "extensionName": "Save to OmniBox",
+  "extensionDescription": "With a single click, save the page and turn your browser into a personal knowledge hub.",
   "setting_title": "Extension Settings",
   "collect_submit": "Collect web page",
   "config_first": "Please configure first",
