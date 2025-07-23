@@ -72,7 +72,7 @@ export default function Feedback(props: Storage) {
           {t('view')}
         </Button>
       </div>
-      <div className="text-muted-foreground opacity-90">{t('close_after_three_seconds')}</div>
+      <div className="text-muted-foreground opacity-90 text-left">{t('close_after_three_seconds')}</div>
     </div>
   );
 }
