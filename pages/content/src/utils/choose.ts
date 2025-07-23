@@ -42,18 +42,11 @@ export default function choose(callback: (node: HTMLElement) => void) {
   }
   function destory() {
     stylesheet.remove();
-    document.removeEventListener('keydown', handleESC);
     document.body.removeEventListener('click', handleClick, true);
     document.body.removeEventListener('mouseover', handleMouseover);
     document.body.removeEventListener('mouseleave', cleanUpScene);
     cleanUpScene();
   }
-  function handleESC(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      destory();
-    }
-  }
-  document.addEventListener('keydown', handleESC);
   document.body.addEventListener('click', handleClick, true);
   document.body.addEventListener('mouseover', handleMouseover);
   document.body.addEventListener('mouseleave', cleanUpScene);

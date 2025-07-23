@@ -7,9 +7,6 @@ let queryed = false;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'collect') {
     status = request.type;
-    if (request.type === 'choose') {
-      chrome.action.openPopup();
-    }
     axios(`${request.baseUrl.endsWith('/') ? request.baseUrl.slice(0, -1) : request.baseUrl}/api/v1/wizard/collect`, {
       apiKey: request.apiKey,
       data: {
@@ -40,7 +37,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         status = '';
         queryed = false;
       });
-    return true;
   } else if (request.action === 'status') {
     sendResponse({ data: status });
     if (status) {
@@ -53,7 +49,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         chrome.tabs.remove(sender.tab.id);
       }
     });
-    return true;
+  } else if (request.action === 'create-tab') {
+    chrome.tabs.create({ url: request.url }, sendResponse);
   }
   return true;
 });

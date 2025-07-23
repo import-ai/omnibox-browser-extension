@@ -8,7 +8,7 @@ export function useOption() {
     resourceId: '',
     theme: 'light',
     language: 'en',
-    apiBaseUrl: 'https://omnibox.pro',
+    apiBaseUrl: 'https://www.omnibox.pro',
   });
   const refetch = useCallback(() => {
     chrome.storage.sync.get(['apiKey', 'apiBaseUrl', 'namespaceId', 'resourceId', 'language', 'theme'], response => {
@@ -18,7 +18,7 @@ export function useOption() {
         namespaceId: response.namespaceId || '',
         theme: response.theme || 'light',
         language: response.language || 'en',
-        apiBaseUrl: response.apiBaseUrl || 'https://omnibox.pro',
+        apiBaseUrl: response.apiBaseUrl || 'https://www.omnibox.pro',
       });
     });
   }, []);
