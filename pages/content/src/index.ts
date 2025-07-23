@@ -8,12 +8,40 @@ app.on('cancel-choose', cancelChoose);
 
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.action === 'collect') {
-    collect({ ...request.option, action: request.action }, sendResponse);
+    app.fire('status', 'pending');
+    collect({ ...request.option, action: request.action }, response => {
+      sendResponse(response);
+      if (response && response.error) {
+        app.fire('status', 'error');
+        app.fire('result', response.error);
+      } else {
+        app.fire('status', 'done');
+        if (response.data) {
+          app.fire('result', response.data.resource_id);
+        }
+      }
+    });
   } else if (request.action === 'choose') {
     app.fire('choose', true);
-    choose({ ...request.option, action: request.action }, sendResponse, () => {
-      app.fire('choose', false);
-    });
+    choose(
+      { ...request.option, action: request.action },
+      response => {
+        sendResponse(response);
+        if (response && response.error) {
+          app.fire('status', 'error');
+          app.fire('result', response.error);
+        } else {
+          app.fire('status', 'done');
+          if (response.data) {
+            app.fire('result', response.data.resource_id);
+          }
+        }
+      },
+      () => {
+        app.fire('choose', false);
+        app.fire('status', 'pending');
+      },
+    );
   } else if (request.action === 'cancel-choose') {
     cancelChoose(sendResponse);
   }

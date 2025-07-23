@@ -56,6 +56,7 @@ export default function Page() {
       }
       onTabId(-1);
     });
+    window.close();
   };
   const handleNamespace = () => {
     onChooseNamespace(true);

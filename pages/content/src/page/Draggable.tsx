@@ -96,7 +96,7 @@ export default function DraggableBox(props: IProps) {
   return (
     <div
       ref={ref}
-      className={`fixed left-[30%] top-[50px] flex cursor-move text-sm font-medium justify-between items-center px-4 py-3 rounded-lg min-w-[360px] shadow-lg bg-background text-foreground`}
+      className={`fixed left-[50%] ml-[-180px] top-[50px] cursor-move rounded-lg min-w-[360px] shadow-lg bg-background text-foreground`}
       style={{
         zIndex,
         transform: `translate3d(${position.x}px, ${position.y}px, 0)`,

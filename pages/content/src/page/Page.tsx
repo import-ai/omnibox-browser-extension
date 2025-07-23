@@ -1,4 +1,4 @@
-import Choose from './Choose';
+import Wrapper from './Wrapper';
 import { useEffect } from 'react';
 import useApp from './hooks/useApp';
 import { useOption } from '@extension/shared';
@@ -24,5 +24,5 @@ export default function Page() {
     }
   }, [i18n, data.language]);
 
-  return <Choose />;
+  return <Wrapper {...data} />;
 }

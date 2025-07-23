@@ -2,7 +2,13 @@ export function collect(
   option: {
     [index: string]: string;
   },
-  callback: () => void,
+  callback: (response: {
+    data?: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      [index: string]: any;
+    };
+    error?: string;
+  }) => void,
 ) {
   const { action, apiBaseUrl, apiKey, namespaceId, resourceId } = option;
   chrome.runtime.sendMessage(
