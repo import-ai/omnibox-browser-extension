@@ -23,8 +23,7 @@ const manifest = {
   name: '__MSG_extensionName__',
   browser_specific_settings: {
     gecko: {
-      id: 'example@example.com',
-      strict_min_version: '109.0',
+      id: 'save_to_omnibox@omnibox.pro',
     },
   },
   version: packageJson.version,
