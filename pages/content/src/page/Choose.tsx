@@ -33,7 +33,7 @@ export default function Choose() {
   }
 
   return (
-    <div className="flex text-sm font-medium justify-between items-center px-4 py-3">
+    <div className="flex gap-2 text-sm font-medium justify-between items-center px-4 py-3">
       <span>{t('choose_start')}</span>
       <Button size="sm" className="h-6" onClick={cancelChoose}>
         {t('choose_cancel')}
