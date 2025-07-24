@@ -3,6 +3,6 @@
   "choose_cancel": "Cancel selection",
   "save_success": "Save successful",
   "view": "View",
-  "close_after_three_seconds": "Automatically close after 3 seconds",
+  "close_after_three_seconds": "Automatically close after {{ seconds }} seconds",
   "pending": "Processing"
 }

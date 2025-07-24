@@ -5,11 +5,14 @@ import { useTranslation } from 'react-i18next';
 import type { Storage } from '@extension/shared';
 import { Loader2, AlertCircleIcon } from 'lucide-react';
 
+type Status = '' | 'pending' | 'error' | 'done';
+
 export default function Feedback(props: Storage) {
   const { namespaceId, apiBaseUrl } = props;
   const { app } = useApp();
   const [result, setResult] = useState('');
-  const [status, setStatus] = useState<'' | 'pending' | 'error' | 'done'>('');
+  const [deadline, setDeadline] = useState(3);
+  const [status, setStatus] = useState<Status>('');
   const { t } = useTranslation();
   const handleClick = () => {
     chrome.runtime.sendMessage({
@@ -22,14 +25,20 @@ export default function Feedback(props: Storage) {
     if (status !== 'done') {
       return;
     }
-    const timer = setTimeout(() => {
-      setStatus('');
-      setResult('');
-    }, 3000);
+    const timer = setInterval(() => {
+      if (deadline <= 1) {
+        clearInterval(timer);
+        setStatus('');
+        setResult('');
+        setDeadline(3);
+        return;
+      }
+      setDeadline(deadline - 1);
+    }, 1000);
     return () => {
-      clearTimeout(timer);
+      clearInterval(timer);
     };
-  }, [status]);
+  }, [status, deadline]);
 
   useEffect(() => {
     const hooks: Array<() => void> = [];
@@ -72,7 +81,9 @@ export default function Feedback(props: Storage) {
           {t('view')}
         </Button>
       </div>
-      <div className="text-muted-foreground opacity-90 text-left">{t('close_after_three_seconds')}</div>
+      <div className="text-muted-foreground opacity-90 text-left">
+        {t('close_after_three_seconds', { seconds: deadline })}
+      </div>
     </div>
   );
 }
