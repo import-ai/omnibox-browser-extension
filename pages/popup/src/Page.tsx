@@ -1,9 +1,9 @@
 import Done from './Done';
+import Header from './Header';
 import Config from './Config';
 import Choose from './Choose';
 import Collect from './Collect';
 import BuiltIn from './BuiltIn';
-import Setting from './Setting';
 import { toast, Toaster } from 'sonner';
 import { useState, useEffect } from 'react';
 import { cn } from '@extension/ui/lib/utils';
@@ -14,7 +14,7 @@ import { Separator, Resource, ChooseResource, Namespace, ChooseNamespace } from 
 
 export default function Page() {
   const { t, i18n } = useTranslation();
-  const { data, onChange } = useOption();
+  const { data, refetch, onChange } = useOption();
   const [tabId, onTabId] = useState(-1);
   const [doneUrl, setDoneUrl] = useState('');
   const [choosing, setChoosing] = useState(false);
@@ -186,11 +186,11 @@ export default function Page() {
             />
           )}
           <div className={cn('flex flex-col', { hidden: chooseNamespace || chooseResource })}>
+            <Header refetch={refetch} />
+            <Separator />
             <Collect disabled={tabId < 0} loading={collecting} onClick={handleCollect} />
             <Separator />
             <Choose disabled={tabId < 0} loading={choosing} onClick={handleChoose} />
-            <Separator />
-            <Setting />
             <Separator />
             <Namespace
               label={t('space')}
