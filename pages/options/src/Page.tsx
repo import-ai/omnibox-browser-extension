@@ -4,6 +4,7 @@ import CommonForm from './common-form';
 import SettingForm from './setting-form';
 import { useOption } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
+import axios from '@extension/shared/lib/utils/axios';
 
 export default function Page() {
   const { data, onChange, refetch } = useOption();
@@ -19,9 +20,42 @@ export default function Page() {
   }, [data.theme]);
 
   useEffect(() => {
-    window.addEventListener('focus', refetch);
+    const focusFN = () => {
+      chrome.storage.sync.get(
+        ['apiKey', 'apiBaseUrl', 'namespaceId', 'resourceId'],
+        ({ apiKey, apiBaseUrl, namespaceId, resourceId }) => {
+          if (namespaceId && resourceId) {
+            refetch();
+            return;
+          }
+          const baseUrl = apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
+          axios(`${baseUrl}/api/v1/namespaces`, {
+            apiKey,
+          })
+            .then(namespaces => {
+              if (namespaces.length <= 0) {
+                return;
+              }
+              const namespaceId = namespaces[0].id;
+              return axios(`${baseUrl}/api/v1/namespaces/${namespaceId}/root`, {
+                apiKey,
+                query: { namespace_id: namespaceId },
+              }).then(response => {
+                const privateData = response['private'];
+                if (!privateData) {
+                  return;
+                }
+                const resourceId = privateData.id;
+                return chrome.storage.sync.set({ namespaceId, resourceId });
+              });
+            })
+            .finally(refetch);
+        },
+      );
+    };
+    window.addEventListener('focus', focusFN);
     return () => {
-      window.removeEventListener('focus', refetch);
+      window.removeEventListener('focus', focusFN);
     };
   }, [refetch]);
 
