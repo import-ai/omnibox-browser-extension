@@ -37,29 +37,31 @@ export function Resource(props: IProps) {
       return;
     }
     setLoading(true);
-    axios(
-      `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/resources/${resourceId}`,
-      { apiKey },
-    )
-      .then(response => {
-        if (response.parent_id && response.parent_id !== '0') {
-          onData({
-            id: response.id,
-            name: response.name || untitled,
-          });
+    axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/root`, {
+      apiKey,
+      query: { namespace_id: namespaceId },
+    })
+      .then(root => {
+        let match = false;
+        each(Object.keys(root), spaceType => {
+          const item = root[spaceType];
+          if (item.id === resourceId) {
+            onData({ id: resourceId, name: spaceType === 'private' ? privateText : teamspaceText });
+            match = true;
+            return true;
+          }
+          return;
+        });
+        if (match) {
           return;
         }
-        axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/root`, {
-          apiKey,
-          query: { namespace_id: namespaceId },
-        }).then(root => {
-          each(Object.keys(root), spaceType => {
-            const item = root[spaceType];
-            if (item.id === response.id) {
-              onData({ id: response.id, name: spaceType === 'private' ? privateText : teamspaceText });
-              return true;
-            }
-            return;
+        axios(
+          `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/resources/${resourceId}`,
+          { apiKey },
+        ).then(response => {
+          onData({
+            id: resourceId,
+            name: response.name || untitled,
           });
         });
       })

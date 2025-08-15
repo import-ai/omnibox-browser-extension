@@ -29,9 +29,7 @@ export function useOption() {
     });
   }, []);
 
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
+  useEffect(refetch, [refetch]);
 
   return { data, refetch, onChange };
 }
