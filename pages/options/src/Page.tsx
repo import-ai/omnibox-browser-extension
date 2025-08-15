@@ -28,28 +28,31 @@ export default function Page() {
             refetch();
             return;
           }
+          if (!apiKey || !apiBaseUrl) {
+            return;
+          }
           const baseUrl = apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
           axios(`${baseUrl}/api/v1/namespaces`, {
             apiKey,
-          })
-            .then(namespaces => {
-              if (namespaces.length <= 0) {
+          }).then(namespaces => {
+            if (namespaces.length <= 0) {
+              refetch();
+              return;
+            }
+            const namespaceId = namespaces[0].id;
+            axios(`${baseUrl}/api/v1/namespaces/${namespaceId}/root`, {
+              apiKey,
+              query: { namespace_id: namespaceId },
+            }).then(response => {
+              const privateData = response['private'];
+              if (!privateData) {
+                refetch();
                 return;
               }
-              const namespaceId = namespaces[0].id;
-              return axios(`${baseUrl}/api/v1/namespaces/${namespaceId}/root`, {
-                apiKey,
-                query: { namespace_id: namespaceId },
-              }).then(response => {
-                const privateData = response['private'];
-                if (!privateData) {
-                  return;
-                }
-                const resourceId = privateData.id;
-                return chrome.storage.sync.set({ namespaceId, resourceId });
-              });
-            })
-            .finally(refetch);
+              const resourceId = privateData.id;
+              chrome.storage.sync.set({ namespaceId, resourceId }).finally(refetch);
+            });
+          });
         },
       );
     };
