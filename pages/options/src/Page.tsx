@@ -5,6 +5,7 @@ import SettingForm from './setting-form';
 import { useOption } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
 import axios from '@extension/shared/lib/utils/axios';
+import { getOptions } from '@extension/shared/lib/utils/options';
 
 export default function Page() {
   const { data, onChange, refetch } = useOption();
@@ -21,40 +22,38 @@ export default function Page() {
 
   useEffect(() => {
     const focusFN = () => {
-      chrome.storage.sync.get(
-        ['apiKey', 'apiBaseUrl', 'namespaceId', 'resourceId'],
-        ({ apiKey, apiBaseUrl, namespaceId, resourceId }) => {
-          if (namespaceId && resourceId) {
+      chrome.storage.sync.get(['apiKey', 'apiBaseUrl', 'namespaceId', 'resourceId'], response => {
+        const { apiKey, apiBaseUrl, namespaceId, resourceId } = getOptions(response);
+        if (namespaceId && resourceId) {
+          refetch();
+          return;
+        }
+        if (!apiKey || !apiBaseUrl) {
+          return;
+        }
+        const baseUrl = apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
+        axios(`${baseUrl}/api/v1/namespaces`, {
+          apiKey,
+        }).then(namespaces => {
+          if (namespaces.length <= 0) {
             refetch();
             return;
           }
-          if (!apiKey || !apiBaseUrl) {
-            return;
-          }
-          const baseUrl = apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
-          axios(`${baseUrl}/api/v1/namespaces`, {
+          const namespaceId = namespaces[0].id;
+          axios(`${baseUrl}/api/v1/namespaces/${namespaceId}/root`, {
             apiKey,
-          }).then(namespaces => {
-            if (namespaces.length <= 0) {
+            query: { namespace_id: namespaceId },
+          }).then(response => {
+            const privateData = response['private'];
+            if (!privateData) {
               refetch();
               return;
             }
-            const namespaceId = namespaces[0].id;
-            axios(`${baseUrl}/api/v1/namespaces/${namespaceId}/root`, {
-              apiKey,
-              query: { namespace_id: namespaceId },
-            }).then(response => {
-              const privateData = response['private'];
-              if (!privateData) {
-                refetch();
-                return;
-              }
-              const resourceId = privateData.id;
-              chrome.storage.sync.set({ namespaceId, resourceId }).finally(refetch);
-            });
+            const resourceId = privateData.id;
+            chrome.storage.sync.set({ namespaceId, resourceId }).finally(refetch);
           });
-        },
-      );
+        });
+      });
     };
     window.addEventListener('focus', focusFN);
     return () => {
