@@ -16,8 +16,9 @@ export default function Access(props: IProps) {
     if (!baseUrl || !isValidStrictHttpRootDomain(baseUrl)) {
       return;
     }
+    const siteHostname = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
     chrome.tabs.create({
-      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/user/login?from=extension`,
+      url: `${siteHostname}/user/login?response_type=code&state=state&client_id=omnibox-client-chrome&redirect_uri=${encodeURIComponent(`${siteHostname}/single/oauth/confirm`)}`,
     });
   };
   const handleChange = (val: string) => {

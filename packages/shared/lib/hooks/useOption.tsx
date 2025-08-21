@@ -1,25 +1,23 @@
 import { useState, useEffect, useCallback } from 'react';
+
+import { getOptions } from '../utils/options.js';
+
 import type { Storage } from '../utils/shared-types.js';
 
 export function useOption() {
-  const [data, onData] = useState<Storage>({
-    apiKey: '',
-    namespaceId: '',
-    resourceId: '',
-    theme: 'light',
-    language: 'en',
-    apiBaseUrl: 'https://www.omnibox.pro',
-  });
+  const [data, onData] = useState<Storage>(
+    getOptions({
+      apiKey: '',
+      namespaceId: '',
+      resourceId: '',
+      theme: 'light',
+      language: 'en',
+      apiBaseUrl: 'https://www.omnibox.pro',
+    }),
+  );
   const refetch = useCallback(() => {
     chrome.storage.sync.get(['apiKey', 'apiBaseUrl', 'namespaceId', 'resourceId', 'language', 'theme'], response => {
-      onData({
-        apiKey: response.apiKey || '',
-        resourceId: response.resourceId || '',
-        namespaceId: response.namespaceId || '',
-        theme: response.theme || 'light',
-        language: response.language || 'en',
-        apiBaseUrl: response.apiBaseUrl || 'https://www.omnibox.pro',
-      });
+      onData(getOptions(response));
     });
   }, []);
   const onChange = useCallback((val: string | { [index: string]: string }, key?: string) => {

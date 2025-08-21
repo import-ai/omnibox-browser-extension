@@ -26,6 +26,7 @@
     "@extension/ui": "workspace:*",
     "@hookform/resolvers": "^5.0.1",
     "i18next": "^25.3.0",
+    "i18next-browser-languagedetector": "^8.2.0",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.507.0",
     "react-hook-form": "^7.56.2",

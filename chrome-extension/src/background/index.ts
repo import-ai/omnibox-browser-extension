@@ -42,12 +42,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (status) {
       queryed = true;
     }
-  } else if (request.action === 'saveToken') {
-    chrome.storage.sync.set({ apiKey: request.token }, () => {
-      sendResponse();
-      if (sender.tab && sender.tab.id) {
-        chrome.tabs.remove(sender.tab.id);
-      }
+  } else if (request.action === 'oauth') {
+    chrome.storage.sync.get(['apiBaseUrl'], options => {
+      const baseUrl = options.apiBaseUrl || 'https://www.omnibox.pro';
+      axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/oauth2/token`, {
+        data: {
+          code: request.code,
+          state: request.state,
+          grant_type: 'authorization_code',
+          client_id: 'omnibox-client-chrome',
+        },
+      }).then(response => {
+        chrome.storage.sync.set({ apiKey: response.access_token }, () => {
+          sendResponse();
+          if (sender.tab && sender.tab.id) {
+            chrome.tabs.remove(sender.tab.id);
+          }
+        });
+      });
     });
   } else if (request.action === 'create-tab') {
     chrome.tabs.create({ url: request.url }, sendResponse);
