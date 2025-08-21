@@ -2,22 +2,24 @@ import useApp from './hooks/useApp';
 import { Button } from '@extension/ui';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Storage } from '@extension/shared';
+import { getOptions } from '@extension/shared';
 import { Loader2, AlertCircleIcon } from 'lucide-react';
 
 type Status = '' | 'pending' | 'error' | 'done';
 
-export default function Feedback(props: Storage) {
-  const { namespaceId, apiBaseUrl } = props;
+export default function Feedback() {
   const { app } = useApp();
   const [result, setResult] = useState('');
   const [deadline, setDeadline] = useState(3);
   const [status, setStatus] = useState<Status>('');
   const { t } = useTranslation();
   const handleClick = () => {
-    chrome.runtime.sendMessage({
-      action: 'create-tab',
-      url: `${apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl}/${namespaceId}/${result}`,
+    chrome.storage.sync.get(['apiBaseUrl', 'namespaceId'], response => {
+      const { apiBaseUrl, namespaceId } = getOptions(response);
+      chrome.runtime.sendMessage({
+        action: 'create-tab',
+        url: `${apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl}/${namespaceId}/${result}`,
+      });
     });
   };
 

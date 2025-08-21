@@ -21,8 +21,35 @@ interface IProps {
 export function ChooseNamespace(props: IProps) {
   const { backText, apiKey, baseUrl, namespaceId, placeholder, onCancel, onChange } = props;
   const [search, onSearch] = useState('');
+  const [lazy, onLazy] = useState('');
   const [loading, onLoading] = useState(false);
   const [data, onData] = useState<Array<Namespace>>([]);
+  const handleChange = (itemId: string) => {
+    onLazy(itemId);
+    axios(`${baseUrl}/api/v1/namespaces/${itemId}/root`, {
+      apiKey,
+      query: { namespace_id: itemId },
+    })
+      .then(response => {
+        const privateData = response['private'];
+        if (privateData) {
+          onChange({
+            resourceId: privateData.id,
+            namespaceId: itemId,
+          });
+        } else {
+          onChange({
+            resourceId: '',
+            namespaceId: itemId,
+          });
+        }
+        onSearch('');
+        onCancel();
+      })
+      .finally(() => {
+        onLazy('');
+      });
+  };
 
   useEffect(() => {
     if (!baseUrl || !apiKey) {
@@ -67,18 +94,17 @@ export function ChooseNamespace(props: IProps) {
               <Button
                 key={item.id}
                 variant="ghost"
+                onClick={() => handleChange(item.id)}
                 className={cn('w-full h-auto whitespace-normal justify-start items-start font-normal rounded-none', {
                   'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50': item.id === namespaceId,
-                })}
-                onClick={() => {
-                  onChange({
-                    resourceId: '',
-                    namespaceId: item.id,
-                  });
-                  onSearch('');
-                  onCancel();
-                }}>
-                <Badge variant="secondary">{name.charAt(0)}</Badge>
+                })}>
+                <Badge
+                  variant="secondary"
+                  className={cn({
+                    'px-2': lazy === item.id,
+                  })}>
+                  {lazy === item.id ? <LoaderCircle className="transition-transform animate-spin" /> : name.charAt(0)}
+                </Badge>
                 <div className="text-left">{name}</div>
               </Button>
             );
