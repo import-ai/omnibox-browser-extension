@@ -1,7 +1,7 @@
 export default function axios(
   url: string,
   opts: {
-    apiKey: string;
+    apiKey?: string;
     format?: 'json' | 'text' | 'blob';
     query?: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,7 +46,9 @@ export default function axios(
       'Content-Type': 'application/json',
     };
   }
-  params.headers.Authorization = `Bearer ${params.apiKey}`;
+  if (params.apiKey) {
+    params.headers.Authorization = `Bearer ${params.apiKey}`;
+  }
   const options: RequestInit = {
     body: params.body,
     redirect: 'manual',
