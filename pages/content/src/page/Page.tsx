@@ -24,5 +24,5 @@ export default function Page() {
     }
   }, [i18n, data.language]);
 
-  return <Wrapper {...data} />;
+  return <Wrapper />;
 }
