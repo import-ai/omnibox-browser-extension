@@ -15,7 +15,7 @@ export function choose(
   }) => void,
   doneCallback: () => void,
 ) {
-  const { action, apiBaseUrl, apiKey, namespaceId, resourceId } = option;
+  const { action, apiBaseUrl, namespaceId, resourceId } = option;
   if (destoryChoose) {
     destoryChoose();
     destoryChoose = null;
@@ -28,7 +28,6 @@ export function choose(
     doneCallback();
     chrome.runtime.sendMessage(
       {
-        apiKey,
         resourceId,
         namespaceId,
         type: action,

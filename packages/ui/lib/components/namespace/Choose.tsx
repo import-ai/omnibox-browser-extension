@@ -9,7 +9,6 @@ import { Search, LoaderCircle } from 'lucide-react';
 import axios from '@extension/shared/lib/utils/axios';
 
 interface IProps {
-  apiKey: string;
   baseUrl?: string;
   backText?: string;
   namespaceId: string;
@@ -19,7 +18,7 @@ interface IProps {
 }
 
 export function ChooseNamespace(props: IProps) {
-  const { backText, apiKey, baseUrl, namespaceId, placeholder, onCancel, onChange } = props;
+  const { backText, baseUrl, namespaceId, placeholder, onCancel, onChange } = props;
   const [search, onSearch] = useState('');
   const [lazy, onLazy] = useState('');
   const [loading, onLoading] = useState(false);
@@ -27,7 +26,6 @@ export function ChooseNamespace(props: IProps) {
   const handleChange = (itemId: string) => {
     onLazy(itemId);
     axios(`${baseUrl}/api/v1/namespaces/${itemId}/root`, {
-      apiKey,
       query: { namespace_id: itemId },
     })
       .then(response => {
@@ -52,18 +50,16 @@ export function ChooseNamespace(props: IProps) {
   };
 
   useEffect(() => {
-    if (!baseUrl || !apiKey) {
+    if (!baseUrl) {
       return;
     }
     onLoading(true);
-    axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces`, {
-      apiKey,
-    })
+    axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces`)
       .then(onData)
       .finally(() => {
         onLoading(false);
       });
-  }, [baseUrl, apiKey]);
+  }, [baseUrl]);
 
   return (
     <div>

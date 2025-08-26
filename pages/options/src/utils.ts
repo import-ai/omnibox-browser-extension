@@ -1,3 +1,6 @@
+import axios from '@extension/shared/lib/utils/axios';
+import { getOptions } from '@extension/shared/lib/utils/options';
+
 export function isValidStrictHttpRootDomain(url: string) {
   try {
     const parsedUrl = new URL(url);
@@ -12,4 +15,42 @@ export function isValidStrictHttpRootDomain(url: string) {
   } catch (e) {
     return false;
   }
+}
+
+export function initResources(callback?: () => void) {
+  chrome.storage.sync.get(['apiKey', 'apiBaseUrl', 'namespaceId', 'resourceId'], response => {
+    const { apiBaseUrl, namespaceId, resourceId } = getOptions(response);
+    if (namespaceId && resourceId) {
+      if (callback) {
+        callback();
+      }
+      return;
+    }
+    if (!apiBaseUrl) {
+      return;
+    }
+    const baseUrl = apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
+    axios(`${baseUrl}/api/v1/namespaces`).then(namespaces => {
+      if (namespaces.length <= 0) {
+        if (callback) {
+          callback();
+        }
+        return;
+      }
+      const namespaceId = namespaces[0].id;
+      axios(`${baseUrl}/api/v1/namespaces/${namespaceId}/root`, {
+        query: { namespace_id: namespaceId },
+      }).then(response => {
+        const privateData = response['private'];
+        if (!privateData) {
+          if (callback) {
+            callback();
+          }
+          return;
+        }
+        const resourceId = privateData.id;
+        chrome.storage.sync.set({ namespaceId, resourceId }).finally(callback);
+      });
+    });
+  });
 }

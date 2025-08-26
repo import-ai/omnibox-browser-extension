@@ -6,14 +6,13 @@ import { Check, PanelTop, ChevronDown } from 'lucide-react';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@extension/ui';
 
 interface IProps {
-  apiKey: string;
   baseUrl: string;
   data: Theme;
   onChange: (val: string | { [index: string]: string }, key?: string) => void;
 }
 
 export default function FieldTheme(props: IProps) {
-  const { apiKey, baseUrl, data, onChange } = props;
+  const { baseUrl, data, onChange } = props;
   const { t } = useTranslation();
   const dataSource: Array<{
     label: string;
@@ -24,12 +23,11 @@ export default function FieldTheme(props: IProps) {
     { label: t('system'), value: 'system' },
   ];
   const handleTheme = (theme: Theme) => {
-    if (!baseUrl || !apiKey) {
+    if (!baseUrl) {
       onChange(theme, 'theme');
       return;
     }
     axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/user/option`, {
-      apiKey,
       data: {
         name: 'theme',
         value: theme,
@@ -40,20 +38,18 @@ export default function FieldTheme(props: IProps) {
   };
 
   useEffect(() => {
-    if (!data || !baseUrl || !apiKey) {
+    if (!data || !baseUrl) {
       return;
     }
-    axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/user/option/theme`, { apiKey }).then(
-      response => {
-        if (!response || !response.value) {
-          return;
-        }
-        if (response.value !== data) {
-          onChange(response.value, 'theme');
-        }
-      },
-    );
-  }, [data, baseUrl, apiKey, onChange]);
+    axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/user/option/theme`).then(response => {
+      if (!response || !response.value) {
+        return;
+      }
+      if (response.value !== data) {
+        onChange(response.value, 'theme');
+      }
+    });
+  }, [data, baseUrl, onChange]);
 
   return (
     <div className="flex items-center justify-between">

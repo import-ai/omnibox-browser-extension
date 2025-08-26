@@ -7,7 +7,6 @@ import axios from '@extension/shared/lib/utils/axios';
 import { ChevronDown, FolderClosed, LoaderCircle } from 'lucide-react';
 
 interface IProps {
-  apiKey: string;
   modal?: boolean;
   baseUrl?: string;
   label: string;
@@ -20,8 +19,7 @@ interface IProps {
 }
 
 export function Resource(props: IProps) {
-  const { apiKey, modal, untitled, baseUrl, label, privateText, teamspaceText, namespaceId, resourceId, onClick } =
-    props;
+  const { modal, untitled, baseUrl, label, privateText, teamspaceText, namespaceId, resourceId, onClick } = props;
   const [loading, setLoading] = useState(false);
   const [data, onData] = useState<Resource>({
     id: '',
@@ -29,7 +27,7 @@ export function Resource(props: IProps) {
   });
 
   useEffect(() => {
-    if (!baseUrl || !namespaceId || !resourceId || !apiKey) {
+    if (!baseUrl || !namespaceId || !resourceId) {
       onData({
         id: '',
         name: '',
@@ -38,7 +36,6 @@ export function Resource(props: IProps) {
     }
     setLoading(true);
     axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/root`, {
-      apiKey,
       query: { namespace_id: namespaceId },
     })
       .then(root => {
@@ -57,7 +54,6 @@ export function Resource(props: IProps) {
         }
         axios(
           `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/resources/${resourceId}`,
-          { apiKey },
         ).then(response => {
           onData({
             id: resourceId,
@@ -68,7 +64,7 @@ export function Resource(props: IProps) {
       .finally(() => {
         setLoading(false);
       });
-  }, [baseUrl, apiKey, namespaceId, resourceId, privateText, teamspaceText, untitled]);
+  }, [baseUrl, namespaceId, resourceId, privateText, teamspaceText, untitled]);
 
   return (
     <div
@@ -79,7 +75,7 @@ export function Resource(props: IProps) {
         <FolderClosed className="size-4" />
         <span className="text-sm">{label}</span>
       </div>
-      <Button disabled={!apiKey} variant="outline" className="font-normal w-40 justify-between" onClick={onClick}>
+      <Button variant="outline" className="font-normal w-40 justify-between" onClick={onClick}>
         <span className="max-w-[94px] truncate">{data.name}</span>
         {loading ? (
           <LoaderCircle className="transition-transform animate-spin" />

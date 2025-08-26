@@ -1,7 +1,6 @@
 export default function axios(
   url: string,
-  opts: {
-    apiKey?: string;
+  opts?: {
     format?: 'json' | 'text' | 'blob';
     query?: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,9 +45,6 @@ export default function axios(
       'Content-Type': 'application/json',
     };
   }
-  if (params.apiKey) {
-    params.headers.Authorization = `Bearer ${params.apiKey}`;
-  }
   const options: RequestInit = {
     body: params.body,
     redirect: 'manual',
@@ -78,7 +74,7 @@ export default function axios(
         });
       }
       if (response.status === 401) {
-        chrome.storage.sync.remove(['apiKey', 'namespaceId', 'resourceId']);
+        chrome.storage.sync.remove(['namespaceId', 'resourceId']);
       }
       return Promise.reject(new Error(`HTTP error! status: ${response.status}`));
     } else {

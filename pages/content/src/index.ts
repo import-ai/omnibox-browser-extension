@@ -1,4 +1,4 @@
-import '@src/utils/oauth';
+import './utils/close';
 import { init } from '@src/page';
 import { choose, collect, cancelChoose } from '@src/actions';
 

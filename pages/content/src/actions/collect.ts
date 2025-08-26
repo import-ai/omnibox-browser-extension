@@ -10,10 +10,9 @@ export function collect(
     error?: string;
   }) => void,
 ) {
-  const { action, apiBaseUrl, apiKey, namespaceId, resourceId } = option;
+  const { action, apiBaseUrl, namespaceId, resourceId } = option;
   chrome.runtime.sendMessage(
     {
-      apiKey,
       resourceId,
       namespaceId,
       type: action,
