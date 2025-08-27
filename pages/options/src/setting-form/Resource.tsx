@@ -12,7 +12,6 @@ import {
 } from '@extension/ui';
 
 interface IProps {
-  apiKey: string;
   baseUrl: string;
   resourceId: string;
   namespaceId: string;
@@ -20,7 +19,7 @@ interface IProps {
 }
 
 export default function FormResource(props: IProps) {
-  const { apiKey, baseUrl, resourceId, namespaceId, onChange } = props;
+  const { baseUrl, resourceId, namespaceId, onChange } = props;
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const handleCancel = () => {
@@ -32,7 +31,6 @@ export default function FormResource(props: IProps) {
       <DialogTrigger asChild>
         <Resource
           modal
-          apiKey={apiKey}
           baseUrl={baseUrl}
           untitled={t('untitled')}
           resourceId={resourceId}
@@ -48,7 +46,6 @@ export default function FormResource(props: IProps) {
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <ChooseResource
-          apiKey={apiKey}
           baseUrl={baseUrl}
           onChange={onChange}
           untitled={t('untitled')}

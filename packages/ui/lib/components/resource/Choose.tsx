@@ -8,7 +8,6 @@ import axios from '@extension/shared/lib/utils/axios';
 import { Search, LoaderCircle } from 'lucide-react';
 
 interface IProps {
-  apiKey: string;
   untitled: string;
   privateText: string;
   teamspaceText: string;
@@ -23,7 +22,6 @@ interface IProps {
 
 export function ChooseResource(props: IProps) {
   const {
-    apiKey,
     untitled,
     privateText,
     teamspaceText,
@@ -46,13 +44,12 @@ export function ChooseResource(props: IProps) {
   });
 
   useEffect(() => {
-    if (!baseUrl || !namespaceId || !apiKey) {
+    if (!baseUrl || !namespaceId) {
       return;
     }
     onLoading(true);
     if (!search) {
       axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/root`, {
-        apiKey,
         query: { namespace_id: namespaceId },
       })
         .then(response => {
@@ -78,7 +75,6 @@ export function ChooseResource(props: IProps) {
     axios(
       `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/resources/search`,
       {
-        apiKey,
         query: {
           name: encodeURIComponent(search),
         },
@@ -93,7 +89,7 @@ export function ChooseResource(props: IProps) {
       .finally(() => {
         onLoading(false);
       });
-  }, [baseUrl, search, apiKey, namespaceId]);
+  }, [baseUrl, search, namespaceId]);
 
   return (
     <div className="w-full">

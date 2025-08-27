@@ -144,7 +144,7 @@ export default function Page() {
     }
   }, [i18n, data.language]);
 
-  if (!data.apiKey || !data.namespaceId) {
+  if (!data.namespaceId) {
     return <Config />;
   }
 
@@ -163,7 +163,6 @@ export default function Page() {
             <ChooseNamespace
               backText={t('back')}
               onChange={onChange}
-              apiKey={data.apiKey}
               baseUrl={data.apiBaseUrl}
               onCancel={cancelNamespace}
               namespaceId={data.namespaceId}
@@ -174,7 +173,6 @@ export default function Page() {
             <ChooseResource
               backText={t('back')}
               onChange={onChange}
-              apiKey={data.apiKey}
               onCancel={cancelResource}
               baseUrl={data.apiBaseUrl}
               resourceId={data.resourceId}
@@ -186,7 +184,7 @@ export default function Page() {
             />
           )}
           <div className={cn('flex flex-col', { hidden: chooseNamespace || chooseResource })}>
-            <Header refetch={refetch} />
+            <Header refetch={refetch} baseUrl={data.apiBaseUrl} />
             <Separator />
             <Collect disabled={tabId < 0} loading={collecting} onClick={handleCollect} />
             <Separator />
@@ -194,13 +192,11 @@ export default function Page() {
             <Separator />
             <Namespace
               label={t('space')}
-              apiKey={data.apiKey}
               onClick={handleNamespace}
               baseUrl={data.apiBaseUrl}
               namespaceId={data.namespaceId}
             />
             <Resource
-              apiKey={data.apiKey}
               untitled={t('untitled')}
               label={t('collect_to')}
               onClick={handleResource}

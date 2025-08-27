@@ -6,14 +6,13 @@ import { Check, ChevronDown, Earth } from 'lucide-react';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@extension/ui';
 
 interface IProps {
-  apiKey: string;
   baseUrl: string;
   data: Language;
   onChange: (val: string | { [index: string]: string }, key?: string) => void;
 }
 
 export default function FieldLanguage(props: IProps) {
-  const { baseUrl, data, onChange, apiKey } = props;
+  const { baseUrl, data, onChange } = props;
   const { i18n, t } = useTranslation();
   const dataSource = [
     { label: '简体中文', value: 'zh' },
@@ -21,12 +20,11 @@ export default function FieldLanguage(props: IProps) {
   ];
   const toggleLanguage = (lng: string) => {
     i18n.changeLanguage(lng).then(() => {
-      if (!baseUrl || !apiKey) {
+      if (!baseUrl) {
         onChange(lng, 'language');
         return;
       }
       axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/user/option`, {
-        apiKey,
         data: {
           name: 'language',
           value: lng === 'en' ? 'en-US' : 'zh-CN',
@@ -38,23 +36,21 @@ export default function FieldLanguage(props: IProps) {
   };
 
   useEffect(() => {
-    if (!baseUrl || !apiKey) {
+    if (!baseUrl) {
       return;
     }
-    axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/user/option/language`, { apiKey }).then(
-      response => {
-        if (!response || !response.value) {
-          return;
-        }
-        const lng = response.value === 'en-US' ? 'en' : 'zh';
-        if (lng !== i18n.language) {
-          i18n.changeLanguage(lng).then(() => {
-            onChange(lng, 'language');
-          });
-        }
-      },
-    );
-  }, [i18n, apiKey, baseUrl, onChange]);
+    axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/user/option/language`).then(response => {
+      if (!response || !response.value) {
+        return;
+      }
+      const lng = response.value === 'en-US' ? 'en' : 'zh';
+      if (lng !== i18n.language) {
+        i18n.changeLanguage(lng).then(() => {
+          onChange(lng, 'language');
+        });
+      }
+    });
+  }, [i18n, baseUrl, onChange]);
 
   return (
     <div className="flex items-center justify-between">

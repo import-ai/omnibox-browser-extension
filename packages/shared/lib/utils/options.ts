@@ -1,7 +1,6 @@
 import type { Language, Storage, Theme } from '../utils/shared-types.js';
 
 export function getOptions(response: {
-  apiKey?: string;
   apiBaseUrl?: string;
   namespaceId?: string;
   resourceId?: string;
@@ -9,7 +8,6 @@ export function getOptions(response: {
   theme?: Theme;
 }): Storage {
   return {
-    apiKey: response.apiKey || '',
     resourceId: response.resourceId || '',
     namespaceId: response.namespaceId || '',
     theme: response.theme || 'light',

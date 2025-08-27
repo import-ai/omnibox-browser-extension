@@ -12,8 +12,8 @@ export default function CommonForm(props: IProps) {
 
   return (
     <div className="px-2 space-y-6">
-      <Theme apiKey={data.apiKey} baseUrl={data.apiBaseUrl} data={data.theme} onChange={onChange} />
-      <Language apiKey={data.apiKey} baseUrl={data.apiBaseUrl} data={data.language} onChange={onChange} />
+      <Theme baseUrl={data.apiBaseUrl} data={data.theme} onChange={onChange} />
+      <Language baseUrl={data.apiBaseUrl} data={data.language} onChange={onChange} />
     </div>
   );
 }

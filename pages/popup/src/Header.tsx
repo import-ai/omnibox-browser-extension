@@ -1,18 +1,22 @@
 import { useTranslation } from 'react-i18next';
 import { LogOut, Settings } from 'lucide-react';
+import axios from '@extension/shared/lib/utils/axios';
 import { Button, Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@extension/ui';
 
 interface IProps {
+  baseUrl: string;
   refetch: () => void;
 }
 
-export default function Header({ refetch }: IProps) {
+export default function Header({ baseUrl, refetch }: IProps) {
   const { t } = useTranslation();
   const handleOption = () => {
     chrome.runtime.openOptionsPage();
   };
   const handleLogout = () => {
-    chrome.storage.sync.remove(['apiKey', 'namespaceId', 'resourceId'], refetch);
+    axios(`${baseUrl}/api/v1/logout`, { method: 'POST' }).finally(() => {
+      chrome.storage.sync.remove(['namespaceId', 'resourceId'], refetch);
+    });
   };
 
   return (

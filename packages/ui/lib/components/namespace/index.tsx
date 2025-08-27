@@ -6,7 +6,6 @@ import axios from '@extension/shared/lib/utils/axios';
 import { ChevronDown, LoaderCircle, Home } from 'lucide-react';
 
 interface IProps {
-  apiKey: string;
   modal?: boolean;
   label: string;
   baseUrl?: string;
@@ -15,12 +14,12 @@ interface IProps {
 }
 
 export function Namespace(props: IProps) {
-  const { apiKey, modal, baseUrl, label, namespaceId, onClick } = props;
+  const { modal, baseUrl, label, namespaceId, onClick } = props;
   const [loading, setLoading] = useState(false);
   const [data, onData] = useState<Namespace>({ id: '', name: '' });
 
   useEffect(() => {
-    if (!baseUrl || !namespaceId || !apiKey) {
+    if (!baseUrl || !namespaceId) {
       onData({
         id: '',
         name: '',
@@ -28,9 +27,7 @@ export function Namespace(props: IProps) {
       return;
     }
     setLoading(true);
-    axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}`, {
-      apiKey,
-    })
+    axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}`)
       .then(response => {
         onData({
           id: response.id,
@@ -40,7 +37,7 @@ export function Namespace(props: IProps) {
       .finally(() => {
         setLoading(false);
       });
-  }, [baseUrl, apiKey, namespaceId]);
+  }, [baseUrl, namespaceId]);
 
   return (
     <div
@@ -51,7 +48,7 @@ export function Namespace(props: IProps) {
         <Home className="size-4" />
         <span className="text-sm">{label}</span>
       </div>
-      <Button disabled={!apiKey} onClick={onClick} variant="outline" className="font-normal w-40 justify-between">
+      <Button onClick={onClick} variant="outline" className="font-normal w-40 justify-between">
         <span className="max-w-[94px] truncate">{data.name}</span>
         {loading ? (
           <LoaderCircle className="transition-transform animate-spin" />

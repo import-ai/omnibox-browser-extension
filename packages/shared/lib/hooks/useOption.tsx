@@ -5,18 +5,15 @@ import { getOptions } from '../utils/options.js';
 import type { Storage } from '../utils/shared-types.js';
 
 export function useOption() {
-  const [data, onData] = useState<Storage>(
-    getOptions({
-      apiKey: '',
-      namespaceId: '',
-      resourceId: '',
-      theme: 'light',
-      language: 'en',
-      apiBaseUrl: 'https://www.omnibox.pro',
-    }),
-  );
+  const [data, onData] = useState<Storage>({
+    namespaceId: '',
+    resourceId: '',
+    theme: 'light',
+    language: 'en',
+    apiBaseUrl: '',
+  });
   const refetch = useCallback(() => {
-    chrome.storage.sync.get(['apiKey', 'apiBaseUrl', 'namespaceId', 'resourceId', 'language', 'theme'], response => {
+    chrome.storage.sync.get(['apiBaseUrl', 'namespaceId', 'resourceId', 'language', 'theme'], response => {
       onData(getOptions(response));
     });
   }, []);

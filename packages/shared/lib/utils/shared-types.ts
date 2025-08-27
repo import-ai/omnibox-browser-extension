@@ -10,7 +10,6 @@ export type Language = 'zh' | 'en';
 export type Theme = 'system' | 'dark' | 'light';
 
 export interface Storage {
-  apiKey: string;
   apiBaseUrl: string;
   namespaceId: string;
   resourceId: string;
