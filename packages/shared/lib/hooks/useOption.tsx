@@ -3,13 +3,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { getOptions } from '../utils/options.js';
 
 import type { Storage } from '../utils/shared-types.js';
+import { detectBrowserLanguage } from '../utils/detect-language.js';
 
 export function useOption() {
   const [data, onData] = useState<Storage>({
     namespaceId: '',
     resourceId: '',
     theme: 'light',
-    language: 'en',
+    language: detectBrowserLanguage(),
     apiBaseUrl: '',
   });
   const refetch = useCallback(() => {

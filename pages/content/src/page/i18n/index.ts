@@ -2,12 +2,13 @@
 import i18n from 'i18next';
 import locales from './locales';
 import { initReactI18next } from 'react-i18next';
+import { detectBrowserLanguage } from '@extension/shared';
 
 i18n
   .use(initReactI18next)
   // options: https://www.i18next.com/overview/configuration-options
   .init({
-    fallbackLng: 'en',
+    fallbackLng: detectBrowserLanguage(),
     resources: locales,
     debug: false,
     interpolation: {
