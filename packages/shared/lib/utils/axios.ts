@@ -45,6 +45,7 @@ export default function axios(
       'Content-Type': 'application/json',
     };
   }
+  params.headers['X-From'] = 'extension';
   const options: RequestInit = {
     body: params.body,
     redirect: 'manual',
