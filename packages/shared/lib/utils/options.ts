@@ -1,4 +1,5 @@
 import type { Language, Storage, Theme } from '../utils/shared-types.js';
+import { detectBrowserLanguage } from './detect-language.js';
 
 export function getOptions(response: {
   apiBaseUrl?: string;
@@ -11,7 +12,7 @@ export function getOptions(response: {
     resourceId: response.resourceId || '',
     namespaceId: response.namespaceId || '',
     theme: response.theme || 'light',
-    language: response.language || 'en',
+    language: response.language || detectBrowserLanguage(),
     apiBaseUrl: response.apiBaseUrl || 'https://www.omnibox.pro',
   };
 }
