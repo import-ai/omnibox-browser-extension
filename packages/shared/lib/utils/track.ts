@@ -14,7 +14,7 @@ class EventStorage {
     const stored = result[this.storageKey];
     if (stored && typeof stored === 'object') {
       Object.entries(stored).forEach(([key, value]) => {
-        this.cache.set(key, value as TrackedEvent);
+        this.cache.set(key, value as boolean);
       });
     }
   }
@@ -41,33 +41,37 @@ const eventStorage = new EventStorage();
 
 interface Attributes {
   once?: boolean;
-  [key: string]: any;
+  url?: string;
+  referrer?: string;
+  finger?: string;
+  section?: string;
+  language?: string;
 }
 
-export async function track(event: string, payload: Attributes = {}) {
-  const { once = false, ...attributes } = payload;
+export async function track(name: string, payload: Attributes = {}) {
+  const { once = false, ...props } = payload;
 
   const apiBaseUrl = await chrome.storage.local.get('apiBaseUrl');
 
   if (!apiBaseUrl) {
-    // 未登陆不统计
     return;
   }
 
-  // Handle different "once" modes
-  if (once && (await eventStorage.isEventTracked(event))) {
+  if (once && (await eventStorage.isEventTracked(name))) {
     return;
   }
 
   try {
-    await axios(`${apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl}/api/v1/track`, {
-      data: {
-        event,
-        attributes,
-      },
+    await axios(`${apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl}/api/v1/trace`, {
+      events: [
+        {
+          name,
+          props,
+        },
+      ],
     });
     if (once) {
-      await eventStorage.markEventAsTracked(event);
+      await eventStorage.markEventAsTracked(name);
     }
   } catch (err) {
     console.error(err);

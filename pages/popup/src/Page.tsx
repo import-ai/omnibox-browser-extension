@@ -132,6 +132,7 @@ export default function Page() {
   useEffect(() => {
     track('open_chrome_popup', {
       once: true,
+      section: 'ext_popup',
     });
   }, []);
 
