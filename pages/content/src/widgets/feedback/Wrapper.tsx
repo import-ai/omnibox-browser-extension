@@ -1,15 +1,15 @@
 import limit from '@src/utils/limit';
+import zIndex from '@src/utils/zindex';
 import getPosition from '@src/utils/position';
 import getTransform from '@src/utils/transform';
 import { useRef, useState, useEffect } from 'react';
 
 interface IProps {
-  zIndex: number;
   children: React.ReactNode;
 }
 
-export default function DraggableBox(props: IProps) {
-  const { zIndex, children } = props;
+export function Wrapper(props: IProps) {
+  const { children } = props;
   const ref = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
@@ -98,7 +98,7 @@ export default function DraggableBox(props: IProps) {
       ref={ref}
       className={`fixed left-[50%] ml-[-180px] top-[50px] cursor-move rounded-lg min-w-[360px] shadow-lg bg-background text-foreground`}
       style={{
-        zIndex,
+        zIndex: zIndex(),
         transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
       }}>
       {children}

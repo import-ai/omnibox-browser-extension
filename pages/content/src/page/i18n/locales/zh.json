@@ -1,8 +1,0 @@
-{
-  "choose_start": "划选鼠标选择区域",
-  "choose_cancel": "取消划选",
-  "save_success": "保存成功",
-  "view": "查看",
-  "close_after_three_seconds": "{{ seconds }} 秒后自动关闭",
-  "pending": "正在处理中"
-}

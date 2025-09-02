@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import generateShadow from '../utils/shadow';
+import generateShadow from './utils/shadow';
 import AppContext from './hooks/app-context';
 import CoreApp from './hooks/app.class';
 import '@extension/ui/lib/global.css';

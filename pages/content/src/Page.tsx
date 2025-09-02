@@ -1,13 +1,14 @@
-import Wrapper from './Wrapper';
 import { useEffect } from 'react';
-import useApp from './hooks/useApp';
+import useApp from '@src/hooks/useApp';
 import { useOption } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
+import { PopupContainer } from '@src/widgets/popup';
+import { FeedbackContainer } from '@src/widgets/feedback';
 
 export default function Page() {
-  const { i18n } = useTranslation();
   const { data } = useOption();
   const { container } = useApp();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     let state = data.theme;
@@ -24,5 +25,10 @@ export default function Page() {
     }
   }, [i18n, data.language]);
 
-  return <Wrapper />;
+  return (
+    <>
+      <PopupContainer />
+      <FeedbackContainer />
+    </>
+  );
 }

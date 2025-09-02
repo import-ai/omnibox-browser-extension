@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { isFunction, isString, isUndefined } from '../../utils/is';
+import { isFunction, isString, isUndefined } from '@src/utils/is';
 
 type Queue = {
   once: boolean;

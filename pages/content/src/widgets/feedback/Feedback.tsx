@@ -1,4 +1,4 @@
-import useApp from './hooks/useApp';
+import useApp from '@src/hooks/useApp';
 import { Button } from '@extension/ui';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';

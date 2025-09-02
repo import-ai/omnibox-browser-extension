@@ -13,6 +13,8 @@ chrome-extension/pre-build.tsconfig.tsbuildinfo
 eslint.config.js
 tsconfig.tsbuildinfo
 
+.claude
+
 # env
 **/.env.*
 **/.env

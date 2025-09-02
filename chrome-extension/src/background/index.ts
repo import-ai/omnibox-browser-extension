@@ -1,8 +1,43 @@
 import 'webextension-polyfill';
+import { isInternalUrl } from './utils';
 import axios from '@extension/shared/lib/utils/axios';
 
 let status = '';
 let queryed = false;
+
+// Update extension icon state based on current tab
+function updateIconState(tabId: number, url: string) {
+  chrome.action.setTitle({
+    tabId,
+    title: isInternalUrl(url) ? 'Cannot inject content script on this page' : 'Show Omnibox popup',
+  });
+}
+
+// Listen for tab updates to update icon state
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.url) {
+    updateIconState(tabId, tab.url);
+  }
+});
+
+// Listen for tab activation to update icon state
+chrome.tabs.onActivated.addListener(activeInfo => {
+  chrome.tabs.get(activeInfo.tabId, tab => {
+    if (tab.url) {
+      updateIconState(activeInfo.tabId, tab.url);
+    }
+  });
+});
+
+// Handle action icon click to show popup in content script
+chrome.action.onClicked.addListener(() => {
+  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+    const tab = tabs[0];
+    if (tab?.id && tab.url && !isInternalUrl(tab.url)) {
+      chrome.tabs.sendMessage(tab.id, { action: 'show-popup' });
+    }
+  });
+});
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'collect') {

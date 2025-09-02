@@ -1,4 +1,4 @@
-import './utils/close';
+import '../../utils/close';
 import { init } from '@src/page';
 import { choose, collect, cancelChoose } from '@src/actions';
 
@@ -44,6 +44,9 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     );
   } else if (request.action === 'cancel-choose') {
     cancelChoose(sendResponse);
+  } else if (request.action === 'show-popup') {
+    app.fire('show-popup');
+    sendResponse({ success: true });
   }
   return true;
 });

@@ -1,4 +1,4 @@
-import chooseFN from '../utils/choose';
+import chooseFN from '../../../utils/choose';
 
 let destoryChoose: (() => void) | null = null;
 

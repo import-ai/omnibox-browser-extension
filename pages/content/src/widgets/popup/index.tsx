@@ -1,9 +1,7 @@
 import Done from './Done';
 import Header from './Header';
-import Config from './Config';
 import Choose from './Choose';
 import Collect from './Collect';
-import BuiltIn from './BuiltIn';
 import { toast, Toaster } from 'sonner';
 import { useState, useEffect } from 'react';
 import { cn } from '@extension/ui/lib/utils';
@@ -12,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import extPage from '@extension/shared/lib/utils/ext-page';
 import { Separator, Resource, ChooseResource, Namespace, ChooseNamespace } from '@extension/ui';
 
-export default function Page() {
+export function PopupContainer() {
   const { t, i18n } = useTranslation();
   const { data, refetch, onChange } = useOption();
   const [tabId, onTabId] = useState(-1);
@@ -143,14 +141,6 @@ export default function Page() {
       i18n.changeLanguage(data.language);
     }
   }, [i18n, data.language]);
-
-  if (!data.namespaceId) {
-    return <Config />;
-  }
-
-  if (tabId === 0) {
-    return <BuiltIn />;
-  }
 
   return (
     <div className="max-w-md">
