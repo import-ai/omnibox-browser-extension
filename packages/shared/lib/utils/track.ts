@@ -51,9 +51,9 @@ interface Attributes {
 export async function track(name: string, payload: Attributes = {}) {
   const { once = false, ...props } = payload;
 
-  const apiBaseUrl = await chrome.storage.local.get('apiBaseUrl');
+  const storage = await chrome.storage.sync.get('apiBaseUrl');
 
-  if (!apiBaseUrl) {
+  if (!storage.apiBaseUrl) {
     return;
   }
 
@@ -62,14 +62,17 @@ export async function track(name: string, payload: Attributes = {}) {
   }
 
   try {
-    await axios(`${apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl}/api/v1/trace`, {
-      events: [
-        {
-          name,
-          props,
-        },
-      ],
-    });
+    await axios(
+      `${storage.apiBaseUrl.endsWith('/') ? storage.apiBaseUrl.slice(0, -1) : storage.apiBaseUrl}/api/v1/trace`,
+      {
+        events: [
+          {
+            name,
+            props,
+          },
+        ],
+      },
+    );
     if (once) {
       await eventStorage.markEventAsTracked(name);
     }
