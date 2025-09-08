@@ -5,8 +5,8 @@ import Collect from './Collect';
 import { toast, Toaster } from 'sonner';
 import { useState, useEffect } from 'react';
 import { cn } from '@extension/ui/lib/utils';
-import { useOption } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
+import { track, useOption } from '@extension/shared';
 import extPage from '@extension/shared/lib/utils/ext-page';
 import { Separator, Resource, ChooseResource, Namespace, ChooseNamespace } from '@extension/ui';
 
@@ -125,6 +125,13 @@ export function PopupContainer() {
     return () => {
       chrome.runtime.onMessage.removeListener(messageFN);
     };
+  }, []);
+
+  useEffect(() => {
+    track('open_chrome_popup', {
+      once: true,
+      section: 'ext_popup',
+    });
   }, []);
 
   useEffect(() => {
