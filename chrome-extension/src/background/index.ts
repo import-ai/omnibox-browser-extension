@@ -1,6 +1,6 @@
 import 'webextension-polyfill';
 import { isInternalUrl } from './utils';
-import axios from '@extension/shared/lib/utils/axios';
+import { axios } from '@extension/shared';
 
 let status = '';
 let queryed = false;

@@ -4,7 +4,7 @@ import FormResource from './FormResource';
 import { Separator } from '../ui/separator';
 import { useState, useEffect } from 'react';
 import type { Resource } from '@extension/shared';
-import axios from '@extension/shared/lib/utils/axios';
+import { axios } from '@extension/shared/lib/utils/axios';
 import { Search, LoaderCircle } from 'lucide-react';
 
 interface IProps {

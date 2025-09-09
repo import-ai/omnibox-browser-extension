@@ -2,8 +2,8 @@ import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 import { useState, useEffect } from 'react';
 import type { Resource } from '@extension/shared';
-import each from '@extension/shared/lib/utils/each';
-import axios from '@extension/shared/lib/utils/axios';
+import { each } from '@extension/shared/lib/utils/each';
+import { axios } from '@extension/shared/lib/utils/axios';
 import { ChevronDown, FolderClosed, LoaderCircle } from 'lucide-react';
 
 interface IProps {

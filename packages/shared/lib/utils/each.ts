@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function each(value: any, callback: (value: any, key: any) => void | boolean) {
+export function each(value: any, callback: (value: any, key: any) => void | boolean) {
   if (!value) {
     return;
   }

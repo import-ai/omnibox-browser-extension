@@ -1,7 +1,10 @@
+import { Card } from './Card';
 import { useEffect } from 'react';
-import { Toaster } from 'sonner';
-import CommonForm from './common-form';
-import SettingForm from './setting-form';
+import { Common } from './common';
+import { Wrapper } from './Wrapper';
+import { Advance } from './advance';
+import { Toolbar } from './toolbar';
+import { Keyboard } from './keyboard';
 import { initResources } from './utils';
 import { useOption } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
@@ -30,17 +33,19 @@ export default function Page() {
   }, [refetch]);
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-2xl">
-      <Toaster />
-      <h1 className="text-2xl font-bold mb-8">{t('setting_title')}</h1>
-      <div className="mb-10">
-        <h2 className="text-lg text-gray-500 mb-4">{t('setting')}</h2>
-        <SettingForm data={data} onChange={onChange} refetch={refetch} />
-      </div>
-      <div>
-        <h2 className="text-lg text-gray-500 mb-4">{t('common')}</h2>
-        <CommonForm data={data} onChange={onChange} />
-      </div>
-    </div>
+    <Wrapper>
+      <Card title={t('common')}>
+        <Common data={data} onChange={onChange} />
+      </Card>
+      <Card title="工具栏设置">
+        <Toolbar data={data} onChange={onChange} refetch={refetch} />
+      </Card>
+      <Card title="快捷键设置">
+        <Keyboard data={data} onChange={onChange} refetch={refetch} />
+      </Card>
+      <Card title={t('setting')}>
+        <Advance data={data} onChange={onChange} refetch={refetch} />
+      </Card>
+    </Wrapper>
   );
 }

@@ -96,7 +96,7 @@ export function Wrapper(props: IProps) {
   return (
     <div
       ref={ref}
-      className={`fixed left-[50%] ml-[-180px] top-[50px] cursor-move rounded-lg min-w-[360px] shadow-lg bg-background text-foreground`}
+      className={`fixed left-[50%] ml-[-130px] top-[50px] cursor-move rounded-[16px] min-w-[260px] bg-background text-foreground`}
       style={{
         zIndex: zIndex(),
         transform: `translate3d(${position.x}px, ${position.y}px, 0)`,

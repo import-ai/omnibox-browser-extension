@@ -1,4 +1,4 @@
-import axios from './axios.js';
+import { axios } from './axios.js';
 
 class EventStorage {
   private loaded: boolean = false;

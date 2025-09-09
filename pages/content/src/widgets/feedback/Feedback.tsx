@@ -1,6 +1,6 @@
-import useApp from '@src/hooks/useApp';
 import { Button } from '@extension/ui';
 import { useState, useEffect } from 'react';
+import { SuccessIcon } from '@src/icon/success';
 import { useTranslation } from 'react-i18next';
 import { getOptions } from '@extension/shared';
 import { Loader2, AlertCircleIcon } from 'lucide-react';
@@ -8,10 +8,9 @@ import { Loader2, AlertCircleIcon } from 'lucide-react';
 type Status = '' | 'pending' | 'error' | 'done';
 
 export default function Feedback() {
-  const { app } = useApp();
   const [result, setResult] = useState('');
   const [deadline, setDeadline] = useState(3);
-  const [status, setStatus] = useState<Status>('');
+  const [status, setStatus] = useState<Status>('done');
   const { t } = useTranslation();
   const handleClick = () => {
     chrome.storage.sync.get(['apiBaseUrl', 'namespaceId'], response => {
@@ -42,24 +41,13 @@ export default function Feedback() {
     };
   }, [status, deadline]);
 
-  useEffect(() => {
-    const hooks: Array<() => void> = [];
-    hooks.push(app.on('status', setStatus));
-    hooks.push(app.on('result', setResult));
-    return () => {
-      hooks.forEach(hook => {
-        hook();
-      });
-    };
-  }, [app]);
-
   if (!status) {
     return null;
   }
 
   if (status === 'pending') {
     return (
-      <div className="flex text-sm font-medium gap-2 items-center px-4 py-3">
+      <div className="flex text-sm font-medium gap-2 items-center px-[16px] py-[8px]">
         <Loader2 className="animate-spin" />
         <span>{t('pending')}</span>
       </div>
@@ -68,7 +56,7 @@ export default function Feedback() {
 
   if (status === 'error') {
     return (
-      <div className="flex text-sm gap-2 items-center px-4 py-3 text-red-600">
+      <div className="flex text-sm gap-2 items-center px-[16px] py-[8px] text-red-600">
         <AlertCircleIcon className="size-4" />
         <span>{result}</span>
       </div>
@@ -76,16 +64,14 @@ export default function Feedback() {
   }
 
   return (
-    <div className="text-sm font-medium px-4 py-3">
-      <div className="flex gap-2 items-center justify-between">
-        <span>{t('save_success')}</span>
-        <Button size="sm" className="h-6" onClick={handleClick}>
-          {t('view')}
-        </Button>
+    <div className="text-sm font-medium flex gap-2 items-center justify-between px-[16px] py-[8px]">
+      <div className="flex items-center gap-[8px]">
+        <SuccessIcon />
+        <span>已保存到该文件夹</span>
       </div>
-      <div className="text-muted-foreground opacity-90 text-left">
-        {t('close_after_three_seconds', { seconds: deadline })}
-      </div>
+      <Button size="sm" className="h-6 rounded-[100px]" onClick={handleClick}>
+        查看
+      </Button>
     </div>
   );
 }

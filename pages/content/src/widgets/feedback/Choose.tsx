@@ -1,32 +1,27 @@
-import useApp from '@src/hooks/useApp';
 import { Button } from '@extension/ui';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 export default function Choose() {
-  const { app } = useApp();
   const { t } = useTranslation();
   const [open, onOpen] = useState(false);
   const cancelChoose = useCallback(() => {
-    onOpen(false);
-    app.fire('cancel-choose');
-  }, [app]);
+    console.log(onOpen);
+    //   onOpen(false);
+    //   app.fire('cancel-choose');
+  }, []);
 
-  useEffect(() => {
-    return app.on('choose', onOpen);
-  }, [app]);
-
-  useEffect(() => {
-    function handleESC(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        cancelChoose();
-      }
-    }
-    document.addEventListener('keydown', handleESC);
-    return () => {
-      document.removeEventListener('keydown', handleESC);
-    };
-  }, [cancelChoose]);
+  // useEffect(() => {
+  //   function handleESC(event: KeyboardEvent) {
+  //     if (event.key === 'Escape') {
+  //       cancelChoose();
+  //     }
+  //   }
+  //   document.addEventListener('keydown', handleESC);
+  //   return () => {
+  //     document.removeEventListener('keydown', handleESC);
+  //   };
+  // }, [cancelChoose]);
 
   if (!open) {
     return null;

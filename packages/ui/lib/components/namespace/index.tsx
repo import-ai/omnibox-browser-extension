@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 import { useState, useEffect } from 'react';
 import type { Namespace } from '@extension/shared';
-import axios from '@extension/shared/lib/utils/axios';
+import { axios } from '@extension/shared/lib/utils/axios';
 import { ChevronDown, LoaderCircle, Home } from 'lucide-react';
 
 interface IProps {

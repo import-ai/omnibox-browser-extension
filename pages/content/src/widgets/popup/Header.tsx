@@ -1,6 +1,7 @@
-import { useTranslation } from 'react-i18next';
-import { LogOut, Settings } from 'lucide-react';
-import axios from '@extension/shared/lib/utils/axios';
+import { useRef } from 'react';
+import { SettingIcon } from '@src/icon/setting';
+import { QuestionIcon } from '@src/icon/question';
+import { axios } from '@extension/shared/lib/utils/axios';
 import { Button, Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@extension/ui';
 
 interface IProps {
@@ -9,7 +10,7 @@ interface IProps {
 }
 
 export default function Header({ baseUrl, refetch }: IProps) {
-  const { t } = useTranslation();
+  const containerRef = useRef(null);
   const handleOption = () => {
     chrome.runtime.openOptionsPage();
   };
@@ -20,25 +21,30 @@ export default function Header({ baseUrl, refetch }: IProps) {
   };
 
   return (
-    <div className="flex items-center justify-between gap-2 pl-4 pr-1 py-2">
-      <h1 className="text-base font-medium">{t('extensionName')}</h1>
-      <div className="flex items-center">
+    <div ref={containerRef} className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <div className="size-[16px]">
+          <img src={chrome.runtime.getURL('icon-128.png')} alt="logo" />
+        </div>
+        <div className="text-sm font-[600] text-[#171717]">OmniBox</div>
+      </div>
+      <div className="flex items-center gap-[12px]">
         <TooltipProvider>
-          <Tooltip>
+          <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <Button size="icon" variant="ghost" onClick={handleOption}>
-                <Settings />
+              <Button size="icon" variant="ghost" className="size-[20px]" onClick={handleOption}>
+                <QuestionIcon />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>{t('setting_title')}</TooltipContent>
+            <TooltipContent container={containerRef.current}>意见反馈</TooltipContent>
           </Tooltip>
-          <Tooltip>
+          <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <Button size="icon" variant="ghost" onClick={handleLogout}>
-                <LogOut />
+              <Button size="icon" variant="ghost" className="size-[20px]" onClick={handleLogout}>
+                <SettingIcon />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>{t('logout')}</TooltipContent>
+            <TooltipContent container={containerRef.current}>偏好设置</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>

@@ -3,6 +3,7 @@ import useApp from '@src/hooks/useApp';
 import { useOption } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
 import { PopupContainer } from '@src/widgets/popup';
+import { ToolbarContainer } from '@src/widgets/toolbar';
 import { FeedbackContainer } from '@src/widgets/feedback';
 
 export default function Page() {
@@ -28,6 +29,7 @@ export default function Page() {
   return (
     <>
       <PopupContainer />
+      <ToolbarContainer />
       <FeedbackContainer />
     </>
   );

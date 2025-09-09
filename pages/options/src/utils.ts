@@ -1,4 +1,4 @@
-import axios from '@extension/shared/lib/utils/axios';
+import { axios } from '@extension/shared/lib/utils/axios';
 import { getOptions } from '@extension/shared/lib/utils/options';
 
 export function isValidStrictHttpRootDomain(url: string) {

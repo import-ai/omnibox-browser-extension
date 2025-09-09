@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { Separator } from '../ui/separator';
 import type { Namespace } from '@extension/shared';
 import { Search, LoaderCircle } from 'lucide-react';
-import axios from '@extension/shared/lib/utils/axios';
+import { axios } from '@extension/shared/lib/utils/axios';
 
 interface IProps {
   baseUrl?: string;
