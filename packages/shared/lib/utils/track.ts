@@ -52,19 +52,15 @@ export async function track(name: string, payload: Attributes = {}) {
   const { once = false, ...props } = payload;
 
   const storage = await chrome.storage.sync.get('apiBaseUrl');
-
-  if (!storage.apiBaseUrl) {
-    return;
-  }
+  const baseUrl = storage.apiBaseUrl || 'https://www.omnibox.pro';
 
   if (once && (await eventStorage.isEventTracked(name))) {
     return;
   }
 
   try {
-    await axios(
-      `${storage.apiBaseUrl.endsWith('/') ? storage.apiBaseUrl.slice(0, -1) : storage.apiBaseUrl}/api/v1/trace`,
-      {
+    await axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/trace`, {
+      data: {
         events: [
           {
             name,
@@ -72,7 +68,7 @@ export async function track(name: string, payload: Attributes = {}) {
           },
         ],
       },
-    );
+    });
     if (once) {
       await eventStorage.markEventAsTracked(name);
     }
