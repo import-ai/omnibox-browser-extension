@@ -1,8 +1,9 @@
 import { Button } from '@extension/ui';
+import { BASE_URL } from '@extension/env/lib/const';
 
 export function Auth() {
   const handleAuth = () => {
-    //todo
+    window.open(BASE_URL, '_blank');
   };
 
   return (
