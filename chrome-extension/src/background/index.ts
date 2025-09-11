@@ -29,12 +29,12 @@ chrome.tabs.onActivated.addListener(activeInfo => {
   });
 });
 
-// Handle action icon click to show popup in content script
+// Handle action icon click to toggle popup in content script
 chrome.action.onClicked.addListener(() => {
   chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
     const tab = tabs[0];
     if (tab?.id && tab.url && !isInternalUrl(tab.url)) {
-      chrome.tabs.sendMessage(tab.id, { action: 'show-popup' });
+      chrome.tabs.sendMessage(tab.id, { action: 'toggle-popup' });
     }
   });
 });

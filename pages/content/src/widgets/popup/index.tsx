@@ -10,7 +10,11 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { track, useOption } from '@extension/shared';
 
-export function PopupContainer() {
+interface PopupContainerProps {
+  isVisible: boolean;
+}
+
+export function PopupContainer({ isVisible }: PopupContainerProps) {
   const { i18n } = useTranslation();
   const { data, refetch } = useOption();
   // const [collecting, setCollecting] = useState(false);
@@ -61,7 +65,7 @@ export function PopupContainer() {
   }, [i18n, data.language]);
 
   return (
-    <Wrapper>
+    <Wrapper isVisible={isVisible}>
       <Header refetch={refetch} baseUrl={data.apiBaseUrl} />
       <Auth />
       {/* <Collect loading={collecting} onClick={handleCollect} />

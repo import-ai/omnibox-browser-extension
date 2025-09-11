@@ -2,6 +2,9 @@ import { useEffect } from 'react';
 import useApp from '@src/hooks/useApp';
 import { useOption } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
+import { usePopupVisibility } from '@src/hooks/usePopupVisibility';
+import { useToolbarVisibility } from '@src/hooks/useToolbarVisibility';
+import { useFeedbackVisibility } from '@src/hooks/useFeedbackVisibility';
 import { PopupContainer } from '@src/widgets/popup';
 import { ToolbarContainer } from '@src/widgets/toolbar';
 import { FeedbackContainer } from '@src/widgets/feedback';
@@ -10,6 +13,9 @@ export default function Page() {
   const { data } = useOption();
   const { container } = useApp();
   const { i18n } = useTranslation();
+  const { isVisible: isPopupVisible } = usePopupVisibility();
+  const { isVisible: isToolbarVisible, position: toolbarPosition } = useToolbarVisibility(isPopupVisible);
+  const { isVisible: isFeedbackVisible } = useFeedbackVisibility();
 
   useEffect(() => {
     let state = data.theme;
@@ -28,9 +34,9 @@ export default function Page() {
 
   return (
     <>
-      <PopupContainer />
-      <ToolbarContainer />
-      <FeedbackContainer />
+      <PopupContainer isVisible={isPopupVisible} />
+      <ToolbarContainer isVisible={isToolbarVisible} position={toolbarPosition} />
+      <FeedbackContainer isVisible={isFeedbackVisible} />
     </>
   );
 }

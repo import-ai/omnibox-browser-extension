@@ -1,22 +1,30 @@
-import { useState } from 'react';
 import zIndex from '@src/utils/zindex';
+
+interface Position {
+  x: number;
+  y: number;
+}
 
 interface IProps {
   children: React.ReactNode;
+  isVisible: boolean;
+  position: Position;
 }
 
 export function Wrapper(props: IProps) {
-  const { children } = props;
-  const [open] = useState(true);
+  const { children, isVisible, position } = props;
 
-  if (!open) {
+  if (!isVisible) {
     return null;
   }
 
   return (
     <div
-      className={`fixed top-[100px] right-[50%] min-w-[70px] text-foreground bg-white rounded-[8px] shadow-[0px 4px 18px 0px rgba(0, 0, 0, 0.1)]`}
+      className={`absolute min-w-[70px] text-foreground bg-white rounded-[8px] shadow-md`}
       style={{
+        top: `${position.y}px`,
+        left: `${position.x}px`,
+        transform: 'translate(-50%, -100%)',
         zIndex: zIndex(),
       }}>
       {children}

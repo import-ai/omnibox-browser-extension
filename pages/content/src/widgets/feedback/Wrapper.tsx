@@ -6,10 +6,11 @@ import { useRef, useState, useEffect } from 'react';
 
 interface IProps {
   children: React.ReactNode;
+  isVisible: boolean;
 }
 
 export function Wrapper(props: IProps) {
-  const { children } = props;
+  const { children, isVisible } = props;
   const ref = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
@@ -93,10 +94,14 @@ export function Wrapper(props: IProps) {
     };
   }, []);
 
+  if (!isVisible) {
+    return null;
+  }
+
   return (
     <div
       ref={ref}
-      className={`fixed left-[50%] ml-[-130px] top-[50px] cursor-move rounded-[16px] min-w-[260px] bg-background text-foreground`}
+      className={`fixed left-[50%] ml-[-130px] top-[50px] cursor-move rounded-[16px] min-w-[260px] bg-background text-foreground shadow-xl`}
       style={{
         zIndex: zIndex(),
         transform: `translate3d(${position.x}px, ${position.y}px, 0)`,

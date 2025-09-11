@@ -1,5 +1,9 @@
 packages:
-  - 'chrome-extension'
-  - 'pages/*'
-  - 'packages/*'
-  - 'tests/*'
+  - chrome-extension
+  - pages/*
+  - packages/*
+  - tests/*
+
+onlyBuiltDependencies:
+  - '@swc/core'
+  - esbuild
