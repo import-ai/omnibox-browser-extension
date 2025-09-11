@@ -6,10 +6,11 @@ import { useRef, useState, useEffect } from 'react';
 
 interface IProps {
   children: React.ReactNode;
+  isVisible: boolean;
 }
 
 export function Wrapper(props: IProps) {
-  const { children } = props;
+  const { children, isVisible } = props;
   const ref = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
@@ -92,6 +93,10 @@ export function Wrapper(props: IProps) {
       container.removeEventListener('touchstart', handleStart);
     };
   }, []);
+
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <div

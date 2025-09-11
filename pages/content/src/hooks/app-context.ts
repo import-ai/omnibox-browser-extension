@@ -1,3 +1,9 @@
 import { createContext } from 'react';
 
-export default createContext({});
+interface AppContextType {
+  root: HTMLElement;
+  shadow: ShadowRoot;
+  container: HTMLElement;
+}
+
+export default createContext<AppContextType | null>(null);

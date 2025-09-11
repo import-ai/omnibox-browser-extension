@@ -1,15 +1,14 @@
-import { useState } from 'react';
 import zIndex from '@src/utils/zindex';
 
 interface IProps {
   children: React.ReactNode;
+  isVisible: boolean;
 }
 
 export function Wrapper(props: IProps) {
-  const { children } = props;
-  const [open] = useState(true);
+  const { children, isVisible } = props;
 
-  if (!open) {
+  if (!isVisible) {
     return null;
   }
 
