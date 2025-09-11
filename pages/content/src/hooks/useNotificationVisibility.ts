@@ -1,30 +1,29 @@
 import { useState, useEffect, useCallback } from 'react';
 
-interface FeedbackData {
+interface NotificationData {
   status: 'pending' | 'error' | 'done' | '';
   result: string;
 }
 
-export function useFeedbackVisibility() {
+export function useNotificationVisibility() {
   const [isVisible, setIsVisible] = useState(false);
-  const [feedbackData, setFeedbackData] = useState<FeedbackData>({ status: '', result: '' });
+  const [notificationData, setNotificationData] = useState<NotificationData>({ status: '', result: '' });
 
   useEffect(() => {
-    const handleMessage = (message: { action: string; data?: FeedbackData }) => {
+    const handleMessage = (message: { action: string; data?: NotificationData }) => {
       if (message.action === 'show-notification') {
-        // Update feedback data
         if (message.data) {
-          setFeedbackData(message.data);
+          setNotificationData(message.data);
         }
 
-        // Show feedback notification
+        // Show notification
         setIsVisible(true);
 
         // Auto-hide after 3 seconds (only for done and error states)
         if (message.data?.status === 'done' || message.data?.status === 'error') {
           setTimeout(() => {
             setIsVisible(false);
-            setFeedbackData({ status: '', result: '' });
+            setNotificationData({ status: '', result: '' });
           }, 3000);
         }
       }
@@ -37,10 +36,9 @@ export function useFeedbackVisibility() {
     };
   }, []);
 
-  // Method to programmatically show feedback
-  const showFeedback = useCallback((data?: FeedbackData) => {
+  const showNotification = useCallback((data?: NotificationData) => {
     if (data) {
-      setFeedbackData(data);
+      setNotificationData(data);
     }
     setIsVisible(true);
 
@@ -48,10 +46,10 @@ export function useFeedbackVisibility() {
     if (data?.status === 'done' || data?.status === 'error') {
       setTimeout(() => {
         setIsVisible(false);
-        setFeedbackData({ status: '', result: '' });
+        setNotificationData({ status: '', result: '' });
       }, 3000);
     }
   }, []);
 
-  return { isVisible, setIsVisible, showFeedback, feedbackData };
+  return { isVisible, setIsVisible, showNotification: showNotification, notificationData: notificationData };
 }

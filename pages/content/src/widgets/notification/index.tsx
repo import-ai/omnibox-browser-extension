@@ -2,17 +2,17 @@ import Choose from './Choose';
 import Notification from './Notification';
 import { Wrapper } from './Wrapper';
 
-interface FeedbackData {
+interface NotificationData {
   status?: 'pending' | 'error' | 'done' | '';
   result?: string;
 }
 
-interface FeedbackContainerProps {
+interface NotificationContainerProps {
   isVisible: boolean;
-  data?: FeedbackData;
+  data?: NotificationData;
 }
 
-export function FeedbackContainer({ isVisible, data }: FeedbackContainerProps) {
+export function NotificationContainer({ isVisible, data }: NotificationContainerProps) {
   return (
     <Wrapper isVisible={isVisible}>
       <div>

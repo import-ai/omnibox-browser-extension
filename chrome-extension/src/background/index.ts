@@ -54,7 +54,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .then(data => {
         sendResponse({ data: data });
 
-        // Send feedback notification to content script
         if (sender.tab?.id) {
           chrome.tabs.sendMessage(sender.tab.id, {
             action: 'show-notification',
