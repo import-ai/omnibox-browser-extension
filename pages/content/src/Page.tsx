@@ -4,10 +4,10 @@ import { useOption } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
 import { usePopupVisibility } from '@src/hooks/usePopupVisibility';
 import { useToolbarVisibility } from '@src/hooks/useToolbarVisibility';
-import { useFeedbackVisibility } from '@src/hooks/useFeedbackVisibility';
+import { useNotificationVisibility } from '@src/hooks/useNotificationVisibility';
 import { PopupContainer } from '@src/widgets/popup';
 import { ToolbarContainer } from '@src/widgets/toolbar';
-import { FeedbackContainer } from '@src/widgets/feedback';
+import { NotificationContainer } from '@src/widgets/notification';
 
 export default function Page() {
   const { data } = useOption();
@@ -15,7 +15,7 @@ export default function Page() {
   const { i18n } = useTranslation();
   const { isVisible: isPopupVisible } = usePopupVisibility();
   const { isVisible: isToolbarVisible, position: toolbarPosition } = useToolbarVisibility(isPopupVisible);
-  const { isVisible: isFeedbackVisible } = useFeedbackVisibility();
+  const { isVisible: isNotificationVisible, notificationData } = useNotificationVisibility();
 
   useEffect(() => {
     let state = data.theme;
@@ -36,7 +36,7 @@ export default function Page() {
     <>
       <PopupContainer isVisible={isPopupVisible} />
       <ToolbarContainer isVisible={isToolbarVisible} position={toolbarPosition} />
-      <FeedbackContainer isVisible={isFeedbackVisible} />
+      <NotificationContainer isVisible={isNotificationVisible} data={notificationData} />
     </>
   );
 }

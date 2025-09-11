@@ -1,8 +1,8 @@
 import { Button } from '@extension/ui';
 
-export function Auth() {
+export function Auth({ baseUrl }: { baseUrl?: string }) {
   const handleAuth = () => {
-    //todo
+    window.open(baseUrl, '_blank');
   };
 
   return (

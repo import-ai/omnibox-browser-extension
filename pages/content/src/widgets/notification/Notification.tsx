@@ -7,11 +7,27 @@ import { Loader2, AlertCircleIcon } from 'lucide-react';
 
 type Status = '' | 'pending' | 'error' | 'done';
 
-export default function Feedback() {
-  const [result, setResult] = useState('');
+interface NotificationProps {
+  status?: Status;
+  result?: string;
+}
+
+export default function Notification({ status: propStatus, result: propResult }: NotificationProps) {
+  const [result, setResult] = useState(propResult || '');
   const [deadline, setDeadline] = useState(3);
-  const [status, setStatus] = useState<Status>('');
+  const [status, setStatus] = useState<Status>(propStatus || '');
   const { t } = useTranslation();
+
+  // Update internal state when props change
+  useEffect(() => {
+    if (propStatus !== undefined) {
+      setStatus(propStatus);
+      setDeadline(3);
+    }
+    if (propResult !== undefined) {
+      setResult(propResult);
+    }
+  }, [propStatus, propResult]);
   const handleClick = () => {
     chrome.storage.sync.get(['apiBaseUrl', 'namespaceId'], response => {
       const { apiBaseUrl, namespaceId } = getOptions(response);

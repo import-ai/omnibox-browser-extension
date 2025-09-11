@@ -6,7 +6,7 @@ import { Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from
 export default function Header() {
   const containerRef = useRef(null);
   const handleOption = () => {
-    chrome.runtime.sendMessage({ action: 'openOptionsPage' });
+    chrome.runtime.sendMessage({ action: 'open-options' });
   };
 
   return (

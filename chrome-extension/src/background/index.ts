@@ -53,6 +53,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     })
       .then(data => {
         sendResponse({ data: data });
+
+        if (sender.tab?.id) {
+          chrome.tabs.sendMessage(sender.tab.id, {
+            action: 'show-notification',
+            data: {
+              status: 'done',
+              result: data.resource_id || '',
+            },
+          });
+        }
+
         if (status && queryed) {
           chrome.runtime.sendMessage({ action: 'sync-status', type: status, data: data }, () => {
             status = '';
@@ -61,6 +72,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       })
       .catch(error => {
         sendResponse({ error: error.toString() });
+
+        // Send error notification to content script
+        if (sender.tab?.id) {
+          chrome.tabs.sendMessage(sender.tab.id, {
+            action: 'show-notification',
+            data: {
+              status: 'error',
+              result: error.toString(),
+            },
+          });
+        }
+
         if (status && queryed) {
           chrome.runtime.sendMessage({ action: 'sync-status', type: status, error: error.toString() }, () => {
             status = '';
@@ -82,8 +105,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (sender.tab && sender.tab.id) {
       chrome.tabs.remove(sender.tab.id);
     }
-  } else if (request.action === 'openOptionsPage') {
+  } else if (request.action === 'open-options') {
     chrome.runtime.openOptionsPage();
+  } else if (request.action === 'check-token') {
+    chrome.cookies.get(
+      {
+        url: request.baseUrl,
+        name: 'token',
+      },
+      cookie => {
+        sendResponse({ hasToken: !!cookie });
+      },
+    );
   }
   return true;
 });
