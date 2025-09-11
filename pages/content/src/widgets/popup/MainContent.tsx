@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { useOption } from '@extension/shared';
 import Collect from './Collect';
 import { Save } from './save';
@@ -25,11 +24,7 @@ export function MainContent() {
       },
       response => {
         setCollecting(false);
-        if (response && response.error) {
-          toast.error(response.error, { position: 'top-center' });
-        } else {
-          // setDoneUrl(response.data.resource_id);
-        }
+        // Notification will be handled by background script
       },
     );
   };

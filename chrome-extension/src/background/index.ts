@@ -54,6 +54,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     })
       .then(data => {
         sendResponse({ data: data });
+
+        // Send feedback notification to content script
+        if (sender.tab?.id) {
+          chrome.tabs.sendMessage(sender.tab.id, {
+            action: 'show-notification',
+            data: {
+              status: 'done',
+              result: data.resource_id || '',
+            },
+          });
+        }
+
         if (status && queryed) {
           chrome.runtime.sendMessage({ action: 'sync-status', type: status, data: data }, () => {
             status = '';
@@ -62,6 +74,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       })
       .catch(error => {
         sendResponse({ error: error.toString() });
+
+        // Send error notification to content script
+        if (sender.tab?.id) {
+          chrome.tabs.sendMessage(sender.tab.id, {
+            action: 'show-notification',
+            data: {
+              status: 'error',
+              result: error.toString(),
+            },
+          });
+        }
+
         if (status && queryed) {
           chrome.runtime.sendMessage({ action: 'sync-status', type: status, error: error.toString() }, () => {
             status = '';
