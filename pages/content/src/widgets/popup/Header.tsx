@@ -1,23 +1,12 @@
 import { useRef } from 'react';
 import { SettingIcon } from '@src/icon/setting';
 import { QuestionIcon } from '@src/icon/question';
-import { axios } from '@extension/shared/lib/utils/axios';
-import { Button, Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@extension/ui';
+import { Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@extension/ui';
 
-interface IProps {
-  baseUrl: string;
-  refetch: () => void;
-}
-
-export default function Header({ baseUrl, refetch }: IProps) {
+export default function Header() {
   const containerRef = useRef(null);
   const handleOption = () => {
-    chrome.runtime.openOptionsPage();
-  };
-  const handleLogout = () => {
-    axios(`${baseUrl}/api/v1/logout`, { method: 'POST' }).finally(() => {
-      chrome.storage.sync.remove(['namespaceId', 'resourceId'], refetch);
-    });
+    chrome.runtime.sendMessage({ action: 'openOptionsPage' });
   };
 
   return (
@@ -32,7 +21,7 @@ export default function Header({ baseUrl, refetch }: IProps) {
         <TooltipProvider>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <Button size="icon" variant="ghost" className="size-[20px]" onClick={handleOption}>
+              <Button size="icon" variant="ghost" className="size-[20px]">
                 <QuestionIcon />
               </Button>
             </TooltipTrigger>
@@ -40,7 +29,7 @@ export default function Header({ baseUrl, refetch }: IProps) {
           </Tooltip>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <Button size="icon" variant="ghost" className="size-[20px]" onClick={handleLogout}>
+              <Button size="icon" variant="ghost" className="size-[20px]" onClick={handleOption}>
                 <SettingIcon />
               </Button>
             </TooltipTrigger>

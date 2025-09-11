@@ -65,7 +65,7 @@ export function PopupContainer({ isVisible }: PopupContainerProps) {
 
   return (
     <Wrapper isVisible={isVisible}>
-      <Header refetch={refetch} baseUrl={data.apiBaseUrl} />
+      <Header />
       <Collect loading={collecting} onClick={handleCollect} />
       <Save data={data} />
       <Section />
