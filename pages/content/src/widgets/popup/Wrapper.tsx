@@ -15,7 +15,7 @@ export function Wrapper(props: IProps) {
 
   return (
     <div
-      className={`fixed top-[28px] right-[28px] rounded-[16px] px-[16px] py-[14px] min-w-[288px] bg-background text-foreground shadow-[0px 4px 12px 0px #0000001A]`}
+      className={`fixed top-[28px] right-[28px] rounded-[16px] px-[16px] py-[14px] min-w-[288px] bg-background text-foreground shadow-lg`}
       style={{
         zIndex: zIndex(),
       }}>
