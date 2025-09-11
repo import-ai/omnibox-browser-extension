@@ -82,6 +82,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (sender.tab && sender.tab.id) {
       chrome.tabs.remove(sender.tab.id);
     }
+  } else if (request.action === 'openOptionsPage') {
+    chrome.runtime.openOptionsPage();
   }
   return true;
 });
