@@ -1,9 +1,8 @@
 import { Button } from '@extension/ui';
-import { BASE_URL } from '@extension/env/lib/const';
 
-export function Auth() {
+export function Auth({ baseUrl }: { baseUrl?: string }) {
   const handleAuth = () => {
-    window.open(BASE_URL, '_blank');
+    window.open(baseUrl, '_blank');
   };
 
   return (

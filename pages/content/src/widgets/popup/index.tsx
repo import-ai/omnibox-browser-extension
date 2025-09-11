@@ -23,10 +23,10 @@ export function PopupContainer({ isVisible }: PopupContainerProps) {
   }, []);
 
   useEffect(() => {
-    chrome.runtime.sendMessage({ action: 'check-token' }, response => {
+    chrome.runtime.sendMessage({ action: 'check-token', baseUrl: data.apiBaseUrl }, response => {
       setIsAuthenticated(response?.hasToken || false);
     });
-  }, []);
+  }, [data.apiBaseUrl]);
 
   useEffect(() => {
     let state = data.theme;
@@ -55,7 +55,7 @@ export function PopupContainer({ isVisible }: PopupContainerProps) {
   return (
     <Wrapper isVisible={isVisible}>
       <Header />
-      {isAuthenticated ? <MainContent /> : <Auth />}
+      {isAuthenticated ? <MainContent /> : <Auth baseUrl={data.apiBaseUrl} />}
     </Wrapper>
   );
 }
