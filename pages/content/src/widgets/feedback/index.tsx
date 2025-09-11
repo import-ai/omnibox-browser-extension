@@ -2,9 +2,13 @@ import Choose from './Choose';
 import Feedback from './Feedback';
 import { Wrapper } from './Wrapper';
 
-export function FeedbackContainer() {
+interface FeedbackContainerProps {
+  isVisible: boolean;
+}
+
+export function FeedbackContainer({ isVisible }: FeedbackContainerProps) {
   return (
-    <Wrapper>
+    <Wrapper isVisible={isVisible}>
       <div>
         <Feedback />
         <Choose />

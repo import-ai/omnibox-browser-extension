@@ -34,7 +34,8 @@
     "copy_env": "bash bash-scripts/copy_env.sh",
     "set-global-env": "bash bash-scripts/set_global_env.sh",
     "postinstall": "pnpm build:eslint && pnpm copy_env",
-    "module-manager": "pnpm -F module-manager start"
+    "module-manager": "pnpm -F module-manager start",
+    "test:browser": "tsx scripts/open-with-extension.ts"
   },
   "dependencies": {
     "react": "19.0.0",
@@ -44,6 +45,7 @@
     "@eslint/compat": "^1.2.5",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.20.0",
+    "@playwright/test": "^1.55.0",
     "@types/chrome": "0.0.304",
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/eslint__eslintrc": "^2.1.2",
@@ -70,6 +72,7 @@
     "globals": "^15.14.0",
     "husky": "^9.1.4",
     "lint-staged": "^15.2.7",
+    "playwright": "^1.55.0",
     "postcss": "^8.5.2",
     "postcss-load-config": "^6.0.1",
     "prettier": "^3.3.3",
@@ -77,6 +80,7 @@
     "run-script-os": "^1.1.6",
     "tailwindcss": "^3.4.17",
     "tslib": "^2.8.1",
+    "tsx": "^4.19.4",
     "turbo": "^2.4.2",
     "typescript": "5.8.1-rc",
     "typescript-eslint": "^8.20.0",
