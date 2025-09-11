@@ -1,13 +1,19 @@
 import { Toolbars } from './toolbars';
 import { Wrapper } from './Wrapper';
 
-interface ToolbarContainerProps {
-  isVisible: boolean;
+interface Position {
+  x: number;
+  y: number;
 }
 
-export function ToolbarContainer({ isVisible }: ToolbarContainerProps) {
+interface ToolbarContainerProps {
+  isVisible: boolean;
+  position: Position;
+}
+
+export function ToolbarContainer({ isVisible, position }: ToolbarContainerProps) {
   return (
-    <Wrapper isVisible={isVisible}>
+    <Wrapper isVisible={isVisible} position={position}>
       <Toolbars />
     </Wrapper>
   );
