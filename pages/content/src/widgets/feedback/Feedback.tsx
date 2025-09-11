@@ -10,7 +10,7 @@ type Status = '' | 'pending' | 'error' | 'done';
 export default function Feedback() {
   const [result, setResult] = useState('');
   const [deadline, setDeadline] = useState(3);
-  const [status, setStatus] = useState<Status>('done');
+  const [status, setStatus] = useState<Status>('');
   const { t } = useTranslation();
   const handleClick = () => {
     chrome.storage.sync.get(['apiBaseUrl', 'namespaceId'], response => {

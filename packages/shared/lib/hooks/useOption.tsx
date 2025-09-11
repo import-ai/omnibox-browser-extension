@@ -11,15 +11,31 @@ export function useOption() {
     resourceId: '',
     theme: 'light',
     language: detectBrowserLanguage(),
-    apiBaseUrl: '',
+    apiBaseUrl: 'https://omnibox.pro', // 默认使用 omnibox.pro
+    audioEnabled: true, // 默认开启声音效果
+    disabledSites: [],
   });
   const refetch = useCallback(() => {
-    chrome.storage.sync.get(['apiBaseUrl', 'namespaceId', 'resourceId', 'language', 'theme'], response => {
-      onData(getOptions(response));
-    });
+    chrome.storage.sync.get(
+      [
+        'apiBaseUrl',
+        'namespaceId',
+        'resourceId',
+        'language',
+        'theme',
+        'audioEnabled',
+        'sectionEnabled',
+        'selectionTextEnabled',
+        'disabledSites',
+        'keyboardShortcuts',
+      ],
+      (response: Storage) => {
+        onData(getOptions(response));
+      },
+    );
   }, []);
-  const onChange = useCallback((val: string | { [index: string]: string }, key?: string) => {
-    const newVal = key ? { [key]: val } : (val as { [index: string]: string });
+  const onChange = useCallback((val: string | boolean | string[] | { [index: string]: string }, key?: string) => {
+    const newVal = key ? { [key]: val } : (val as { [index: string]: unknown });
     chrome.storage.sync.set(newVal).then(() => {
       onData(prev => ({ ...prev, ...newVal }));
     });

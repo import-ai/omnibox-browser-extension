@@ -7,7 +7,7 @@ interface IProps {
 
 export function Wrapper(props: IProps) {
   const { children } = props;
-  const [open] = useState(true);
+  const [open] = useState(false);
 
   if (!open) {
     return null;

@@ -5,3 +5,4 @@ export * from './lib/utils/index.js';
 export * from './lib/utils/track.js';
 export * from './lib/utils/axios.js';
 export * from './lib/utils/detect-language.js';
+export * from './lib/utils/keyMappingUtils.js';
