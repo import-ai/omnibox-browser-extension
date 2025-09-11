@@ -1,6 +1,7 @@
 import 'webextension-polyfill';
 import { isInternalUrl } from './utils';
 import { axios } from '@extension/shared';
+import { BASE_URL } from '@extension/env';
 
 let status = '';
 let queryed = false;
@@ -82,8 +83,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (sender.tab && sender.tab.id) {
       chrome.tabs.remove(sender.tab.id);
     }
-  } else if (request.action === 'openOptionsPage') {
+  } else if (request.action === 'open-options') {
     chrome.runtime.openOptionsPage();
+  } else if (request.action === 'check-token') {
+    chrome.cookies.get(
+      {
+        url: BASE_URL,
+        name: 'token',
+      },
+      cookie => {
+        sendResponse({ hasToken: !!cookie });
+      },
+    );
   }
   return true;
 });
