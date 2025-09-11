@@ -14,7 +14,7 @@ export default function Page() {
   const { container } = useApp();
   const { i18n } = useTranslation();
   const { isVisible: isPopupVisible } = usePopupVisibility();
-  const { isVisible: isToolbarVisible, position: toolbarPosition } = useToolbarVisibility();
+  const { isVisible: isToolbarVisible, position: toolbarPosition } = useToolbarVisibility(isPopupVisible);
   const { isVisible: isFeedbackVisible } = useFeedbackVisibility();
 
   useEffect(() => {

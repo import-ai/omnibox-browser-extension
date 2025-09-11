@@ -5,7 +5,7 @@ interface Position {
   y: number;
 }
 
-export function useToolbarVisibility() {
+export function useToolbarVisibility(isPopupVisible: boolean = false) {
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
 
@@ -19,6 +19,11 @@ export function useToolbarVisibility() {
     const handleMouseUp = (event: MouseEvent) => {
       // Show toolbar only when mouse is released and text is selected
       if (checkSelection()) {
+        // Don't show toolbar if popup is visible
+        if (isPopupVisible) {
+          return;
+        }
+
         // Use pageX/pageY to include scroll offset for absolute positioning
         let x = event.pageX;
         let y = event.pageY;
@@ -47,6 +52,10 @@ export function useToolbarVisibility() {
       // Handle keyboard text selection (Shift + Arrow keys, etc.)
       if (event.shiftKey || event.key === 'Shift') {
         if (checkSelection()) {
+          // Don't show toolbar if popup is visible
+          if (isPopupVisible) {
+            return;
+          }
           // For keyboard selection, position at center of current viewport (including scroll)
           const x = window.scrollX + window.innerWidth / 2;
           const y = window.scrollY + window.innerHeight / 3;
@@ -77,7 +86,7 @@ export function useToolbarVisibility() {
       document.removeEventListener('keyup', handleKeyUp);
       document.removeEventListener('selectionchange', handleSelectionChange);
     };
-  }, []);
+  }, [isPopupVisible]);
 
   return { isVisible, setIsVisible, position };
 }

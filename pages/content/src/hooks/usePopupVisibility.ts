@@ -22,7 +22,7 @@ export function usePopupVisibility() {
   useEffect(() => {
     if (!isVisible || !appContext?.root) return;
 
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleMouseDown = (event: MouseEvent) => {
       const target = event.target as Element;
 
       // Check if click is outside the extension root element
@@ -31,10 +31,10 @@ export function usePopupVisibility() {
       }
     };
 
-    document.addEventListener('click', handleClickOutside, true);
+    document.addEventListener('mousedown', handleMouseDown, true);
 
     return () => {
-      document.removeEventListener('click', handleClickOutside, true);
+      document.removeEventListener('mousedown', handleMouseDown, true);
     };
   }, [isVisible, appContext]);
 
