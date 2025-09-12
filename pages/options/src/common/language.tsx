@@ -8,11 +8,12 @@ import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMe
 interface IProps {
   baseUrl: string;
   data: Language;
+  loading: boolean;
   onChange: (val: string | { [index: string]: string }, key?: string) => void;
 }
 
 export default function FieldLanguage(props: IProps) {
-  const { baseUrl, data, onChange } = props;
+  const { baseUrl, loading, data, onChange } = props;
   const { i18n, t } = useTranslation();
   const dataSource = [
     { label: '简体中文', value: 'zh' },
@@ -36,7 +37,7 @@ export default function FieldLanguage(props: IProps) {
   };
 
   useEffect(() => {
-    if (!baseUrl) {
+    if (loading || !baseUrl) {
       return;
     }
     axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/user/option/language`).then(response => {
@@ -50,7 +51,7 @@ export default function FieldLanguage(props: IProps) {
         });
       }
     });
-  }, [i18n, baseUrl, onChange]);
+  }, [i18n, baseUrl, loading, onChange]);
 
   return (
     <div className="flex items-center justify-between">

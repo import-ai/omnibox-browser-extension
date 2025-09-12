@@ -5,13 +5,12 @@ import { Wrapper } from './Wrapper';
 import { Advance } from './advance';
 import { Toolbar } from './toolbar';
 import { Keyboard } from './keyboard';
-import { initResources } from './utils';
 import { useOption } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
 
 export default function Page() {
-  const { data, onChange, refetch } = useOption();
   const { t } = useTranslation();
+  const { data, loading, onChange, refetch } = useOption();
 
   useEffect(() => {
     let state = data.theme;
@@ -22,29 +21,19 @@ export default function Page() {
     document.documentElement.classList.add(state);
   }, [data.theme]);
 
-  useEffect(() => {
-    const focusFN = () => {
-      initResources(refetch);
-    };
-    window.addEventListener('focus', focusFN);
-    return () => {
-      window.removeEventListener('focus', focusFN);
-    };
-  }, [refetch]);
-
   return (
-    <Wrapper>
+    <Wrapper refetch={refetch} namespaceId={data.namespaceId} baseUrl={loading ? '' : data.apiBaseUrl}>
       <Card title={t('common')}>
-        <Common data={data} onChange={onChange} />
+        <Common loading={loading} data={data} onChange={onChange} />
       </Card>
-      <Card title="工具栏设置">
-        <Toolbar data={data} onChange={onChange} refetch={refetch} />
+      <Card title={t('toolbar_settings')}>
+        <Toolbar loading={loading} data={data} onChange={onChange} refetch={refetch} />
       </Card>
-      <Card title="快捷键设置">
-        <Keyboard data={data} onChange={onChange} refetch={refetch} />
+      <Card title={t('keyboard_settings')}>
+        <Keyboard loading={loading} data={data} onChange={onChange} refetch={refetch} />
       </Card>
       <Card title={t('setting')}>
-        <Advance data={data} onChange={onChange} refetch={refetch} />
+        <Advance loading={loading} data={data} onChange={onChange} refetch={refetch} />
       </Card>
     </Wrapper>
   );

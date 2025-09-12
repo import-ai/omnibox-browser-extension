@@ -1,8 +1,10 @@
 import type { IProps } from '@src/types';
 import { ShortcutInput } from './ShortcutInput';
+import { useTranslation } from 'react-i18next';
 
 export function Section(props: IProps) {
   const { data, onChange } = props;
+  const { t } = useTranslation();
   const handleShortcutChange = (value: string) => {
     onChange(
       {
@@ -15,7 +17,7 @@ export function Section(props: IProps) {
 
   return (
     <div className="flex items-center justify-between">
-      <span className="font-[500]">保存指定区域快捷键</span>
+      <span className="font-[500]">{t('section_shortcut')}</span>
       <ShortcutInput
         className="w-[200px]"
         value={data.keyboardShortcuts?.saveSection || ''}

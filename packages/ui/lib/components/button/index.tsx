@@ -4,7 +4,7 @@ import { Button as ButtonUI } from '../ui/button';
 
 interface ButtonLoadingProps extends ButtonProps {
   loading?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export function Button(props: ButtonLoadingProps) {

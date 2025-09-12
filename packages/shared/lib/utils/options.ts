@@ -10,12 +10,12 @@ export function getOptions(response: Storage): Storage {
     apiBaseUrl: response.apiBaseUrl || 'https://www.omnibox.pro',
     audioEnabled: typeof response.audioEnabled === 'boolean' ? response.audioEnabled : true,
     sectionEnabled: !!response.sectionEnabled,
-    selectionTextEnabled: !!response.selectionTextEnabled,
+    selectionTextEnabled: typeof response.selectionTextEnabled === 'boolean' ? response.selectionTextEnabled : true,
     disabledSites: Array.isArray(response.disabledSites) ? response.disabledSites : [],
     keyboardShortcuts: response.keyboardShortcuts || {
-      save: '',
-      activation: '',
-      saveSection: '',
+      activation: 'Alt+T',
+      save: 'Alt+Y',
+      saveSection: 'Alt',
     },
   };
 }

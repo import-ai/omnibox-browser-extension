@@ -1,21 +1,26 @@
 import { useEffect } from 'react';
+import { Provider } from './provider';
 import useApp from '@src/hooks/useApp';
 import { useOption } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
-import { usePopupVisibility } from '@src/hooks/usePopupVisibility';
-import { useToolbarVisibility } from '@src/hooks/useToolbarVisibility';
-import { useNotificationVisibility } from '@src/hooks/useNotificationVisibility';
 import { PopupContainer } from '@src/widgets/popup';
 import { ToolbarContainer } from '@src/widgets/toolbar';
-import { NotificationContainer } from '@src/widgets/notification';
+import { FeedbackContainer } from '@src/widgets/feedback';
+import { SectionContainer } from '@src/widgets/section';
+import { KeyboardHandler } from '@src/widgets/keyboard';
 
 export default function Page() {
-  const { data } = useOption();
-  const { container } = useApp();
+  const { shadow, container } = useApp();
   const { i18n } = useTranslation();
-  const { isVisible: isPopupVisible } = usePopupVisibility();
-  const { isVisible: isToolbarVisible, position: toolbarPosition } = useToolbarVisibility(isPopupVisible);
-  const { isVisible: isNotificationVisible, notificationData } = useNotificationVisibility();
+  const { data, loading, refetch, onChange } = useOption();
+
+  useEffect(() => {
+    document.head.querySelectorAll('style').forEach(styleEl => {
+      if (styleEl.textContent?.includes('[data-sonner-toaster]')) {
+        shadow.append(styleEl);
+      }
+    });
+  }, [shadow]);
 
   useEffect(() => {
     let state = data.theme;
@@ -33,10 +38,12 @@ export default function Page() {
   }, [i18n, data.language]);
 
   return (
-    <>
-      <PopupContainer isVisible={isPopupVisible} />
-      <ToolbarContainer isVisible={isToolbarVisible} position={toolbarPosition} />
-      <NotificationContainer isVisible={isNotificationVisible} data={notificationData} />
-    </>
+    <Provider>
+      <PopupContainer data={data} loading={loading} refetch={refetch} onChange={onChange} />
+      <ToolbarContainer data={data} onChange={onChange} />
+      <FeedbackContainer data={data} />
+      {data.sectionEnabled && <SectionContainer data={data} />}
+      <KeyboardHandler data={data} />
+    </Provider>
   );
 }

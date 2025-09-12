@@ -1,8 +1,10 @@
 import type { IProps } from '@src/types';
 import { RemoveIcon } from '@src/icon/remove';
+import { useTranslation } from 'react-i18next';
 
 export function DisableSites(props: IProps) {
   const { data, onChange } = props;
+  const { t } = useTranslation();
   const items = data.disabledSites || [];
   const handleRemoveSite = (host: string) => {
     const updatedSites = items.filter(site => site.host !== host);
@@ -11,18 +13,18 @@ export function DisableSites(props: IProps) {
 
   const renderSiteItems = () => {
     if (items.length === 0) {
-      return <div className="text-sm text-gray-500 text-center py-8">暂无禁用的网站</div>;
+      return <div className="text-sm text-gray-500 text-center py-8">{t('no_disabled_sites')}</div>;
     }
 
     const siteElements = items.map(site => (
       <div
         key={site.host}
-        className="flex items-center flex-1 max-w-[284px] justify-between rounded-[16px] border border-[#F2F2F2] p-[16px]">
+        className="flex items-center flex-1 max-w-[284px] justify-between rounded-[16px] border border-[#F2F2F2] p-[16px] dark:border-gray-600">
         <div className="flex items-center gap-[6px]">
           <div className="size-[16px]">
             <img src={site.icon} alt="logo" />
           </div>
-          <div className="text-xs font-[500] text-[#171717]">{site.host}</div>
+          <div className="text-xs font-[500] text-[#171717] dark:text-[#f8f2f2]">{site.host}</div>
         </div>
         <button
           type="button"
@@ -51,7 +53,7 @@ export function DisableSites(props: IProps) {
 
   return (
     <div className="flex flex-col">
-      <span className="font-[500]">禁用的网站</span>
+      <span className="font-[500]">{t('disabled_sites')}</span>
       <div className="mt-[22px]">{renderSiteItems()}</div>
     </div>
   );

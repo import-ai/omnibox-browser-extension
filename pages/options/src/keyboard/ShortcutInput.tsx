@@ -1,6 +1,7 @@
 import { Input } from '@extension/ui';
 import { useState, useEffect, useRef } from 'react';
 import { parseShortcutToDisplay, parseKeyboardEvent, createShortcut } from '@extension/shared';
+import { useTranslation } from 'react-i18next';
 
 interface ShortcutInputProps {
   value: string;
@@ -9,7 +10,8 @@ interface ShortcutInputProps {
   className?: string;
 }
 
-export function ShortcutInput({ value, onChange, placeholder = '输入快捷键', className }: ShortcutInputProps) {
+export function ShortcutInput({ value, onChange, placeholder, className }: ShortcutInputProps) {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [currentValue, setCurrentValue] = useState(value);
   const [displayValue, setDisplayValue] = useState(parseShortcutToDisplay(value));
@@ -44,6 +46,14 @@ export function ShortcutInput({ value, onChange, placeholder = '输入快捷键'
 
     const { modifierKeys, mainKey } = parseKeyboardEvent(e);
 
+    // Handle single Alt key as a valid shortcut
+    if (e.key === 'Alt' && !mainKey && modifierKeys.length === 1 && modifierKeys[0] === 'Alt') {
+      const { raw, display } = createShortcut([], 'Alt');
+      setCurrentValue(raw);
+      setDisplayValue(display);
+      return;
+    }
+
     // Only create shortcut if we have a main key
     if (mainKey) {
       const { raw, display } = createShortcut(modifierKeys, mainKey);
@@ -60,7 +70,9 @@ export function ShortcutInput({ value, onChange, placeholder = '输入快捷键'
       onFocus={handleFocus}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
-      placeholder={isEditing ? placeholder : displayValue || placeholder}
+      placeholder={
+        isEditing ? placeholder || t('shortcut_placeholder') : displayValue || placeholder || t('shortcut_placeholder')
+      }
       readOnly={false}
     />
   );

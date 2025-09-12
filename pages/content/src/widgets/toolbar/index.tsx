@@ -1,20 +1,28 @@
-import { Toolbars } from './toolbars';
+import { useState } from 'react';
 import { Wrapper } from './Wrapper';
+import { Toolbars } from './toolbars';
+import type { Storage } from '@extension/shared';
+import { useAction } from '@src/provider/useAction';
 
-interface Position {
-  x: number;
-  y: number;
+export interface IProps {
+  data: Storage;
+  onChange: (val: unknown, key?: string) => void;
 }
 
-interface ToolbarContainerProps {
-  isVisible: boolean;
-  position: Position;
-}
+export function ToolbarContainer(props: IProps) {
+  const { data, onChange } = props;
+  const [disableTemp, onDisableTemp] = useState(false);
+  const { popup, toolbar, onToolbar } = useAction();
+  const disableSites = Array.isArray(data.disabledSites) ? data.disabledSites : [];
+  const index = disableSites.findIndex(item => item.host === location.hostname);
 
-export function ToolbarContainer({ isVisible, position }: ToolbarContainerProps) {
+  if (!data.selectionTextEnabled || index >= 0) {
+    return null;
+  }
+
   return (
-    <Wrapper isVisible={isVisible} position={position}>
-      <Toolbars />
+    <Wrapper popup={popup} toolbar={toolbar} onToolbar={onToolbar} disableTemp={disableTemp}>
+      <Toolbars data={data} onChange={onChange} onToolbar={onToolbar} onDisableTemp={onDisableTemp} />
     </Wrapper>
   );
 }

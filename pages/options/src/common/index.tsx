@@ -4,13 +4,13 @@ import type { IProps } from '@src/types';
 import { Separator } from '@extension/ui';
 
 export function Common(props: Omit<IProps, 'refetch'>) {
-  const { data, onChange } = props;
+  const { data, onChange, loading } = props;
 
   return (
     <>
-      <Theme baseUrl={data.apiBaseUrl} data={data.theme} onChange={onChange} />
-      <Separator className="my-[24px] bg-[#F2F2F2]" />
-      <Language baseUrl={data.apiBaseUrl} data={data.language} onChange={onChange} />
+      <Theme loading={loading} baseUrl={data.apiBaseUrl} data={data.theme} onChange={onChange} />
+      <Separator className="my-[24px] bg-[#F2F2F2] dark:bg-gray-600" />
+      <Language loading={loading} baseUrl={data.apiBaseUrl} data={data.language} onChange={onChange} />
     </>
   );
 }

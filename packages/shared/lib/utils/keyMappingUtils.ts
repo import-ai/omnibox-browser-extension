@@ -54,7 +54,7 @@ export const getKeySymbol = (key: string): string => {
 };
 
 export const formatShortcut = (keys: string[]): string => {
-  return keys.map(getKeySymbol).join('');
+  return keys.map(getKeySymbol).join('+');
 };
 
 export const parseShortcutToDisplay = (shortcut: string): string => {
@@ -69,15 +69,37 @@ export const parseKeyboardEvent = (
   const modifierKeys: ModifierKey[] = [];
   let mainKey: string | null = null;
 
-  // Collect modifier keys in standard order
-  if (e.ctrlKey || e.metaKey) modifierKeys.push(e.metaKey ? 'Meta' : 'Control');
-  if (e.altKey) modifierKeys.push('Alt');
-  if (e.shiftKey) modifierKeys.push('Shift');
+  // Collect modifier keys
+  if (e.ctrlKey || e.metaKey) {
+    modifierKeys.push(e.metaKey ? 'Meta' : 'Control');
+  }
+  if (e.altKey) {
+    modifierKeys.push('Alt');
+  }
+  if (e.shiftKey) {
+    modifierKeys.push('Shift');
+  }
 
-  // Process main key (non-modifier)
-  const excludedKeys: string[] = ['Control', 'Alt', 'Shift', 'Meta'];
-  if (!excludedKeys.includes(e.key)) {
-    mainKey = e.key === ' ' ? 'Space' : e.key;
+  // Use code for physical key detection
+  const excludedCodes = [
+    'ControlLeft',
+    'ControlRight',
+    'AltLeft',
+    'AltRight',
+    'ShiftLeft',
+    'ShiftRight',
+    'MetaLeft',
+    'MetaRight',
+  ];
+
+  if (!excludedCodes.includes(e.code)) {
+    if (e.code.startsWith('Key')) {
+      mainKey = e.code.slice(3); // KeyT -> T
+    } else if (e.code === 'Space') {
+      mainKey = 'Space';
+    } else {
+      mainKey = e.key;
+    }
   }
 
   return { modifierKeys, mainKey };

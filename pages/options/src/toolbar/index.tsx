@@ -9,11 +9,11 @@ export function Toolbar(props: IProps) {
   return (
     <>
       <Audio {...props} />
-      <Separator className="my-[24px] bg-[#F2F2F2]" />
+      <Separator className="my-[24px] bg-[#F2F2F2] dark:bg-gray-600" />
       <Section {...props} />
-      <Separator className="my-[24px] bg-[#F2F2F2]" />
+      <Separator className="my-[24px] bg-[#F2F2F2] dark:bg-gray-600" />
       <SectionText {...props} />
-      <Separator className="my-[24px] bg-[#F2F2F2]" />
+      <Separator className="my-[24px] bg-[#F2F2F2] dark:bg-gray-600" />
       <DisableSites {...props} />
     </>
   );

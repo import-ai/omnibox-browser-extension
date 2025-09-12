@@ -34,7 +34,7 @@ export type Permission = 'no_access' | 'can_view' | 'can_comment' | 'can_edit' |
 export interface User extends IBase {
   id: string;
   email: string;
-  username: string;
+  username?: string;
   password?: string;
   password_repeat?: string;
 }

@@ -1,19 +1,18 @@
 import Header from './Header';
 import { Auth } from './Auth';
-import { MainContent } from './MainContent';
+import { Save } from './save';
+import Collect from './Collect';
+import { useEffect } from 'react';
 import { Wrapper } from './Wrapper';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { track, useOption } from '@extension/shared';
+import { Section } from './Section';
+import type { Response } from '@extension/shared';
+import { track, useUser } from '@extension/shared';
+import { useAction } from '@src/provider/useAction';
 
-interface PopupContainerProps {
-  isVisible: boolean;
-}
-
-export function PopupContainer({ isVisible }: PopupContainerProps) {
-  const { i18n } = useTranslation();
-  const { data, refetch } = useOption();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+export function PopupContainer(props: Response) {
+  const { data, loading, onChange } = props;
+  const { popup } = useAction();
+  const { user } = useUser({ baseUrl: loading ? '' : data.apiBaseUrl });
 
   useEffect(() => {
     track('open_chrome_popup', {
@@ -23,39 +22,64 @@ export function PopupContainer({ isVisible }: PopupContainerProps) {
   }, []);
 
   useEffect(() => {
-    chrome.runtime.sendMessage({ action: 'check-token', baseUrl: data.apiBaseUrl }, response => {
-      setIsAuthenticated(response?.hasToken || false);
-    });
-  }, [data.apiBaseUrl]);
-
-  useEffect(() => {
-    let state = data.theme;
-    if (data.theme === 'system') {
-      state = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    if (!user.id || !data.apiBaseUrl || data.namespaceId || data.resourceId) {
+      return;
     }
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(state);
-  }, [data.theme]);
-
-  useEffect(() => {
-    if (data.language !== i18n.language) {
-      i18n.changeLanguage(data.language);
-    }
-  }, [i18n, data.language]);
-
-  if (isAuthenticated === null) {
-    return (
-      <Wrapper isVisible={isVisible}>
-        <Header />
-        <div className="p-4 text-center text-sm text-gray-500">检查登录状态...</div>
-      </Wrapper>
+    const baseUrl = data.apiBaseUrl.endsWith('/') ? data.apiBaseUrl.slice(0, -1) : data.apiBaseUrl;
+    chrome.runtime.sendMessage(
+      {
+        action: 'fetch',
+        url: `${baseUrl}/api/v1/namespaces`,
+      },
+      response => {
+        if (!response.data) {
+          return;
+        }
+        if (response.data.length <= 0) {
+          return;
+        }
+        const namespaceId = response.data[0].id;
+        chrome.runtime.sendMessage(
+          {
+            action: 'fetch',
+            query: { namespace_id: namespaceId },
+            url: `${baseUrl}/api/v1/namespaces/${namespaceId}/root`,
+          },
+          root => {
+            if (!root.data) {
+              return;
+            }
+            const privateData = root.data['private'];
+            if (!privateData) {
+              return;
+            }
+            const resourceId = privateData.id;
+            onChange({
+              namespaceId,
+              resourceId,
+            });
+          },
+        );
+      },
     );
+  }, [data.apiBaseUrl, data.namespaceId, data.resourceId, user.id, onChange]);
+
+  if (!popup) {
+    return null;
   }
 
   return (
-    <Wrapper isVisible={isVisible}>
+    <Wrapper>
       <Header />
-      {isAuthenticated ? <MainContent /> : <Auth baseUrl={data.apiBaseUrl} />}
+      {user.id ? (
+        <>
+          <Collect data={data} />
+          <Save data={data} loading={loading} onChange={onChange} />
+          <Section data={data} onChange={onChange} />
+        </>
+      ) : (
+        <Auth baseUrl={data.apiBaseUrl} />
+      )}
     </Wrapper>
   );
 }

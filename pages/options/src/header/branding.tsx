@@ -4,7 +4,7 @@ export function Binding() {
       <div className="size-[30px]">
         <img src={chrome.runtime.getURL('icon-128.png')} alt="logo" />
       </div>
-      <h1 className="text-xl font-medium text-gray-900">OmniBox</h1>
+      <h1 className="text-xl font-medium text-gray-900 dark:text-gray-100">OmniBox</h1>
     </div>
   );
 }

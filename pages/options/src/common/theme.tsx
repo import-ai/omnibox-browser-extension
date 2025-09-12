@@ -8,11 +8,12 @@ import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMe
 interface IProps {
   baseUrl: string;
   data: Theme;
+  loading: boolean;
   onChange: (val: string | { [index: string]: string }, key?: string) => void;
 }
 
 export default function FieldTheme(props: IProps) {
-  const { baseUrl, data, onChange } = props;
+  const { baseUrl, loading, data, onChange } = props;
   const { t } = useTranslation();
   const dataSource: Array<{
     label: string;
@@ -38,7 +39,7 @@ export default function FieldTheme(props: IProps) {
   };
 
   useEffect(() => {
-    if (!data || !baseUrl) {
+    if (loading || !data || !baseUrl) {
       return;
     }
     axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/user/option/theme`).then(response => {
@@ -49,7 +50,7 @@ export default function FieldTheme(props: IProps) {
         onChange(response.value, 'theme');
       }
     });
-  }, [data, baseUrl, onChange]);
+  }, [data, baseUrl, loading, onChange]);
 
   return (
     <div className="flex items-center justify-between">

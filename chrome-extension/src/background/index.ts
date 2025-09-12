@@ -2,9 +2,6 @@ import 'webextension-polyfill';
 import { isInternalUrl } from './utils';
 import { axios } from '@extension/shared';
 
-let status = '';
-let queryed = false;
-
 // Update extension icon state based on current tab
 function updateIconState(tabId: number, url: string) {
   chrome.action.setTitle({
@@ -41,7 +38,6 @@ chrome.action.onClicked.addListener(() => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'collect') {
-    status = request.type;
     axios(`${request.baseUrl.endsWith('/') ? request.baseUrl.slice(0, -1) : request.baseUrl}/api/v1/wizard/collect`, {
       data: {
         html: request.data,
@@ -53,52 +49,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     })
       .then(data => {
         sendResponse({ data: data });
-
-        if (sender.tab?.id) {
-          chrome.tabs.sendMessage(sender.tab.id, {
-            action: 'show-notification',
-            data: {
-              status: 'done',
-              result: data.resource_id || '',
-            },
-          });
-        }
-
-        if (status && queryed) {
-          chrome.runtime.sendMessage({ action: 'sync-status', type: status, data: data }, () => {
-            status = '';
-          });
-        }
       })
       .catch(error => {
         sendResponse({ error: error.toString() });
-
-        // Send error notification to content script
-        if (sender.tab?.id) {
-          chrome.tabs.sendMessage(sender.tab.id, {
-            action: 'show-notification',
-            data: {
-              status: 'error',
-              result: error.toString(),
-            },
-          });
-        }
-
-        if (status && queryed) {
-          chrome.runtime.sendMessage({ action: 'sync-status', type: status, error: error.toString() }, () => {
-            status = '';
-          });
-        }
-      })
-      .finally(() => {
-        status = '';
-        queryed = false;
       });
-  } else if (request.action === 'status') {
-    sendResponse({ data: status });
-    if (status) {
-      queryed = true;
-    }
+  } else if (request.action === 'fetch') {
+    axios(request.url, {
+      data: request.data,
+      query: request.query,
+    })
+      .then(data => {
+        sendResponse({ data: data });
+      })
+      .catch(error => {
+        sendResponse({ error: error.toString() });
+      });
   } else if (request.action === 'create-tab') {
     chrome.tabs.create({ url: request.url }, sendResponse);
   } else if (request.action === 'close-tab') {
@@ -107,16 +72,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
   } else if (request.action === 'open-options') {
     chrome.runtime.openOptionsPage();
-  } else if (request.action === 'check-token') {
-    chrome.cookies.get(
-      {
-        url: request.baseUrl,
-        name: 'token',
-      },
-      cookie => {
-        sendResponse({ hasToken: !!cookie });
-      },
-    );
   }
   return true;
 });
