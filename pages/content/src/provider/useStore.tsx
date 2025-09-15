@@ -5,7 +5,6 @@ export function useStore<T>() {
   const [result, onResult] = useState('');
   const [toolbar, onToolbar] = useState(false);
   const [status, onStatus] = useState(''); //'' | 'pending' | 'error' | 'done'
-  const [choosing, onChoosing] = useState(false);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
@@ -26,7 +25,5 @@ export function useStore<T>() {
     toolbar,
     onToolbar,
     onStatus,
-    choosing,
-    onChoosing,
   } as T;
 }

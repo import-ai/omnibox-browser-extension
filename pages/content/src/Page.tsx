@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { Provider } from './provider';
 import useApp from '@src/hooks/useApp';
-import { useOption } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
+import { useOption } from '@src/hooks/useOption';
 import { PopupContainer } from '@src/widgets/popup';
 import { ToolbarContainer } from '@src/widgets/toolbar';
 import { FeedbackContainer } from '@src/widgets/feedback';
@@ -17,7 +17,10 @@ export default function Page() {
   useEffect(() => {
     document.head.querySelectorAll('style').forEach(styleEl => {
       if (styleEl.textContent?.includes('[data-sonner-toaster]')) {
-        shadow.append(styleEl);
+        const toastStyleElement = document.createElement('style');
+        toastStyleElement.type = 'text/css';
+        toastStyleElement.innerText = styleEl.textContent;
+        shadow.append(toastStyleElement);
       }
     });
   }, [shadow]);

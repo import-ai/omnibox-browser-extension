@@ -1,30 +1,6 @@
 import 'webextension-polyfill';
 import { isInternalUrl } from './utils';
-import { axios } from '@extension/shared';
-
-// Update extension icon state based on current tab
-function updateIconState(tabId: number, url: string) {
-  chrome.action.setTitle({
-    tabId,
-    title: isInternalUrl(url) ? 'Cannot inject content script on this page' : 'Show Omnibox popup',
-  });
-}
-
-// Listen for tab updates to update icon state
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url) {
-    updateIconState(tabId, tab.url);
-  }
-});
-
-// Listen for tab activation to update icon state
-chrome.tabs.onActivated.addListener(activeInfo => {
-  chrome.tabs.get(activeInfo.tabId, tab => {
-    if (tab.url) {
-      updateIconState(activeInfo.tabId, tab.url);
-    }
-  });
-});
+import { axios, track } from '@extension/shared';
 
 // Handle action icon click to toggle popup in content script
 chrome.action.onClicked.addListener(() => {
@@ -64,6 +40,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch(error => {
         sendResponse({ error: error.toString() });
       });
+  } else if (request.action === 'storage') {
+    chrome.storage.sync
+      .get(request.args)
+      .then(data => {
+        sendResponse({ data: data });
+      })
+      .catch(error => {
+        sendResponse({ error: error.toString() });
+      });
+  } else if (request.action === 'set-storage') {
+    chrome.storage.sync
+      .set(request.args)
+      .then(data => {
+        sendResponse({ data: data });
+      })
+      .catch(error => {
+        sendResponse({ error: error.toString() });
+      });
+  } else if (request.action === 'remove-storage') {
+    chrome.storage.sync.remove(request.args).finally(sendResponse);
+  } else if (request.action === 'track') {
+    sendResponse();
+    track(request.name, request.payload);
   } else if (request.action === 'create-tab') {
     chrome.tabs.create({ url: request.url }, sendResponse);
   } else if (request.action === 'close-tab') {

@@ -1,9 +1,9 @@
 import useApp from '@src/hooks/useApp';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SettingIcon } from '@src/icon/setting';
 import { QuestionIcon } from '@src/icon/question';
 import { Button, Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@extension/ui';
-import { useTranslation } from 'react-i18next';
 
 export default function Header() {
   const { container } = useApp();
