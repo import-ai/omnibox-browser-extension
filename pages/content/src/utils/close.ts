@@ -1,5 +1,4 @@
 if (location.hostname.includes('omnibox.pro')) {
-  console.log(document.body);
   const observer = new MutationObserver(mutations => {
     for (const mutation of mutations) {
       if (mutation.type === 'attributes' && mutation.attributeName === 'class') {

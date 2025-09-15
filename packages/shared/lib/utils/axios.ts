@@ -1,4 +1,4 @@
-export default function axios(
+export function axios(
   url: string,
   opts?: {
     format?: 'json' | 'text' | 'blob';

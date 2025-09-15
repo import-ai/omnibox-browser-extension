@@ -24,6 +24,7 @@
     "@extension/shared": "workspace:*",
     "@extension/storage": "workspace:*",
     "@extension/ui": "workspace:*",
+    "copy-to-clipboard": "^3.3.3",
     "i18next": "^25.3.0",
     "lucide-react": "^0.507.0",
     "react-i18next": "^15.5.3",

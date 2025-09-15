@@ -1,14 +1,16 @@
+import { Card } from './Card';
 import { useEffect } from 'react';
-import { Toaster } from 'sonner';
-import CommonForm from './common-form';
-import SettingForm from './setting-form';
-import { initResources } from './utils';
+import { Common } from './common';
+import { Wrapper } from './Wrapper';
+import { Advance } from './advance';
+import { Toolbar } from './toolbar';
+import { Keyboard } from './keyboard';
 import { useOption } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
 
 export default function Page() {
-  const { data, onChange, refetch } = useOption();
   const { t } = useTranslation();
+  const { data, loading, onChange, refetch } = useOption();
 
   useEffect(() => {
     let state = data.theme;
@@ -19,28 +21,20 @@ export default function Page() {
     document.documentElement.classList.add(state);
   }, [data.theme]);
 
-  useEffect(() => {
-    const focusFN = () => {
-      initResources(refetch);
-    };
-    window.addEventListener('focus', focusFN);
-    return () => {
-      window.removeEventListener('focus', focusFN);
-    };
-  }, [refetch]);
-
   return (
-    <div className="container mx-auto py-8 px-4 max-w-2xl">
-      <Toaster />
-      <h1 className="text-2xl font-bold mb-8">{t('setting_title')}</h1>
-      <div className="mb-10">
-        <h2 className="text-lg text-gray-500 mb-4">{t('setting')}</h2>
-        <SettingForm data={data} onChange={onChange} refetch={refetch} />
-      </div>
-      <div>
-        <h2 className="text-lg text-gray-500 mb-4">{t('common')}</h2>
-        <CommonForm data={data} onChange={onChange} />
-      </div>
-    </div>
+    <Wrapper refetch={refetch} namespaceId={data.namespaceId} baseUrl={loading ? '' : data.apiBaseUrl}>
+      <Card title={t('common')}>
+        <Common loading={loading} data={data} onChange={onChange} />
+      </Card>
+      <Card title={t('toolbar_settings')}>
+        <Toolbar loading={loading} data={data} onChange={onChange} refetch={refetch} />
+      </Card>
+      <Card title={t('keyboard_settings')}>
+        <Keyboard loading={loading} data={data} onChange={onChange} refetch={refetch} />
+      </Card>
+      <Card title={t('setting')}>
+        <Advance loading={loading} data={data} onChange={onChange} refetch={refetch} />
+      </Card>
+    </Wrapper>
   );
 }

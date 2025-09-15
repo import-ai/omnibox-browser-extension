@@ -1,4 +1,4 @@
-export default function extPage(url = location.href) {
+export function extPage(url = location.href) {
   return (
     url.startsWith('chrome') ||
     url.startsWith('edge') ||

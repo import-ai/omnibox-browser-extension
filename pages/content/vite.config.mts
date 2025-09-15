@@ -19,7 +19,7 @@ export default withPageConfig({
       name: 'ContentScript',
       fileName: 'index',
       formats: ['iife'],
-      entry: resolve(srcDir, 'index.ts'),
+      entry: resolve(srcDir, 'index.tsx'),
     },
     outDir: resolve(rootDir, '..', '..', 'dist', 'content'),
   },

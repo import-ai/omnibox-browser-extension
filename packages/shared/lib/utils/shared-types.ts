@@ -15,6 +15,18 @@ export interface Storage {
   resourceId: string;
   language: Language;
   theme: Theme;
+  audioEnabled?: boolean;
+  sectionEnabled?: boolean;
+  selectionTextEnabled?: boolean;
+  disabledSites?: Array<{
+    host: string;
+    icon: string;
+  }>;
+  keyboardShortcuts?: {
+    saveSection?: string;
+    activation?: string;
+    save?: string;
+  };
 }
 
 export type Permission = 'no_access' | 'can_view' | 'can_comment' | 'can_edit' | 'full_access';
@@ -22,7 +34,7 @@ export type Permission = 'no_access' | 'can_view' | 'can_comment' | 'can_edit' |
 export interface User extends IBase {
   id: string;
   email: string;
-  username: string;
+  username?: string;
   password?: string;
   password_repeat?: string;
 }
