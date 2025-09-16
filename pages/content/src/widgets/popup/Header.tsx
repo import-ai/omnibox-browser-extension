@@ -5,14 +5,19 @@ import { SettingIcon } from '@src/icon/setting';
 import { QuestionIcon } from '@src/icon/question';
 import { Button, Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@extension/ui';
 
-export default function Header() {
+interface IProps {
+  baseUrl: string;
+}
+
+export default function Header(props: IProps) {
+  const { baseUrl } = props;
   const { container } = useApp();
   const [target, onTarget] = useState<HTMLElement | null>(null);
   const { t } = useTranslation();
   const handleFeedback = () => {
     chrome.runtime.sendMessage({
       action: 'create-tab',
-      url: 'xxx/feedback',
+      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/feedback`,
     });
   };
   const handleSetting = () => {

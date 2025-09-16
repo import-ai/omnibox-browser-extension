@@ -1,5 +1,5 @@
 import { ChooseResource } from './Choose';
-import { useState, useEffect, useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { each } from '@extension/shared';
 import type { Resource } from '@extension/shared';
 import { ChevronDown, LoaderCircle } from 'lucide-react';
@@ -19,13 +19,12 @@ export function Resource(props: IProps) {
   const { container, baseUrl, loading, namespaceId, resourceId, onChange } = props;
   const { t } = useTranslation();
   const [open, onOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [fetching, onFetching] = useState(false);
   const [data, onData] = useState<Resource>({
     id: '',
     name: '',
   });
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
   const handleOpen = () => {
     onOpen(true);
   };
@@ -33,49 +32,15 @@ export function Resource(props: IProps) {
     onChange(val, key);
     onOpen(false);
   };
-  const handleClose = () => {
-    onOpen(false);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!dropdownRef.current) return;
-
-      const rect = dropdownRef.current.getBoundingClientRect();
-
-      const isInside =
-        event.clientX >= rect.left &&
-        event.clientX <= rect.right &&
-        event.clientY >= rect.top &&
-        event.clientY <= rect.bottom;
-
-      if (!isInside) {
-        handleClose();
-      }
-    };
-
-    if (open) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [open]);
 
   useEffect(() => {
     if (loading || !baseUrl || !namespaceId || !resourceId) {
-      onData({
-        id: '',
-        name: '',
-      });
       return;
     }
     onFetching(true);
     chrome.runtime.sendMessage(
       {
         action: 'fetch',
-        query: { namespace_id: namespaceId },
         url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/root`,
       },
       root => {
@@ -113,7 +78,33 @@ export function Resource(props: IProps) {
         );
       },
     );
-  }, [loading, baseUrl, namespaceId, resourceId]);
+  }, [t, loading, baseUrl, namespaceId, resourceId]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!dropdownRef.current) return;
+
+      const rect = dropdownRef.current.getBoundingClientRect();
+
+      const isInside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+
+      if (!isInside) {
+        onOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open]);
 
   return (
     <DropdownMenu open={open}>
@@ -132,14 +123,16 @@ export function Resource(props: IProps) {
         side="bottom"
         align="end"
         container={container}
-        className="rounded-[12px] border-none max-w-[200px]">
-        <ChooseResource
-          loading={loading}
-          baseUrl={baseUrl}
-          onChange={handleChange}
-          namespaceId={namespaceId}
-          resourceId={resourceId}
-        />
+        className="rounded-[12px] border-none w-[200px] min-w-[200px]">
+        {open && (
+          <ChooseResource
+            loading={loading}
+            baseUrl={baseUrl}
+            onChange={handleChange}
+            namespaceId={namespaceId}
+            resourceId={resourceId}
+          />
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

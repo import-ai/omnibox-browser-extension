@@ -395,13 +395,13 @@ importers:
         version: 3.3.3
       i18next:
         specifier: ^25.3.0
-        version: 25.3.0(typescript@5.8.1-rc)
+        version: 25.3.0
       lucide-react:
         specifier: ^0.507.0
         version: 0.507.0(react@19.0.0)
       react-i18next:
         specifier: ^15.5.3
-        version: 15.5.3(i18next@25.3.0(typescript@5.8.1-rc))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.8.1-rc)
+        version: 15.5.3(i18next@25.3.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       sonner:
         specifier: ^2.0.3
         version: 2.0.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -7189,6 +7189,10 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.27.6
 
+  i18next@25.3.0:
+    dependencies:
+      '@babel/runtime': 7.27.6
+
   i18next@25.3.0(typescript@5.8.1-rc):
     dependencies:
       '@babel/runtime': 7.27.6
@@ -7946,6 +7950,15 @@ snapshots:
     optionalDependencies:
       react-dom: 19.0.0(react@19.0.0)
       typescript: 5.8.1-rc
+
+  react-i18next@15.5.3(i18next@25.3.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      '@babel/runtime': 7.27.6
+      html-parse-stringify: 3.0.1
+      i18next: 25.3.0
+      react: 19.0.0
+    optionalDependencies:
+      react-dom: 19.0.0(react@19.0.0)
 
   react-is@16.13.1: {}
 

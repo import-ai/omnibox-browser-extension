@@ -1,5 +1,5 @@
-import { Feedback } from './Feedback';
 import { Wrapper } from './Wrapper';
+import { Notification } from './Notification';
 import type { Storage } from '@extension/shared';
 import { useAction } from '@src/provider/useAction';
 
@@ -17,7 +17,7 @@ export function FeedbackContainer(props: IProps) {
 
   return (
     <Wrapper>
-      {status && <Feedback data={data} status={status} onStatus={onStatus} result={result} onResult={onResult} />}
+      {status && <Notification data={data} status={status} onStatus={onStatus} result={result} onResult={onResult} />}
     </Wrapper>
   );
 }

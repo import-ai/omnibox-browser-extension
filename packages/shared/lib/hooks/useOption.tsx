@@ -19,7 +19,7 @@ export function useOption() {
     resourceId: '',
     theme: 'light',
     language: detectBrowserLanguage(),
-    apiBaseUrl: 'https://omnibox.pro', // 默认使用 omnibox.pro
+    apiBaseUrl: 'https://www.omnibox.pro', // 默认使用 omnibox.pro
     audioEnabled: true, // 默认开启声音效果
     disabledSites: [],
     selectionTextEnabled: true,
@@ -62,7 +62,7 @@ export function useOption() {
     return () => {
       window.removeEventListener('focus', refetch);
     };
-  }, []);
+  }, [refetch]);
 
   return { data, loading, refetch, onChange } as Response;
 }

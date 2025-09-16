@@ -9,7 +9,7 @@ declare global {
 export default function zIndex() {
   const zIndex = document._zindex;
   if (isNumber(zIndex)) {
-    return zIndex;
+    return zIndex + 1;
   } else {
     let value = 0;
     document.body.querySelectorAll('*').forEach(item => {

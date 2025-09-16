@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 export function useStore<T>() {
   const [popup, onPopup] = useState(false);
   const [result, onResult] = useState('');
-  const [toolbar, onToolbar] = useState(false);
+  const [toolbar, onToolbar] = useState('');
+  const [disableTemp, onDisableTemp] = useState(false);
   const [status, onStatus] = useState(''); //'' | 'pending' | 'error' | 'done'
 
   useEffect(() => {
@@ -24,6 +25,8 @@ export function useStore<T>() {
     status,
     toolbar,
     onToolbar,
+    disableTemp,
+    onDisableTemp,
     onStatus,
   } as T;
 }

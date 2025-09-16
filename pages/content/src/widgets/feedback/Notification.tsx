@@ -14,7 +14,7 @@ interface IProps {
   onResult: (result: string) => void;
 }
 
-export function Feedback(props: IProps) {
+export function Notification(props: IProps) {
   const { data, status, result, onStatus, onResult } = props;
   const [deadline, setDeadline] = useState(3);
   const { t } = useTranslation();

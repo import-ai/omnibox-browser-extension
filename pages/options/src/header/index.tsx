@@ -7,10 +7,12 @@ interface IProps {
   profile?: boolean;
   refetch: () => void;
   namespaceId: string;
+  userRefetch?: () => void;
+  onChange?: (val: unknown, key?: string) => void;
 }
 
 export function Header(props: IProps) {
-  const { profile, ...prop } = props;
+  const { profile = true, ...prop } = props;
 
   return (
     <div

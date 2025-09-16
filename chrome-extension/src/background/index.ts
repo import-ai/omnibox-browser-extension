@@ -1,6 +1,11 @@
 import 'webextension-polyfill';
-import { isInternalUrl } from './utils';
+import { isInternalUrl, compress } from './utils';
 import { axios, track } from '@extension/shared';
+
+self.addEventListener('unhandledrejection', e => {
+  e.preventDefault();
+  console.log(e);
+});
 
 // Handle action icon click to toggle popup in content script
 chrome.action.onClicked.addListener(() => {
@@ -14,21 +19,28 @@ chrome.action.onClicked.addListener(() => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'collect') {
-    axios(`${request.baseUrl.endsWith('/') ? request.baseUrl.slice(0, -1) : request.baseUrl}/api/v1/wizard/collect`, {
-      data: {
-        html: request.data,
-        url: request.pageUrl,
-        title: request.pageTitle,
-        parentId: request.resourceId,
-        namespace_id: request.namespaceId,
-      },
-    })
-      .then(data => {
-        sendResponse({ data: data });
-      })
-      .catch(error => {
-        sendResponse({ error: error.toString() });
-      });
+    compress(request.data, 'gzip').then(compressedHtml => {
+      const formData = new FormData();
+      formData.append('url', request.pageUrl);
+      formData.append('title', request.pageTitle);
+      formData.append('parentId', request.resourceId);
+      formData.append('namespace_id', request.namespaceId);
+      formData.append('html', new Blob([compressedHtml], { type: 'application/gzip' }), 'html.gz');
+      axios(
+        `${request.baseUrl.endsWith('/') ? request.baseUrl.slice(0, -1) : request.baseUrl}/api/v1/wizard/collect/gzip`,
+        {
+          method: 'POST',
+          body: formData,
+          headers: {},
+        },
+      )
+        .then(data => {
+          sendResponse({ data: data });
+        })
+        .catch(error => {
+          sendResponse({ error: error.toString() });
+        });
+    });
   } else if (request.action === 'fetch') {
     axios(request.url, {
       data: request.data,

@@ -45,7 +45,7 @@ export default function Page() {
       <PopupContainer data={data} loading={loading} refetch={refetch} onChange={onChange} />
       <ToolbarContainer data={data} onChange={onChange} />
       <FeedbackContainer data={data} />
-      {data.sectionEnabled && <SectionContainer data={data} />}
+      {data.sectionEnabled && <SectionContainer data={data} onChange={onChange} />}
       <KeyboardHandler data={data} />
     </Provider>
   );

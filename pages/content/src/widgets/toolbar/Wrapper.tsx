@@ -1,6 +1,7 @@
-import { hasSelection } from './utils';
 import zIndex from '@src/utils/zindex';
+import useApp from '@src/hooks/useApp';
 import { useState, useEffect } from 'react';
+import { getSelectionText, clearSelection } from './utils';
 
 interface Position {
   x: number;
@@ -9,37 +10,55 @@ interface Position {
 
 interface IProps {
   popup: boolean;
-  toolbar: boolean;
-  onToolbar: (toolbar: boolean) => void;
+  toolbar: string;
+  onToolbar: (toolbar: string) => void;
+  selection: string;
+  onSelection: (selection: string) => void;
   children: React.ReactNode;
-  disableTemp: boolean;
 }
 
 export function Wrapper(props: IProps) {
-  const { popup, toolbar, onToolbar, children, disableTemp } = props;
+  const { popup, toolbar, onToolbar, children, selection, onSelection } = props;
+  const { shadow } = useApp();
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
+  const zIndexValue = zIndex();
+  const hanldeClose = () => {
+    onToolbar('');
+    onSelection('');
+    clearSelection();
+  };
 
   useEffect(() => {
     const handleScroll = () => {
       if (!open) {
         return;
       }
-      onToolbar(false);
+      onToolbar('');
     };
     const handleMouseUp = (event: MouseEvent) => {
-      if (disableTemp) {
-        return;
-      }
+      const selectionText = getSelectionText();
       // Show toolbar only when mouse is released and text is selected
-      if (hasSelection()) {
+      if (selectionText) {
         // Don't show toolbar if popup is visible
         if (popup) {
           return;
         }
-
-        // Use pageX/pageY to include scroll offset for absolute positioning
+        if (shadow.querySelector('.js-omnibox-overlay')) {
+          return;
+        }
         let x = event.pageX;
         let y = event.pageY;
+        const selection = window.getSelection();
+        if (selection) {
+          const range = selection.getRangeAt(0);
+          if (range) {
+            const rangeRect = range.getBoundingClientRect();
+            if (x < rangeRect.left || x > rangeRect.right) {
+              x = rangeRect.right + window.scrollX;
+              y = rangeRect.bottom + window.scrollY;
+            }
+          }
+        }
 
         // Basic edge adjustment to keep toolbar on screen
         const toolbarWidth = 70;
@@ -57,41 +76,42 @@ export function Wrapper(props: IProps) {
         }
 
         setPosition({ x, y });
-        onToolbar(true);
+        onToolbar(selectionText);
+        onSelection(selectionText);
       }
     };
-    const handleSelectionChange = () => {
-      // Hide toolbar when selection is cleared
-      if (!hasSelection()) {
-        onToolbar(false);
-      }
-    };
-
     window.addEventListener('scroll', handleScroll);
     document.addEventListener('mouseup', handleMouseUp);
-    document.addEventListener('selectionchange', handleSelectionChange);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('selectionchange', handleSelectionChange);
     };
-  }, [popup, disableTemp, toolbar, onToolbar]);
+  }, [popup, shadow, toolbar, onToolbar, onSelection]);
 
-  if (!toolbar) {
+  if (toolbar.length <= 0 || selection.length <= 0) {
     return null;
   }
 
   return (
-    <div
-      className={`js-toolbar absolute top-0 bottom-auto left-0 right-auto min-w-[70px] text-foreground bg-background rounded-[8px] shadow-[0px_4px_18px_0px_rgba(0,0,0,0.1)]`}
-      style={{
-        zIndex: zIndex(),
-        top: `${position.y}px`,
-        left: `${position.x}px`,
-        transform: 'translate(-50%, -100%)',
-      }}>
-      {children}
-    </div>
+    <>
+      <div
+        onClick={hanldeClose}
+        className="fixed left-0 top-0 w-full h-full"
+        style={{
+          zIndex: zIndexValue,
+        }}
+      />
+      <div
+        className={`js-toolbar absolute top-0 bottom-auto left-0 right-auto min-w-[70px] text-foreground bg-background rounded-[8px] shadow-[0px_4px_18px_0px_rgba(0,0,0,0.1)]`}
+        style={{
+          zIndex: zIndexValue + 1,
+          top: `${position.y}px`,
+          left: `${position.x}px`,
+          transform: 'translate(-50%, -100%)',
+        }}>
+        {children}
+      </div>
+    </>
   );
 }

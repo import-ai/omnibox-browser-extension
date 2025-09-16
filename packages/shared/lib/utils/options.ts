@@ -14,7 +14,7 @@ export function getOptions(response: Storage): Storage {
     disabledSites: Array.isArray(response.disabledSites) ? response.disabledSites : [],
     keyboardShortcuts: response.keyboardShortcuts || {
       activation: 'Alt+T',
-      save: 'Alt+Y',
+      save: 'Alt+S',
       saveSection: 'Alt',
     },
   };

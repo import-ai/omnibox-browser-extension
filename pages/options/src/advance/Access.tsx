@@ -1,3 +1,4 @@
+import { axios } from '@extension/shared';
 import { LazyInput } from '@extension/ui';
 import type { IProps } from '@src/types';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +7,12 @@ export default function Access(props: IProps) {
   const { data, onChange } = props;
   const { t } = useTranslation();
   const handleApiBaseUrlChange = (value: string) => {
-    onChange(value, 'apiBaseUrl');
+    onChange({
+      apiBaseUrl: value,
+      namespaceId: '',
+      resourceId: '',
+    });
+    axios(`${value.endsWith('/') ? value.slice(0, -1) : value}/api/v1/user/me`);
   };
 
   return (

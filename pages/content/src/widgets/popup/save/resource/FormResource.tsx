@@ -32,7 +32,12 @@ export default function FormResource(props: IProps) {
       )}>
       <div className="flex items-center gap-[8px]">
         <Folder className="size-4" />
-        <span className="text-[#171717] max-w-[150px] dark:text-white truncate">{name}</span>
+        <span
+          className={cn('text-[#171717] max-w-[128px] dark:text-white truncate', {
+            'max-w-[152px]': data.id !== resourceId,
+          })}>
+          {name}
+        </span>
       </div>
       {data.id === resourceId && <Check className="size-5 text-[#171717" />}
     </DropdownMenuItem>

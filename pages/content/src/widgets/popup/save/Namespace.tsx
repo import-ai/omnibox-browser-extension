@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useRef, useState, useEffect } from 'react';
 import type { Response, Namespace } from '@extension/shared';
 import { LoaderCircle, ChevronDown, Check } from 'lucide-react';
 import { cn, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@extension/ui';
@@ -13,23 +14,20 @@ interface IProps extends Omit<Response, 'data' | 'refetch'> {
 export function Namespace(props: IProps) {
   const { baseUrl, loading, namespaceId, onChange, container } = props;
   const [open, onOpen] = useState(false);
+  const { t } = useTranslation();
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [fetching, onFetching] = useState(false);
   const [switching, onSwitching] = useState('');
   const [data, onData] = useState<Namespace[]>([]);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const namespace = data.find(item => item.id === namespaceId);
   const handleOpen = () => {
     onOpen(true);
-  };
-  const handleClose = () => {
-    onOpen(false);
   };
   const handleChange = (itemId: string) => {
     onSwitching(itemId);
     chrome.runtime.sendMessage(
       {
         action: 'fetch',
-        query: { namespace_id: itemId },
         url: `${baseUrl}/api/v1/namespaces/${itemId}/root`,
       },
       response => {
@@ -40,8 +38,11 @@ export function Namespace(props: IProps) {
         }
         const privateData = response.data['private'];
         if (privateData) {
+          const uncategorizedFolder = privateData.children?.find(
+            (child: { id: string; name: string }) => child.name === 'Uncategorized' || child.name === '未分类',
+          );
           onChange({
-            resourceId: privateData.id,
+            resourceId: uncategorizedFolder ? uncategorizedFolder.id : privateData.id,
             namespaceId: itemId,
           });
         } else {
@@ -54,31 +55,6 @@ export function Namespace(props: IProps) {
       },
     );
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!dropdownRef.current) return;
-
-      const rect = dropdownRef.current.getBoundingClientRect();
-      const isInside =
-        event.clientX >= rect.left &&
-        event.clientX <= rect.right &&
-        event.clientY >= rect.top &&
-        event.clientY <= rect.bottom;
-
-      if (!isInside) {
-        handleClose();
-      }
-    };
-
-    if (open) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [open]);
 
   useEffect(() => {
     if (loading || !baseUrl) {
@@ -99,6 +75,31 @@ export function Namespace(props: IProps) {
       },
     );
   }, [loading, baseUrl]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!dropdownRef.current) return;
+
+      const rect = dropdownRef.current.getBoundingClientRect();
+      const isInside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+
+      if (!isInside) {
+        onOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open]);
 
   if (data.length <= 1) {
     return null;
@@ -121,7 +122,7 @@ export function Namespace(props: IProps) {
           ref={dropdownRef}
           side="bottom"
           align="end"
-          className="rounded-[12px] border-none max-w-[200px]"
+          className="no-scrollbar max-h-[344px] overflow-y-auto rounded-[12px] border-none w-[200px] min-w-[200px]"
           container={container}>
           {data.map(item => (
             <DropdownMenuItem
@@ -133,7 +134,12 @@ export function Namespace(props: IProps) {
                   'bg-gray-100 dark:bg-gray-400': item.id === namespaceId,
                 },
               )}>
-              <span className="text-[#171717] dark:text-white">{item.name || 'untitled'}</span>
+              <span
+                className={cn('text-[#171717] dark:text-white max-w-[150px] truncate', {
+                  'max-w-[176px]': item.id !== namespaceId,
+                })}>
+                {item.name || 'untitled'}
+              </span>
               {switching === item.id ? (
                 <LoaderCircle className="size-5 text-[#171717 transition-transform animate-spin" />
               ) : (
@@ -143,7 +149,7 @@ export function Namespace(props: IProps) {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-      <span className="text-sm text-[#8F959E]">的</span>
+      <span className="text-sm text-[#8F959E]">{t('s')}</span>
     </>
   );
 }

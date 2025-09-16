@@ -16,7 +16,7 @@ export function useOption() {
     resourceId: '',
     theme: 'light',
     language: detectBrowserLanguage(),
-    apiBaseUrl: 'https://omnibox.pro',
+    apiBaseUrl: 'https://www.omnibox.pro',
     disabledSites: [],
     selectionTextEnabled: true,
     keyboardShortcuts: {
