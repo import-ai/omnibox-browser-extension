@@ -1,9 +1,12 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@extension/ui';
 import { BoxIcon } from '@src/icon/box';
-import { useAction } from '@src/provider/useAction';
-import type { Storage } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
+import type { Storage } from '@extension/shared';
+import { useAction } from '@src/provider/useAction';
+import { getElementType, getElementContent } from './utils';
+import { useState, useEffect, useRef, useCallback } from 'react';
+
+const DRAG_THRESHOLD = 5;
 
 export interface ISectionSelectorProps {
   data: Storage;
@@ -27,15 +30,14 @@ interface DragSelection {
 
 export function SectionSelector(props: ISectionSelectorProps) {
   const { data, onCancel } = props;
-  const { onStatus, onResult } = useAction();
   const { t } = useTranslation();
+  const elementIdCounter = useRef(0);
+  const { onStatus, onResult } = useAction();
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [hoveredElement, setHoveredElement] = useState<HTMLElement | null>(null);
   const [selectedElements, setSelectedElements] = useState<SelectedElement[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
   const [dragSelection, setDragSelection] = useState<DragSelection | null>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
-  const elementIdCounter = useRef(0);
-  const DRAG_THRESHOLD = 5;
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -49,43 +51,6 @@ export function SectionSelector(props: ISectionSelectorProps) {
       document.removeEventListener('keydown', handleEscape);
     };
   }, [onCancel]);
-
-  const getElementType = (element: HTMLElement): 'text' | 'image' | 'link' | null => {
-    if (element.tagName === 'IMG') {
-      return 'image';
-    }
-    if (element.tagName === 'A' || element.closest('a')) {
-      return 'link';
-    }
-    if (element.textContent && element.textContent.trim().length > 0) {
-      const tagName = element.tagName.toLowerCase();
-      if (
-        ['p', 'div', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'article', 'section', 'li', 'td', 'th'].includes(
-          tagName,
-        )
-      ) {
-        return 'text';
-      }
-    }
-    return null;
-  };
-
-  const getElementContent = (element: HTMLElement, type: 'text' | 'image' | 'link'): string => {
-    switch (type) {
-      case 'image': {
-        const img = element as HTMLImageElement;
-        return img.alt || img.src || t('default_image');
-      }
-      case 'link': {
-        const linkElement = element.tagName === 'A' ? element : element.closest('a');
-        return linkElement?.textContent?.trim() || linkElement?.getAttribute('href') || t('default_link');
-      }
-      case 'text':
-        return element.textContent?.trim() || '';
-      default:
-        return '';
-    }
-  };
 
   const isElementSelectable = useCallback((element: HTMLElement): boolean => {
     const type = getElementType(element);
@@ -134,11 +99,23 @@ export function SectionSelector(props: ISectionSelectorProps) {
         return null;
       }
 
-      const filteredElements = selectableElements.filter(element => {
-        return !selectableElements.some(other => other !== element && element.contains(other));
-      });
+      // Find the outermost element that doesn't have any selectable parent
+      for (const element of selectableElements) {
+        let hasSelectableParent = false;
 
-      return filteredElements.length > 0 ? filteredElements[0] : selectableElements[0];
+        for (const otherElement of selectableElements) {
+          if (otherElement !== element && otherElement.contains(element)) {
+            hasSelectableParent = true;
+            break;
+          }
+        }
+
+        if (!hasSelectableParent) {
+          return element;
+        }
+      }
+
+      return selectableElements[0];
     },
     [isElementSelectable],
   );
@@ -343,12 +320,9 @@ export function SectionSelector(props: ISectionSelectorProps) {
 
   return (
     <>
-      {/* ESC 退出提醒 */}
       <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-90 text-white px-3 py-1 rounded text-sm z-[999999] pointer-events-none">
         {t('esc_to_exit')}
       </div>
-
-      {/* 透明全屏事件捕获层 - 无背景 */}
       <div
         ref={overlayRef}
         className="fixed inset-0 z-[999999]"
@@ -376,8 +350,6 @@ export function SectionSelector(props: ISectionSelectorProps) {
         tabIndex={-1}
         role="presentation"
       />
-
-      {/* 悬停高亮 */}
       {hoveredElement && !isDragging && (
         <div
           className="absolute border-2 border-blue-400 bg-blue-400 bg-opacity-20 pointer-events-none"
@@ -389,8 +361,6 @@ export function SectionSelector(props: ISectionSelectorProps) {
           }}
         />
       )}
-
-      {/* 已选中元素高亮 */}
       {selectedElements.map(selected => (
         <div
           key={selected.id}
@@ -403,8 +373,6 @@ export function SectionSelector(props: ISectionSelectorProps) {
           }}
         />
       ))}
-
-      {/* 拖拽选择框 */}
       {isDragging && dragSelection && (
         <div
           className="absolute border-2 border-purple-500 bg-purple-500 bg-opacity-10 pointer-events-none"
@@ -416,8 +384,6 @@ export function SectionSelector(props: ISectionSelectorProps) {
           }}
         />
       )}
-
-      {/* Cubox风格的简洁操作按钮 */}
       {selectedElements.length > 0 && (
         <div
           className="fixed z-[1000000]"

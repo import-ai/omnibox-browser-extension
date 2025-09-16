@@ -5,8 +5,8 @@ import Collect from './Collect';
 import { useEffect } from 'react';
 import { Wrapper } from './Wrapper';
 import { Section } from './Section';
+import { useUser } from '@src/hooks/useUser';
 import type { Response } from '@extension/shared';
-import { track, useUser } from '@extension/shared';
 import { useAction } from '@src/provider/useAction';
 
 export function PopupContainer(props: Response) {
@@ -15,9 +15,13 @@ export function PopupContainer(props: Response) {
   const { user } = useUser({ baseUrl: loading ? '' : data.apiBaseUrl });
 
   useEffect(() => {
-    track('open_chrome_popup', {
-      once: true,
-      section: 'ext_popup',
+    chrome.runtime.sendMessage({
+      action: 'track',
+      name: 'open_chrome_popup',
+      payload: {
+        once: true,
+        section: 'ext_popup',
+      },
     });
   }, []);
 

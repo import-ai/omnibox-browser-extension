@@ -1,4 +1,3 @@
-import { Choose } from './Choose';
 import { Feedback } from './Feedback';
 import { Wrapper } from './Wrapper';
 import type { Storage } from '@extension/shared';
@@ -10,18 +9,15 @@ export interface IProps {
 
 export function FeedbackContainer(props: IProps) {
   const { data } = props;
-  const { status, result, onStatus, onResult, choosing, onChoosing } = useAction();
+  const { status, result, onStatus, onResult } = useAction();
 
-  if (!status && !choosing) {
+  if (!status) {
     return null;
   }
 
   return (
     <Wrapper>
-      <div>
-        {status && <Feedback data={data} status={status} onStatus={onStatus} result={result} onResult={onResult} />}
-        {choosing && <Choose choosing={choosing} onChoosing={onChoosing} />}
-      </div>
+      {status && <Feedback data={data} status={status} onStatus={onStatus} result={result} onResult={onResult} />}
     </Wrapper>
   );
 }

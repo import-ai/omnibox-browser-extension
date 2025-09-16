@@ -16,6 +16,10 @@ export function SectionContainer(props: IProps) {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (selecting) {
+        return;
+      }
+
       // Prevent handling keyboard events on input elements
       const target = e.target as HTMLElement;
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true') {
