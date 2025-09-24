@@ -1,8 +1,7 @@
 import useApp from '@src/hooks/useApp';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SettingIcon } from '@src/icon/setting';
-import { QuestionIcon } from '@src/icon/question';
+import { Bolt, MessageCircleWarning } from 'lucide-react';
 import { Button, Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@extension/ui';
 
 interface IProps {
@@ -46,7 +45,7 @@ export default function Header(props: IProps) {
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <Button size="icon" variant="ghost" className="size-[20px]" onClick={handleFeedback}>
-                <QuestionIcon />
+                <MessageCircleWarning color="#8F959E" />
               </Button>
             </TooltipTrigger>
             <TooltipContent container={target}>{t('feedback')}</TooltipContent>
@@ -54,7 +53,7 @@ export default function Header(props: IProps) {
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <Button size="icon" variant="ghost" className="size-[20px]" onClick={handleSetting}>
-                <SettingIcon />
+                <Bolt color="#8F959E" />
               </Button>
             </TooltipTrigger>
             <TooltipContent container={target}>{t('settings')}</TooltipContent>
