@@ -2,8 +2,8 @@ import FormResource from './FormResource';
 import { useState, useEffect } from 'react';
 import { ChooseWrapper } from './ChooseWrapper';
 import type { Resource } from '@extension/shared';
-import { User, Search, LoaderCircle } from 'lucide-react';
-import { LazyInput, DropdownMenuSeparator, DropdownMenuItem } from '@extension/ui';
+import { User, Check, Search, LoaderCircle } from 'lucide-react';
+import { cn, LazyInput, DropdownMenuSeparator, DropdownMenuItem } from '@extension/ui';
 import { useTranslation } from 'react-i18next';
 
 interface IProps {
@@ -20,14 +20,22 @@ export function ChooseResource(props: IProps) {
   const [search, onSearch] = useState('');
   const [fetching, onFetching] = useState(false);
   const [data, onData] = useState<{
+    privateRootId: string;
+    teamRootId: string;
     private: Array<Resource>;
     team: Array<Resource>;
   }>({
+    privateRootId: '',
+    teamRootId: '',
     private: [],
     team: [],
   });
   const teamData = search ? data.team.filter(item => item.name?.includes(search)) : data.team;
   const privateData = search ? data.private.filter(item => item.name?.includes(search)) : data.private;
+  const handlePrivateClick = () => {
+    onChange(data.privateRootId, 'resourceId');
+    onSearch('');
+  };
 
   useEffect(() => {
     if (loading || !baseUrl || !namespaceId) {
@@ -37,7 +45,6 @@ export function ChooseResource(props: IProps) {
     chrome.runtime.sendMessage(
       {
         action: 'fetch',
-        query: { namespace_id: namespaceId },
         url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/root`,
       },
       response => {
@@ -45,10 +52,17 @@ export function ChooseResource(props: IProps) {
         if (!response.data) {
           return;
         }
+        let teamRootId = '';
+        let privateRootId = '';
         const items: Array<Resource> = [];
         const team: Array<Resource> = [];
         Object.keys(response.data).forEach(spaceType => {
           const item = response.data[spaceType];
+          if (spaceType === 'private') {
+            privateRootId = item.id;
+          } else {
+            teamRootId = item.id;
+          }
           if (Array.isArray(item.children) && item.children.length > 0) {
             if (spaceType === 'private') {
               items.push(...item.children);
@@ -57,7 +71,7 @@ export function ChooseResource(props: IProps) {
             }
           }
         });
-        onData({ private: items, team });
+        onData({ private: items, team, teamRootId, privateRootId });
       },
     );
   }, [baseUrl, loading, namespaceId]);
@@ -78,23 +92,30 @@ export function ChooseResource(props: IProps) {
         />
       </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <div className="max-h-[291px] overflow-y-auto">
-        {privateData.length > 0 && (
-          <>
-            <DropdownMenuItem className="py-2 gap-[6px] rounded-[8px] cursor-pointer dark:text-white hover:bg-gray-100 dark:hover:bg-gray-400">
-              <User />
-              <span className="text-[#171717] dark:text-white">{t('personal')}</span>
-            </DropdownMenuItem>
-            {privateData.map(item => (
-              <FormResource data={item} key={item.id} onSearch={onSearch} onChange={onChange} resourceId={resourceId} />
-            ))}
-          </>
-        )}
+      <div className="max-h-[291px] overflow-y-auto no-scrollbar ">
+        <DropdownMenuItem
+          onClick={handlePrivateClick}
+          className={cn(
+            'py-2 gap-[6px] rounded-[8px] justify-between cursor-pointer dark:text-white hover:bg-gray-100 dark:hover:bg-gray-400',
+            {
+              'bg-gray-100 dark:bg-gray-400': data.privateRootId === resourceId,
+            },
+          )}>
+          <div className="flex items-center gap-[8px]">
+            <User className="size-4" />
+            <span className="text-[#171717] dark:text-white">{t('personal')}</span>
+          </div>
+          {data.privateRootId === resourceId && <Check className="size-5 text-[#171717" />}
+        </DropdownMenuItem>
+        {privateData.map(item => (
+          <FormResource data={item} key={item.id} onSearch={onSearch} onChange={onChange} resourceId={resourceId} />
+        ))}
         <ChooseWrapper
           baseUrl={baseUrl}
           namespaceId={namespaceId}
           resourceId={resourceId}
           onSearch={onSearch}
+          teamRootId={data.teamRootId}
           data={teamData}
           onChange={onChange}
         />

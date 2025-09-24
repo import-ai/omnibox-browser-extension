@@ -7,8 +7,8 @@ export interface State {
   onResult: (result: string) => void;
   status: Status;
   onStatus: (status: Status) => void;
-  choosing: boolean;
-  onChoosing: (choosing: boolean) => void;
-  toolbar: boolean;
-  onToolbar: (toolbar: boolean) => void;
+  toolbar: string;
+  onToolbar: (toolbar: string) => void;
+  disableTemp: boolean;
+  onDisableTemp: (disableTemp: boolean) => void;
 }

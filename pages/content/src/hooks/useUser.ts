@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 interface IProps {
   baseUrl: string;
@@ -10,7 +10,7 @@ export function useUser(props: IProps) {
   const [user, setUser] = useState<{ id: string; username?: string }>({
     id: '',
   });
-  const refetch = () => {
+  const refetch = useCallback(() => {
     if (!baseUrl) {
       return;
     }
@@ -21,15 +21,25 @@ export function useUser(props: IProps) {
       },
       response => {
         setLoading(false);
+        if (response.error && response.error.includes('401')) {
+          setUser({ id: '' });
+          return;
+        }
         if (!response.data) {
           return;
         }
         setUser(response.data);
       },
     );
-  };
+  }, [baseUrl]);
 
-  useEffect(refetch, [baseUrl]);
+  useEffect(() => {
+    window.addEventListener('focus', refetch);
+    refetch();
+    return () => {
+      window.removeEventListener('focus', refetch);
+    };
+  }, [refetch]);
 
   return { user, loading, refetch };
 }

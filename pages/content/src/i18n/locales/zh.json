@@ -1,6 +1,4 @@
 {
-  "choose_start": "划选鼠标选择区域",
-  "choose_cancel": "取消划选",
   "pending": "正在处理中",
   "copy_success": "复制成功",
   "copy_failed": "复制失败",
@@ -19,6 +17,7 @@
   "login_required": "登录后即可使用",
   "login_now": "立即登录",
   "save_to": "保存到",
+  "s": "的",
   "feedback": "意见反馈",
   "loading": "加载中...",
   "error_occurred": "发生错误",
@@ -28,5 +27,6 @@
   "hold_option_tooltip": "按住⌥键可选中指定区域内容",
   "default_image": "图片",
   "default_link": "链接",
-  "search_placeholder": "搜索"
+  "search_placeholder": "搜索",
+  "saving": "保存中..."
 }

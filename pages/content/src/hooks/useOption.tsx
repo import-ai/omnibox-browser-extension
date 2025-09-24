@@ -1,9 +1,6 @@
+import type { Storage } from '@extension/shared';
 import { useState, useEffect, useCallback } from 'react';
-
-import { getOptions } from '../utils/options.js';
-
-import type { Storage } from '../utils/shared-types.js';
-import { detectBrowserLanguage } from '../utils/detect-language.js';
+import { getOptions, detectBrowserLanguage } from '@extension/shared';
 
 export interface Response {
   data: Storage;
@@ -19,8 +16,7 @@ export function useOption() {
     resourceId: '',
     theme: 'light',
     language: detectBrowserLanguage(),
-    apiBaseUrl: 'https://www.omnibox.pro', // 默认使用 omnibox.pro
-    audioEnabled: true, // 默认开启声音效果
+    apiBaseUrl: 'https://www.omnibox.pro',
     disabledSites: [],
     selectionTextEnabled: true,
     keyboardShortcuts: {
@@ -30,30 +26,41 @@ export function useOption() {
     },
   });
   const refetch = useCallback(() => {
-    chrome.storage.sync.get(
-      [
-        'apiBaseUrl',
-        'namespaceId',
-        'resourceId',
-        'language',
-        'theme',
-        'audioEnabled',
-        'sectionEnabled',
-        'selectionTextEnabled',
-        'disabledSites',
-        'keyboardShortcuts',
-      ],
-      (response: Storage) => {
-        onData(getOptions(response));
+    chrome.runtime.sendMessage(
+      {
+        action: 'storage',
+        args: [
+          'apiBaseUrl',
+          'namespaceId',
+          'resourceId',
+          'language',
+          'theme',
+          'sectionEnabled',
+          'selectionTextEnabled',
+          'disabledSites',
+          'keyboardShortcuts',
+        ],
+      },
+      (response: { data: Storage }) => {
+        if (!response.data) {
+          return;
+        }
+        onData(getOptions(response.data));
         onLoading(false);
       },
     );
   }, []);
   const onChange = useCallback((val: unknown, key?: string) => {
     const newVal = key ? { [key]: val } : (val as { [index: string]: unknown });
-    chrome.storage.sync.set(newVal).then(() => {
-      onData(prev => ({ ...prev, ...newVal }));
-    });
+    chrome.runtime.sendMessage(
+      {
+        action: 'set-storage',
+        args: newVal,
+      },
+      () => {
+        onData(prev => ({ ...prev, ...newVal }));
+      },
+    );
   }, []);
 
   useEffect(() => {

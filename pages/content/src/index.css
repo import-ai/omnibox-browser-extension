@@ -2,7 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-body,
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
 :host {
   margin: 0;
   font-size: 16px;

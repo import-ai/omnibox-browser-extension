@@ -1,62 +1,36 @@
-import { useState, useEffect } from 'react';
-import { SectionSelector } from './SectionSelector';
-import { parseKeyboardEvent, createShortcut } from '@extension/shared';
+import { Wrapper } from './wrapper';
+import { Toolbar } from './toolbar';
+import { useContext } from './useContext';
+import { ActiveElement } from './element';
 import type { Storage } from '@extension/shared';
 
 export interface IProps {
   data: Storage;
+  onChange: (val: unknown, key?: string) => void;
 }
 
 export function SectionContainer(props: IProps) {
-  const { data } = props;
-  const [selecting, setSelecting] = useState(false);
-  const handleCancel = () => {
-    setSelecting(false);
-  };
+  const { cursor, selected, point, onDestory } = useContext();
+  const merged = selected.find(item => !!item.text);
+  const selectedText = merged
+    ? merged.text || ''
+    : selected
+        .filter(item => item.active)
+        .map(item => item.element.outerHTML)
+        .join('');
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Prevent handling keyboard events on input elements
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true') {
-        return;
-      }
-
-      const { modifierKeys, mainKey } = parseKeyboardEvent(e);
-
-      const shortcuts = data.keyboardShortcuts;
-      if (!shortcuts || !shortcuts.saveSection) {
-        return;
-      }
-
-      // Only handle if we have a complete shortcut match
-      if (mainKey) {
-        const { raw } = createShortcut(modifierKeys, mainKey);
-        if (raw === shortcuts.saveSection && !selecting) {
-          e.preventDefault();
-          setSelecting(true);
-          return;
-        }
-      } else if (e.key === 'Alt' && modifierKeys.length === 1 && modifierKeys[0] === 'Alt') {
-        // Only trigger on single Alt if the configured shortcut is exactly 'Alt'
-        if (shortcuts.saveSection === 'Alt' && !selecting) {
-          e.preventDefault();
-          setSelecting(true);
-          return;
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [selecting, data.keyboardShortcuts]);
-
-  if (!selecting) {
+  if (selected.length <= 0 && !cursor) {
     return null;
   }
 
-  return <SectionSelector data={data} onCancel={handleCancel} />;
+  return (
+    <>
+      <Wrapper active={cursor}>
+        {selected.map(item => (
+          <ActiveElement {...item} key={item.id} />
+        ))}
+      </Wrapper>
+      <Toolbar {...props} point={point} value={selectedText} onDestory={onDestory} />
+    </>
+  );
 }

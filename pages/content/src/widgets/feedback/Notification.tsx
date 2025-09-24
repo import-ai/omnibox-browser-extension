@@ -14,7 +14,7 @@ interface IProps {
   onResult: (result: string) => void;
 }
 
-export function Feedback(props: IProps) {
+export function Notification(props: IProps) {
   const { data, status, result, onStatus, onResult } = props;
   const [deadline, setDeadline] = useState(3);
   const { t } = useTranslation();
@@ -24,16 +24,6 @@ export function Feedback(props: IProps) {
       url: `${data.apiBaseUrl.endsWith('/') ? data.apiBaseUrl.slice(0, -1) : data.apiBaseUrl}/${data.namespaceId}/${result}`,
     });
   };
-
-  useEffect(() => {
-    if (status !== 'done' || !data.audioEnabled) {
-      return;
-    }
-    const audio = new Audio();
-    audio.src =
-      'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjiR1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjiR1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjiR1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjiR1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjiR1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjiR1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjiR1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjiR1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjiR1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmE=';
-    audio.play();
-  }, [status, data.audioEnabled]);
 
   useEffect(() => {
     if (status !== 'done') {
@@ -56,31 +46,31 @@ export function Feedback(props: IProps) {
 
   if (status === 'pending') {
     return (
-      <div className="flex text-sm font-medium gap-2 items-center px-[16px] py-[8px]">
+      <div className="flex text-sm gap-2 items-center px-[16px] py-[8px] bg-[#171717] rounded-[16px]">
         <Loader2 className="animate-spin" />
-        <span>{t('pending')}</span>
+        <span className="text-sm text-white">{t('pending')}</span>
       </div>
     );
   }
 
   if (status === 'error') {
     return (
-      <div className="flex text-sm gap-2 items-center px-[16px] py-[8px] text-red-600">
+      <div className="flex text-sm gap-2 items-center px-[16px] py-[8px] bg-[#171717] rounded-[16px] text-red-600">
         <AlertCircleIcon className="size-4" />
-        <span>{result}</span>
+        <span className="text-sm text-white">{result}</span>
       </div>
     );
   }
 
   return (
-    <div className="text-sm font-medium flex gap-2 items-center justify-between px-[16px] py-[8px]">
+    <div className="flex gap-2 items-center justify-between px-[16px] py-[8px] bg-[#171717] rounded-[16px]">
       <div className="flex items-center gap-[8px]">
         <SuccessIcon />
-        <span>{t('save_success_message')}</span>
+        <span className="text-sm text-white">{t('save_success_message')}</span>
       </div>
       <Button
         size="sm"
-        className="h-6 rounded-[100px] dark:border dark:text-[#c0c0c0] dark:border-[#454545] dark:bg-[#F2F3F5] dark:bg-opacity-10"
+        className="h-6 rounded-[100px] border text-[#c0c0c0] border-[#454545] bg-[#F2F3F5] bg-opacity-10"
         onClick={handleClick}>
         {t('view_button')}
       </Button>

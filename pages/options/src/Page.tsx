@@ -22,7 +22,13 @@ export default function Page() {
   }, [data.theme]);
 
   return (
-    <Wrapper refetch={refetch} namespaceId={data.namespaceId} baseUrl={loading ? '' : data.apiBaseUrl}>
+    <Wrapper
+      data={data}
+      loading={loading}
+      refetch={refetch}
+      onChange={onChange}
+      namespaceId={data.namespaceId}
+      baseUrl={loading ? '' : data.apiBaseUrl}>
       <Card title={t('common')}>
         <Common loading={loading} data={data} onChange={onChange} />
       </Card>

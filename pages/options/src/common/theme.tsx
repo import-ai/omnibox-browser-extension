@@ -62,7 +62,7 @@ export default function FieldTheme(props: IProps) {
             <ChevronDown className="size-4 ml-2" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent className="w-[200px]">
           {dataSource.map(item => (
             <DropdownMenuItem key={item.value} className="flex justify-between" onClick={() => handleTheme(item.value)}>
               {item.label}

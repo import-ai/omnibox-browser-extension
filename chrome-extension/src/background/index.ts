@@ -1,29 +1,10 @@
 import 'webextension-polyfill';
-import { isInternalUrl } from './utils';
-import { axios } from '@extension/shared';
+import { isInternalUrl, compress } from './utils';
+import { axios, track } from '@extension/shared';
 
-// Update extension icon state based on current tab
-function updateIconState(tabId: number, url: string) {
-  chrome.action.setTitle({
-    tabId,
-    title: isInternalUrl(url) ? 'Cannot inject content script on this page' : 'Show Omnibox popup',
-  });
-}
-
-// Listen for tab updates to update icon state
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url) {
-    updateIconState(tabId, tab.url);
-  }
-});
-
-// Listen for tab activation to update icon state
-chrome.tabs.onActivated.addListener(activeInfo => {
-  chrome.tabs.get(activeInfo.tabId, tab => {
-    if (tab.url) {
-      updateIconState(activeInfo.tabId, tab.url);
-    }
-  });
+self.addEventListener('unhandledrejection', e => {
+  e.preventDefault();
+  console.log(e);
 });
 
 // Handle action icon click to toggle popup in content script
@@ -38,21 +19,28 @@ chrome.action.onClicked.addListener(() => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'collect') {
-    axios(`${request.baseUrl.endsWith('/') ? request.baseUrl.slice(0, -1) : request.baseUrl}/api/v1/wizard/collect`, {
-      data: {
-        html: request.data,
-        url: request.pageUrl,
-        title: request.pageTitle,
-        parentId: request.resourceId,
-        namespace_id: request.namespaceId,
-      },
-    })
-      .then(data => {
-        sendResponse({ data: data });
-      })
-      .catch(error => {
-        sendResponse({ error: error.toString() });
-      });
+    compress(request.data, 'gzip').then(compressedHtml => {
+      const formData = new FormData();
+      formData.append('url', request.pageUrl);
+      formData.append('title', request.pageTitle);
+      formData.append('parentId', request.resourceId);
+      formData.append('namespace_id', request.namespaceId);
+      formData.append('html', new Blob([compressedHtml], { type: 'application/gzip' }), 'html.gz');
+      axios(
+        `${request.baseUrl.endsWith('/') ? request.baseUrl.slice(0, -1) : request.baseUrl}/api/v1/wizard/collect/gzip`,
+        {
+          method: 'POST',
+          body: formData,
+          headers: {},
+        },
+      )
+        .then(data => {
+          sendResponse({ data: data });
+        })
+        .catch(error => {
+          sendResponse({ error: error.toString() });
+        });
+    });
   } else if (request.action === 'fetch') {
     axios(request.url, {
       data: request.data,
@@ -64,6 +52,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch(error => {
         sendResponse({ error: error.toString() });
       });
+  } else if (request.action === 'storage') {
+    chrome.storage.sync
+      .get(request.args)
+      .then(data => {
+        sendResponse({ data: data });
+      })
+      .catch(error => {
+        sendResponse({ error: error.toString() });
+      });
+  } else if (request.action === 'set-storage') {
+    chrome.storage.sync
+      .set(request.args)
+      .then(data => {
+        sendResponse({ data: data });
+      })
+      .catch(error => {
+        sendResponse({ error: error.toString() });
+      });
+  } else if (request.action === 'remove-storage') {
+    chrome.storage.sync.remove(request.args).finally(sendResponse);
+  } else if (request.action === 'track') {
+    sendResponse();
+    track(request.name, request.payload);
   } else if (request.action === 'create-tab') {
     chrome.tabs.create({ url: request.url }, sendResponse);
   } else if (request.action === 'close-tab') {

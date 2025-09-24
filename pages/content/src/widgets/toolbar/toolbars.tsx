@@ -5,10 +5,10 @@ import useApp from '@src/hooks/useApp';
 import { SaveIcon } from '@src/icon/save';
 import { CopyIcon } from '@src/icon/copy';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Storage } from '@extension/shared';
 import { useAction } from '@src/provider/useAction';
-import { useTranslation } from 'react-i18next';
-import { getSelectionText, getFaviconUrl, clearSelection } from './utils';
+import { getFaviconUrl, clearSelection } from './utils';
 import {
   Badge,
   Button,
@@ -26,13 +26,15 @@ import {
 
 interface IProps {
   data: Storage;
-  onToolbar: (toolbar: boolean) => void;
+  toolbar: string;
+  onDestory?: () => void;
+  onToolbar: (toolbar: string) => void;
   onDisableTemp: (disableTemp: boolean) => void;
   onChange: (val: unknown, key?: string) => void;
 }
 
 export function Toolbars(props: IProps) {
-  const { data, onToolbar, onChange, onDisableTemp } = props;
+  const { data, toolbar, onToolbar, onChange, onDestory, onDisableTemp } = props;
   const { container } = useApp();
   const { onResult, onStatus } = useAction();
   const { t } = useTranslation();
@@ -40,12 +42,14 @@ export function Toolbars(props: IProps) {
   const [target, onTarget] = useState<HTMLElement | null>(null);
   const handleCancel = () => {
     clearSelection();
-    onToolbar(false);
+    onToolbar('');
+    if (onDestory) {
+      onDestory();
+    }
   };
   const handleCopy = () => {
-    const selectionText = getSelectionText();
     if (
-      copy(selectionText, {
+      copy(toolbar, {
         format: 'text/plain',
       })
     ) {
@@ -56,7 +60,6 @@ export function Toolbars(props: IProps) {
     handleCancel();
   };
   const handleSave = () => {
-    const selectionText = getSelectionText();
     onLoading(true);
     const { apiBaseUrl, resourceId, namespaceId } = data;
     chrome.runtime.sendMessage(
@@ -67,7 +70,7 @@ export function Toolbars(props: IProps) {
         baseUrl: apiBaseUrl,
         pageUrl: document.URL,
         pageTitle: document.title,
-        data: `<html><head><title>${document.title}</title></head><body><p>${selectionText}</p></body></html>`,
+        data: `<html><head><title>${document.title}</title></head><body><p>${toolbar}</p></body></html>`,
       },
       response => {
         onLoading(false);
@@ -128,7 +131,7 @@ export function Toolbars(props: IProps) {
               <X className="size-[10px]" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="bottom" align="start" container={target} className="min-w-[126px]">
+          <DropdownMenuContent side="bottom" align="start" container={target} className="min-w-[126px] rounded-[6px]">
             <DropdownMenuItem
               onClick={handleDisableTemp}
               className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-400">
