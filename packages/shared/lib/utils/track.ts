@@ -72,7 +72,7 @@ export async function track(name: string, payload: Attributes = {}) {
     if (once) {
       await eventStorage.markEventAsTracked(name);
     }
-  } catch (err) {
-    console.error(err);
+  } catch {
+    // console.error(err);
   }
 }
