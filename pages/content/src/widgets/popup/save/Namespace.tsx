@@ -138,7 +138,7 @@ export function Namespace(props: IProps) {
                 className={cn('text-[#171717] dark:text-white max-w-[150px] truncate', {
                   'max-w-[176px]': item.id !== namespaceId,
                 })}>
-                {item.name || 'untitled'}
+                {item.name || t('untitled')}
               </span>
               {switching === item.id ? (
                 <LoaderCircle className="size-5 text-[#171717 transition-transform animate-spin" />
