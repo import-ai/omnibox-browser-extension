@@ -72,7 +72,7 @@ export function Resource(props: IProps) {
             }
             onData({
               id: resourceId,
-              name: response.data.name || 'untitled',
+              name: response.data.name || t('untitled'),
             });
           },
         );

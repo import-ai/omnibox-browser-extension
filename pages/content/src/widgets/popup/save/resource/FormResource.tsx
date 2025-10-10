@@ -1,6 +1,7 @@
 import { Check, Folder } from 'lucide-react';
 import type { Resource } from '@extension/shared';
 import { cn, DropdownMenuItem } from '@extension/ui';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
   data: Resource;
@@ -11,7 +12,8 @@ interface IProps {
 
 export default function FormResource(props: IProps) {
   const { data, resourceId, onSearch, onChange } = props;
-  const resourceName = data.name || 'untitled';
+  const { t } = useTranslation();
+  const resourceName = data.name || t('untitled');
   let name = resourceName;
   if ((!data.parent_id || data.parent_id === '0') && data.space_type) {
     name = data.space_type === 'private' ? 'private' : 'team';

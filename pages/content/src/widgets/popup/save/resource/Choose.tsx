@@ -65,9 +65,9 @@ export function ChooseResource(props: IProps) {
           }
           if (Array.isArray(item.children) && item.children.length > 0) {
             if (spaceType === 'private') {
-              items.push(...item.children);
+              items.push(...item.children.filter((item: Resource) => item.resource_type === 'folder'));
             } else {
-              team.push(...item.children);
+              team.push(...item.children.filter((item: Resource) => item.resource_type === 'folder'));
             }
           }
         });
