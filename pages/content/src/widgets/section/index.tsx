@@ -10,7 +10,7 @@ export interface IProps {
 }
 
 export function SectionContainer(props: IProps) {
-  const { cursor, selected, point, onDestory } = useContext();
+  const { cursor, selected, point, onDestory } = useContext(props);
   const merged = selected.find(item => !!item.text);
   const selectedText = merged
     ? merged.text || ''

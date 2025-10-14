@@ -3,6 +3,7 @@ import { Binding } from './branding';
 import { Profile } from './profile';
 
 interface IProps {
+  user: { id: string; username?: string };
   baseUrl: string;
   profile?: boolean;
   refetch: () => void;

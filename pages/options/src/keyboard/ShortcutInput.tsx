@@ -1,5 +1,5 @@
-import { Input } from '@extension/ui';
-import { useState, useEffect, useRef } from 'react';
+import { Input, Kbd, KbdGroup } from '@extension/ui';
+import React, { useState, useEffect, useRef } from 'react';
 import { parseShortcutToDisplay, parseKeyboardEvent, createShortcut } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
 
@@ -27,8 +27,10 @@ export function ShortcutInput({ value, onChange, placeholder, className }: Short
   const handleFocus = () => {
     setIsEditing(true);
     setDisplayValue('');
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
   };
-
   const handleBlur = () => {
     setIsEditing(false);
     if (!currentValue.trim()) {
@@ -40,7 +42,6 @@ export function ShortcutInput({ value, onChange, placeholder, className }: Short
       onChange(currentValue);
     }
   };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     e.preventDefault();
 
@@ -62,12 +63,26 @@ export function ShortcutInput({ value, onChange, placeholder, className }: Short
     }
   };
 
+  if (!isEditing) {
+    return (
+      <div className="h-[36px] w-[200px] flex justify-end items-center">
+        <KbdGroup onClick={handleFocus}>
+          {displayValue.split('+').map((val, index) => (
+            <React.Fragment key={val}>
+              {index > 0 && <span className="opacity-50">+</span>}
+              <Kbd>{val}</Kbd>
+            </React.Fragment>
+          ))}
+        </KbdGroup>
+      </div>
+    );
+  }
+
   return (
     <Input
       ref={inputRef}
       className={className}
       value={displayValue}
-      onFocus={handleFocus}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
       placeholder={

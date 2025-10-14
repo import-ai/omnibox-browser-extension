@@ -14,4 +14,5 @@ export * from './lib/components/ui/tooltip';
 export * from './lib/components/ui/alert';
 export * from './lib/components/ui/switch';
 export * from './lib/components/ui/separator';
+export * from './lib/components/ui/kbd';
 export * from './lib/components/ui/dropdown-menu';
