@@ -1,6 +1,8 @@
 import useApp from '@src/hooks/useApp';
+import type { Storage } from '@extension/shared';
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { availableElements, getElementId, isElementIntersection } from './utils';
+import { parseShortcutToDisplay, parseKeyboardEvent, createShortcut } from '@extension/shared';
 
 interface Point {
   x: number;
@@ -18,7 +20,13 @@ interface State {
   element: Element;
 }
 
-export function useContext() {
+export interface IProps {
+  data: Storage;
+  onChange: (val: unknown, key?: string) => void;
+}
+
+export function useContext(props: IProps) {
+  const { data } = props;
   const { shadow } = useApp();
   const timer = useRef<number>(0);
   const draggingRef = useRef(false);
@@ -26,6 +34,7 @@ export function useContext() {
   const [cursor, onCursor] = useState(false);
   const [selected, onSelected] = useState<State[]>([]);
   const [point, onPoint] = useState<Point>({ x: 0, y: 0 });
+  const saveSection = data.keyboardShortcuts?.saveSection;
   const onDestory = useCallback(() => {
     dragMoveRef.current = false;
     draggingRef.current = false;
@@ -35,8 +44,18 @@ export function useContext() {
 
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key !== 'Alt') {
-        return;
+      const { modifierKeys, mainKey } = parseKeyboardEvent(e);
+      if (e.key === 'Alt' && !mainKey && modifierKeys.length === 1 && modifierKeys[0] === 'Alt') {
+        const { raw } = createShortcut([], 'Alt');
+        if (raw !== saveSection) {
+          return;
+        }
+      }
+      if (mainKey) {
+        const { raw } = createShortcut(modifierKeys, mainKey);
+        if (raw !== saveSection) {
+          return;
+        }
       }
       onCursor(false);
       onSelected(val => {
@@ -44,21 +63,36 @@ export function useContext() {
       });
     };
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== 'Alt') {
-        return;
+      const { modifierKeys, mainKey } = parseKeyboardEvent(e);
+      if (e.key === 'Alt' && !mainKey && modifierKeys.length === 1 && modifierKeys[0] === 'Alt') {
+        const { raw } = createShortcut([], 'Alt');
+        if (raw !== saveSection) {
+          return;
+        }
+      }
+      if (mainKey) {
+        const { raw } = createShortcut(modifierKeys, mainKey);
+        if (raw !== saveSection) {
+          return;
+        }
       }
       onCursor(true);
       onSelected([]);
     };
-    window.addEventListener('scroll', onDestory);
-    window.addEventListener('resize', onDestory);
     window.addEventListener('keyup', handleKeyUp);
     window.addEventListener('keydown', handleKeyDown);
     return () => {
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [saveSection]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', onDestory);
+    window.addEventListener('resize', onDestory);
+    return () => {
       window.removeEventListener('scroll', onDestory);
       window.removeEventListener('resize', onDestory);
-      window.removeEventListener('keyup', handleKeyUp, true);
-      window.removeEventListener('keydown', handleKeyDown, true);
     };
   }, [onDestory]);
 

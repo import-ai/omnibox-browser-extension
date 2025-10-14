@@ -49,6 +49,7 @@ export function Wrapper(props: IProps) {
     <div className="bg-[#F3F3F3] dark:bg-gray-900 min-h-dvh">
       <Toaster />
       <Header
+        user={user}
         baseUrl={baseUrl}
         onChange={onChange}
         refetch={refetch}

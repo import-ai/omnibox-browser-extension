@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { axios } from '@extension/shared';
 import { useTranslation } from 'react-i18next';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@extension/ui';
 
 interface IProps {
+  user: { id: string; username?: string };
   baseUrl: string;
   namespaceId: string;
   refetch: () => void;
@@ -13,9 +14,8 @@ interface IProps {
 }
 
 export function Profile(props: IProps) {
-  const { baseUrl, namespaceId, refetch, onChange, userRefetch } = props;
+  const { user, baseUrl, namespaceId, refetch, onChange, userRefetch } = props;
   const { t } = useTranslation();
-  const [namespaceName, onNamespaceName] = useState('');
   const handleOmnibox = () => {
     if (!baseUrl) {
       return;
@@ -34,61 +34,46 @@ export function Profile(props: IProps) {
   };
 
   useEffect(() => {
-    if (!baseUrl) {
-      return;
-    }
-    if (!namespaceId) {
-      chrome.runtime.sendMessage(
-        {
-          action: 'fetch',
-          url: `${baseUrl}/api/v1/namespaces`,
-        },
-        response => {
-          if (!response.data) {
-            return;
-          }
-          if (response.data.length <= 0) {
-            return;
-          }
-          const namespaceId = response.data[0].id;
-          chrome.runtime.sendMessage(
-            {
-              action: 'fetch',
-              url: `${baseUrl}/api/v1/namespaces/${namespaceId}/root`,
-            },
-            root => {
-              if (!root.data) {
-                return;
-              }
-              const privateData = root.data['private'];
-              if (!privateData) {
-                return;
-              }
-              const uncategorizedFolder = privateData.children?.find(
-                (child: { id: string; name: string }) => child.name === 'Uncategorized' || child.name === '未分类',
-              );
-              if (onChange) {
-                onChange({
-                  namespaceId,
-                  resourceId: uncategorizedFolder ? uncategorizedFolder.id : privateData.id,
-                });
-              }
-            },
-          );
-        },
-      );
+    if (!baseUrl || namespaceId) {
       return;
     }
     chrome.runtime.sendMessage(
       {
         action: 'fetch',
-        url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}`,
+        url: `${baseUrl}/api/v1/namespaces`,
       },
       response => {
         if (!response.data) {
           return;
         }
-        onNamespaceName(response.data.name);
+        if (response.data.length <= 0) {
+          return;
+        }
+        const namespaceId = response.data[0].id;
+        chrome.runtime.sendMessage(
+          {
+            action: 'fetch',
+            url: `${baseUrl}/api/v1/namespaces/${namespaceId}/root`,
+          },
+          root => {
+            if (!root.data) {
+              return;
+            }
+            const privateData = root.data['private'];
+            if (!privateData) {
+              return;
+            }
+            const uncategorizedFolder = privateData.children?.find(
+              (child: { id: string; name: string }) => child.name === 'Uncategorized' || child.name === '未分类',
+            );
+            if (onChange) {
+              onChange({
+                namespaceId,
+                resourceId: uncategorizedFolder ? uncategorizedFolder.id : privateData.id,
+              });
+            }
+          },
+        );
       },
     );
   }, [namespaceId, baseUrl, onChange]);
@@ -96,7 +81,7 @@ export function Profile(props: IProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-[6px] outline-0">
-        <span className="text-[#333333] dark:text-gray-200">{namespaceName}</span>
+        <span className="text-[#333333] dark:text-gray-200">{user.username || '--'}</span>
         <ChevronDown className="size-[16px] text-[#37352F] dark:text-gray-400 opacity-[0.35]" />
       </DropdownMenuTrigger>
       <DropdownMenuContent side="bottom" align="end" className="w-[200px]">
