@@ -2,7 +2,6 @@ import useApp from '@src/hooks/useApp';
 import type { Storage } from '@extension/shared';
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { availableElements, getElementId, isElementIntersection } from './utils';
-import { parseShortcutToDisplay, parseKeyboardEvent, createShortcut } from '@extension/shared';
 
 interface Point {
   x: number;
@@ -44,18 +43,8 @@ export function useContext(props: IProps) {
 
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
-      const { modifierKeys, mainKey } = parseKeyboardEvent(e);
-      if (e.key === 'Alt' && !mainKey && modifierKeys.length === 1 && modifierKeys[0] === 'Alt') {
-        const { raw } = createShortcut([], 'Alt');
-        if (raw !== saveSection) {
-          return;
-        }
-      }
-      if (mainKey) {
-        const { raw } = createShortcut(modifierKeys, mainKey);
-        if (raw !== saveSection) {
-          return;
-        }
+      if (e.key !== saveSection) {
+        return;
       }
       onCursor(false);
       onSelected(val => {
@@ -63,18 +52,8 @@ export function useContext(props: IProps) {
       });
     };
     const handleKeyDown = (e: KeyboardEvent) => {
-      const { modifierKeys, mainKey } = parseKeyboardEvent(e);
-      if (e.key === 'Alt' && !mainKey && modifierKeys.length === 1 && modifierKeys[0] === 'Alt') {
-        const { raw } = createShortcut([], 'Alt');
-        if (raw !== saveSection) {
-          return;
-        }
-      }
-      if (mainKey) {
-        const { raw } = createShortcut(modifierKeys, mainKey);
-        if (raw !== saveSection) {
-          return;
-        }
+      if (e.key !== saveSection) {
+        return;
       }
       onCursor(true);
       onSelected([]);
