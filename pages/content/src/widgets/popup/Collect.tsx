@@ -39,6 +39,10 @@ export default function Collect(props: IProps) {
         onPopup(false);
       },
     );
+    chrome.runtime.sendMessage({
+      action: 'track',
+      name: 'save_to_omnibox_in_extension',
+    });
   };
 
   return (
