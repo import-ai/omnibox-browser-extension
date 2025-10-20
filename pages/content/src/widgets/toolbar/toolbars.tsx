@@ -27,6 +27,7 @@ import {
 interface IProps {
   data: Storage;
   toolbar: string;
+  selectionAction?: boolean;
   onDestory?: () => void;
   onToolbar: (toolbar: string) => void;
   onDisableTemp: (disableTemp: boolean) => void;
@@ -34,7 +35,7 @@ interface IProps {
 }
 
 export function Toolbars(props: IProps) {
-  const { data, toolbar, onToolbar, onChange, onDestory, onDisableTemp } = props;
+  const { data, toolbar, onToolbar, onChange, onDestory, onDisableTemp, selectionAction } = props;
   const { container } = useApp();
   const { onResult, onStatus } = useAction();
   const { t } = useTranslation();
@@ -58,6 +59,10 @@ export function Toolbars(props: IProps) {
       toast(t('copy_failed'), { position: 'top-center' });
     }
     handleCancel();
+    chrome.runtime.sendMessage({
+      action: 'track',
+      name: selectionAction ? 'copy_text_in_extension_section' : 'copy_text_in_extension_underline',
+    });
   };
   const handleSave = () => {
     onLoading(true);
@@ -84,6 +89,10 @@ export function Toolbars(props: IProps) {
         }
       },
     );
+    chrome.runtime.sendMessage({
+      action: 'track',
+      name: selectionAction ? 'save_to_omnibox_in_extension_section' : 'save_to_omnibox_in_extension_underline',
+    });
   };
   const handleDisableTemp = () => {
     onDisableTemp(true);

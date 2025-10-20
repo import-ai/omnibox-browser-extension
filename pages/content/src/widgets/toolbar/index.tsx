@@ -27,6 +27,7 @@ export function ToolbarContainer(props: IProps) {
     <Wrapper popup={popup} toolbar={toolbar} onToolbar={onToolbar} selection={selection} onSelection={onSelection}>
       <Toolbars
         data={data}
+        selectionAction={false}
         onChange={onChange}
         toolbar={toolbar}
         onToolbar={onToolbar}

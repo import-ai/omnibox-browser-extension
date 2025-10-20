@@ -2,6 +2,26 @@ import 'webextension-polyfill';
 import { isInternalUrl, compress } from './utils';
 import { axios, track } from '@extension/shared';
 
+// Track uninstall event
+chrome.runtime.onInstalled.addListener(async () => {
+  const storage = await chrome.storage.sync.get('apiBaseUrl');
+  const baseUrl = storage.apiBaseUrl || 'https://www.omnibox.pro';
+  chrome.runtime.setUninstallURL(
+    `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/feedback?from=extension&reason=uninstall`,
+  );
+});
+
+// Track extension icon pinning action
+if (chrome.action && chrome.action.onUserSettingsChanged) {
+  chrome.action.onUserSettingsChanged.addListener(async userSettings => {
+    if (userSettings.isOnToolbar !== undefined) {
+      await track('extension_icon_pinned', {
+        pinned: userSettings.isOnToolbar ? '1' : '0',
+      });
+    }
+  });
+}
+
 self.addEventListener('unhandledrejection', e => {
   e.preventDefault();
   console.log(e);

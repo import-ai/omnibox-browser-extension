@@ -46,6 +46,7 @@ interface Attributes {
   finger?: string;
   section?: string;
   language?: string;
+  [index: string]: unknown;
 }
 
 export async function track(name: string, payload: Attributes = {}) {
