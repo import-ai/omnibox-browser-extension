@@ -36,6 +36,7 @@ export function Toolbar(props: IProps) {
     <Wrapper point={point} toolbar={toolbar}>
       <Toolbars
         data={data}
+        selectionAction={true}
         onChange={onChange}
         toolbar={toolbar}
         onDestory={onDestory}
