@@ -30,7 +30,7 @@ export function Wrapper(props: IProps) {
     return (
       <div className="flex flex-col bg-[#F3F3F3] dark:bg-gray-900 min-h-dvh">
         <Toaster />
-        <Header profile={false} baseUrl={baseUrl} refetch={refetch} namespaceId={namespaceId} />
+        <Header profile={false} user={user} baseUrl={baseUrl} refetch={refetch} namespaceId={namespaceId} />
         <div className="max-w-[628px] w-full mx-auto mt-[192px]">
           <div className="mb-[36px] bg-white dark:bg-black rounded-[16px] p-[24px]">
             <Advance loading={loading} data={data} onChange={onChange} refetch={refetch} />
