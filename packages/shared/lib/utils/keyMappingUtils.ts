@@ -15,7 +15,16 @@ type KnownKey = ModifierKey | SpecialKey | FunctionKey;
 
 export type { ModifierKey, SpecialKey, FunctionKey, KnownKey };
 
-export const KEY_SYMBOLS: Record<KnownKey, string> = {
+// Platform detection
+const isMac = (): boolean => {
+  if (typeof navigator !== 'undefined') {
+    return /Mac|iPhone|iPad|iPod/.test(navigator.platform) || /Mac|iPhone|iPad|iPod/.test(navigator.userAgent);
+  }
+  return false;
+};
+
+// macOS symbols
+const MAC_KEY_SYMBOLS: Record<KnownKey, string> = {
   // Modifier keys
   Control: '⌃',
   Meta: '⌘',
@@ -48,6 +57,44 @@ export const KEY_SYMBOLS: Record<KnownKey, string> = {
   F11: 'F11',
   F12: 'F12',
 };
+
+// Windows/Linux symbols
+const WIN_KEY_SYMBOLS: Record<KnownKey, string> = {
+  // Modifier keys
+  Control: 'Ctrl',
+  Meta: 'Win',
+  Alt: 'Alt',
+  Shift: 'Shift',
+
+  // Special keys
+  ArrowUp: '↑',
+  ArrowDown: '↓',
+  ArrowLeft: '←',
+  ArrowRight: '→',
+  Enter: 'Enter',
+  Escape: 'Esc',
+  Tab: 'Tab',
+  Backspace: 'Backspace',
+  Delete: 'Del',
+  Space: 'Space',
+
+  // Function keys
+  F1: 'F1',
+  F2: 'F2',
+  F3: 'F3',
+  F4: 'F4',
+  F5: 'F5',
+  F6: 'F6',
+  F7: 'F7',
+  F8: 'F8',
+  F9: 'F9',
+  F10: 'F10',
+  F11: 'F11',
+  F12: 'F12',
+};
+
+// Export platform-aware KEY_SYMBOLS
+export const KEY_SYMBOLS: Record<KnownKey, string> = isMac() ? MAC_KEY_SYMBOLS : WIN_KEY_SYMBOLS;
 
 export const getKeySymbol = (key: string): string => {
   return KEY_SYMBOLS[key as KnownKey] || (key.length === 1 ? key.toUpperCase() : key);
