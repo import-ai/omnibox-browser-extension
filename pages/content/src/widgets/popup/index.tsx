@@ -119,7 +119,7 @@ export function PopupContainer(props: Response) {
 
   return (
     <Wrapper onPopup={onPopup}>
-      <Header baseUrl={data.apiBaseUrl} />
+      <Header baseUrl={data.apiBaseUrl} namespaceId={data.namespaceId} />
       {user.id ? (
         <>
           <Collect data={data} />

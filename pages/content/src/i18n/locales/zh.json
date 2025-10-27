@@ -30,5 +30,6 @@
   "default_image": "图片",
   "default_link": "链接",
   "search_placeholder": "搜索",
-  "saving": "保存中..."
+  "saving": "保存中...",
+  "open_namespace": "打开空间"
 }

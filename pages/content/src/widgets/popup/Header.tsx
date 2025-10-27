@@ -1,18 +1,25 @@
 import useApp from '@src/hooks/useApp';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bolt, MessageCircleWarning } from 'lucide-react';
+import { Bolt, HouseIcon, MessageCircleWarning } from 'lucide-react';
 import { Button, Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@extension/ui';
 
 interface IProps {
   baseUrl: string;
+  namespaceId: string;
 }
 
 export default function Header(props: IProps) {
-  const { baseUrl } = props;
+  const { baseUrl, namespaceId } = props;
   const { container } = useApp();
   const [target, onTarget] = useState<HTMLElement | null>(null);
   const { t } = useTranslation();
+  const handleNamespace = () => {
+    chrome.runtime.sendMessage({
+      action: 'create-tab',
+      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/${namespaceId}/chat`,
+    });
+  };
   const handleFeedback = () => {
     chrome.runtime.sendMessage({
       action: 'create-tab',
@@ -42,6 +49,14 @@ export default function Header(props: IProps) {
       </div>
       <div className="flex items-center gap-[12px]">
         <TooltipProvider>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <Button size="icon" variant="ghost" className="size-[20px]" onClick={handleNamespace}>
+                <HouseIcon color="#8F959E" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent container={target}>{t('open_namespace')}</TooltipContent>
+          </Tooltip>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <Button size="icon" variant="ghost" className="size-[20px]" onClick={handleFeedback}>

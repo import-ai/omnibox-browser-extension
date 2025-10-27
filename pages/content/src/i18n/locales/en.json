@@ -30,5 +30,6 @@
   "default_image": "Image",
   "default_link": "Link",
   "search_placeholder": "Search",
-  "saving": "Saving..."
+  "saving": "Saving...",
+  "open_namespace": "Open Namespace"
 }
