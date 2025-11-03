@@ -1,4 +1,5 @@
 import zIndex from '@src/utils/zindex';
+import { useEffect } from 'react';
 
 interface IProps {
   onPopup: (popup: boolean | ((prev: boolean) => boolean)) => void;
@@ -11,6 +12,17 @@ export function Wrapper(props: IProps) {
   const hanldeClose = () => {
     onPopup(false);
   };
+
+  useEffect(() => {
+    chrome.runtime.sendMessage({
+      action: 'track',
+      name: 'open_chrome_popup',
+      payload: {
+        once: true,
+        section: 'ext_popup',
+      },
+    });
+  }, []);
 
   return (
     <>

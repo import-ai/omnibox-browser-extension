@@ -15,17 +15,6 @@ export function PopupContainer(props: Response) {
   const { user } = useUser({ baseUrl: loading ? '' : data.apiBaseUrl });
 
   useEffect(() => {
-    chrome.runtime.sendMessage({
-      action: 'track',
-      name: 'open_chrome_popup',
-      payload: {
-        once: true,
-        section: 'ext_popup',
-      },
-    });
-  }, []);
-
-  useEffect(() => {
     if (loading || !user.id || !data.apiBaseUrl) {
       return;
     }
