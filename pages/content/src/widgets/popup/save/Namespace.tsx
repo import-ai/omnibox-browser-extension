@@ -38,11 +38,8 @@ export function Namespace(props: IProps) {
         }
         const privateData = response.data['private'];
         if (privateData) {
-          const uncategorizedFolder = privateData.children?.find(
-            (child: { id: string; name: string }) => child.name === 'Uncategorized' || child.name === '未分类',
-          );
           onChange({
-            resourceId: uncategorizedFolder ? uncategorizedFolder.id : privateData.id,
+            resourceId: privateData.id,
             namespaceId: itemId,
           });
         } else {

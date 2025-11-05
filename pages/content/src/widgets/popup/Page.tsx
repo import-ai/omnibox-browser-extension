@@ -91,12 +91,9 @@ export function Page(props: IProps) {
             if (!privateData) {
               return;
             }
-            const uncategorizedFolder = privateData.children?.find(
-              (child: { id: string; name: string }) => child.name === 'Uncategorized' || child.name === '未分类',
-            );
             onChange({
               namespaceId,
-              resourceId: uncategorizedFolder ? uncategorizedFolder.id : privateData.id,
+              resourceId: privateData.id,
             });
           },
         );
