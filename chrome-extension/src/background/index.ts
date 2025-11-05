@@ -49,7 +49,20 @@ if (actionAPI && actionAPI.onClicked) {
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
       const tab = tabs[0];
       if (tab?.id && tab.url && !isInternalUrl(tab.url)) {
-        chrome.tabs.sendMessage(tab.id, { action: 'toggle-popup' });
+        const tabId = tab.id;
+        chrome.tabs.sendMessage(tabId, { action: 'toggle-popup' }, () => {
+          // Check if there was an error sending the message
+          const lastError = chrome.runtime.lastError;
+          if (lastError) {
+            // If the receiving end does not exist (content script not loaded),
+            // reload the tab to inject the content script
+            if (lastError.message?.includes('Receiving end does not exist')) {
+              chrome.tabs.reload(tabId);
+            } else {
+              console.error('Error sending message to content script:', lastError);
+            }
+          }
+        });
       }
     });
   });
