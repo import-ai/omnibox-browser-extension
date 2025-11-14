@@ -51,6 +51,7 @@ export function axios(
     redirect: 'manual',
     headers: params.headers,
     method: params.method || 'GET',
+    credentials: 'include',
   };
   return fetch(params.url, options).then(response => {
     if (!response.ok) {

@@ -25,7 +25,7 @@ export function Page(props: IProps) {
       chrome.runtime.sendMessage(
         {
           action: 'fetch',
-          url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${data.namespaceId}/root`,
+          url: `${baseUrl}/api/v1/namespaces/${data.namespaceId}/root`,
         },
         response => {
           let match = false;

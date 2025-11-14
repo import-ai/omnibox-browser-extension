@@ -1,8 +1,10 @@
 import type { Manifest, ManifestParserInterface } from './types.js';
 
 export const ManifestParserImpl: ManifestParserInterface = {
-  convertManifestToString: (manifest, isFirefox) => {
-    if (isFirefox) {
+  convertManifestToString: (manifest, isFirefox, isSafari = false) => {
+    // Safari uses Manifest V2 directly from manifest.ts, no conversion needed
+    // Firefox needs specific conversions for V3
+    if (isFirefox && !isSafari) {
       manifest = convertToFirefoxCompatibleManifest(manifest);
     }
 
@@ -15,7 +17,8 @@ const convertToFirefoxCompatibleManifest = (manifest: Manifest) => {
     ...manifest,
   } as { [key: string]: unknown };
 
-  if (manifest.background?.service_worker) {
+  // Only convert if it's a V3 manifest with service_worker
+  if (manifest.background && 'service_worker' in manifest.background && manifest.background.service_worker) {
     manifestCopy.background = {
       scripts: [manifest.background.service_worker],
       type: 'module',
