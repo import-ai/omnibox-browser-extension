@@ -13,9 +13,12 @@ export default function zIndex() {
   } else {
     let value = 0;
     document.body.querySelectorAll('*').forEach(item => {
-      const zindex = Number.parseInt(window.getComputedStyle(item, null).getPropertyValue('z-index'), 10);
-      if (zindex > value) {
-        value = zindex;
+      const rawZindex = window.getComputedStyle(item, null).getPropertyValue('z-index');
+      if (!['auto', '0'].includes(rawZindex)) {
+        const zindex = Number.parseInt(rawZindex, 10);
+        if (zindex > value) {
+          value = zindex;
+        }
       }
     });
     if (value <= 0) {

@@ -46,49 +46,81 @@ export function axios(
     };
   }
   params.headers['From'] = 'extension';
+
+  // Set up timeout using AbortController
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
   const options: RequestInit = {
     body: params.body,
     redirect: 'manual',
     headers: params.headers,
     method: params.method || 'GET',
+    credentials: 'include',
+    signal: controller.signal,
   };
-  return fetch(params.url, options).then(response => {
-    if (!response.ok) {
-      if (response.type === 'opaqueredirect') {
-        const parsedUrl = new URL(params.url);
-        parsedUrl.hostname = `www.${parsedUrl.hostname}`;
-        return fetch(parsedUrl.toString(), options).then(innerResponse => {
-          if (!innerResponse.ok) {
-            return Promise.reject(new Error(`HTTP error! status: ${innerResponse.status}`));
-          } else {
-            return innerResponse.text().then(data => {
-              if (!data) {
-                return null;
+
+  return fetch(params.url, options)
+    .then(response => {
+      clearTimeout(timeoutId);
+      if (!response.ok) {
+        if (response.type === 'opaqueredirect') {
+          const parsedUrl = new URL(params.url);
+          parsedUrl.hostname = `www.${parsedUrl.hostname}`;
+
+          // Create new controller for retry request
+          const retryController = new AbortController();
+          const retryTimeoutId = setTimeout(() => retryController.abort(), 10000);
+          const retryOptions = { ...options, signal: retryController.signal };
+
+          return fetch(parsedUrl.toString(), retryOptions)
+            .then(innerResponse => {
+              clearTimeout(retryTimeoutId);
+              if (!innerResponse.ok) {
+                return Promise.reject(new Error(`HTTP error! status: ${innerResponse.status}`));
+              } else {
+                return innerResponse.text().then(data => {
+                  if (!data) {
+                    return null;
+                  }
+                  try {
+                    return JSON.parse(data);
+                  } catch {
+                    return null;
+                  }
+                });
               }
-              try {
-                return JSON.parse(data);
-              } catch {
-                return null;
+            })
+            .catch(error => {
+              clearTimeout(retryTimeoutId);
+              if (error.name === 'AbortError') {
+                return Promise.reject(new Error('Request timeout after 10 seconds'));
               }
+              throw error;
             });
+        }
+        if (response.status === 401) {
+          chrome.storage.sync.remove(['namespaceId', 'resourceId']);
+        }
+        return Promise.reject(new Error(`HTTP error! status: ${response.status}`));
+      } else {
+        return response.text().then(data => {
+          if (!data) {
+            return null;
+          }
+          try {
+            return JSON.parse(data);
+          } catch {
+            return null;
           }
         });
       }
-      if (response.status === 401) {
-        chrome.storage.sync.remove(['namespaceId', 'resourceId']);
+    })
+    .catch(error => {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        return Promise.reject(new Error('Request timeout after 10 seconds'));
       }
-      return Promise.reject(new Error(`HTTP error! status: ${response.status}`));
-    } else {
-      return response.text().then(data => {
-        if (!data) {
-          return null;
-        }
-        try {
-          return JSON.parse(data);
-        } catch {
-          return null;
-        }
-      });
-    }
-  });
+      throw error;
+    });
 }

@@ -5,7 +5,7 @@ import { platform } from 'node:process';
 import type { Manifest } from '@extension/dev-utils';
 import { colorLog, ManifestParser } from '@extension/dev-utils';
 import type { PluginOption } from 'vite';
-import { IS_DEV, IS_FIREFOX } from '@extension/env';
+import { IS_DEV, IS_FIREFOX, IS_SAFARI } from '@extension/env';
 
 const manifestFile = resolve(import.meta.dirname, '..', '..', 'manifest.js');
 const refreshFilePath = resolve(
@@ -51,7 +51,7 @@ export default (config: { outDir: string }): PluginOption => {
       addRefreshContentScript(manifest);
     }
 
-    writeFileSync(manifestPath, ManifestParser.convertManifestToString(manifest, IS_FIREFOX));
+    writeFileSync(manifestPath, ManifestParser.convertManifestToString(manifest, IS_FIREFOX, IS_SAFARI));
 
     const refreshFileString = readFileSync(refreshFilePath, 'utf-8');
 

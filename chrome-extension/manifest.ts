@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 
 const packageJson = JSON.parse(readFileSync('./package.json', 'utf8'));
+const isSafari = process.env['CLI_CEB_SAFARI'] === 'true';
 
 /**
  * @prop default_locale
@@ -17,7 +18,37 @@ const packageJson = JSON.parse(readFileSync('./package.json', 'utf8'));
  * @prop content_scripts
  * css: ['content.css'], // public folder
  */
-const manifest = {
+
+// Manifest V2 for Safari
+const manifestV2 = {
+  manifest_version: 2,
+  default_locale: 'en',
+  name: '__MSG_extensionName__',
+  version: packageJson.version,
+  description: '__MSG_extensionDescription__',
+  permissions: ['storage', 'tabs', '<all_urls>'],
+  options_page: 'options/index.html',
+  background: {
+    scripts: ['background.js'],
+    persistent: false,
+  },
+  browser_action: {
+    default_icon: 'icon-34.png',
+  },
+  icons: {
+    '128': 'icon-128.png',
+  },
+  content_scripts: [
+    {
+      matches: ['http://*/*', 'https://*/*', '<all_urls>'],
+      js: ['content/index.iife.js'],
+    },
+  ],
+  web_accessible_resources: ['*.js', '*.css', '*.svg', 'icon-128.png', 'icon-34.png'],
+} satisfies chrome.runtime.ManifestV2;
+
+// Manifest V3 for Chrome/Firefox
+const manifestV3 = {
   manifest_version: 3,
   default_locale: 'en',
   name: '__MSG_extensionName__',
@@ -55,4 +86,6 @@ const manifest = {
   ],
 } satisfies chrome.runtime.ManifestV3;
 
-export default manifest;
+const manifest = isSafari ? manifestV2 : manifestV3;
+
+export default manifest as chrome.runtime.ManifestV3 | chrome.runtime.ManifestV2;

@@ -17,7 +17,9 @@ export function useUser(props: IProps) {
     }
     axios(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/user/me`)
       .then(response => {
-        setUser(response);
+        if (response) {
+          setUser(response);
+        }
       })
       .catch(() => {
         setUser({ id: '' });

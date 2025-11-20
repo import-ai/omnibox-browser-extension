@@ -5,6 +5,7 @@ import Collect from './Collect';
 import { useEffect } from 'react';
 import { Wrapper } from './Wrapper';
 import { Section } from './Section';
+import { Loader2 } from 'lucide-react';
 import { useUser } from '@src/hooks/useUser';
 import type { Response } from '@extension/shared';
 
@@ -14,7 +15,7 @@ interface IProps extends Response {
 
 export function Page(props: IProps) {
   const { onPopup, data, loading, onChange } = props;
-  const { user } = useUser({ baseUrl: loading ? '' : data.apiBaseUrl });
+  const { user, loading: userLoading } = useUser({ baseUrl: loading ? '' : data.apiBaseUrl });
 
   useEffect(() => {
     if (loading || !user.id || !data.apiBaseUrl) {
@@ -25,7 +26,7 @@ export function Page(props: IProps) {
       chrome.runtime.sendMessage(
         {
           action: 'fetch',
-          url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${data.namespaceId}/root`,
+          url: `${baseUrl}/api/v1/namespaces/${data.namespaceId}/root`,
         },
         response => {
           let match = false;
@@ -100,6 +101,16 @@ export function Page(props: IProps) {
       },
     );
   }, [loading, data.apiBaseUrl, data.namespaceId, data.resourceId, user.id, onChange]);
+
+  if (userLoading) {
+    return (
+      <Wrapper onPopup={onPopup}>
+        <div className="flex items-center justify-center opacity-60">
+          <Loader2 className="animate-spin" />
+        </div>
+      </Wrapper>
+    );
+  }
 
   return (
     <Wrapper onPopup={onPopup}>

@@ -24,5 +24,7 @@
   "loading": "Loading...",
   "error_occurred": "Error occurred",
   "shortcut_placeholder": "Enter shortcut",
-  "hold_option_key": "Hold"
+  "hold_option_key": "Hold",
+  "save": "Save",
+  "save_success": "Saved successfully"
 }

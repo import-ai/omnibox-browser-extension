@@ -53,6 +53,10 @@ export function Wrapper(props: IProps) {
           const range = selection.getRangeAt(0);
           if (range) {
             const rangeRect = range.getBoundingClientRect();
+            if (rangeRect.width <= 0) {
+              // Dealing with nested shadowdom, https://www.bilibili.com/video/BV1LN15BLE6f
+              return;
+            }
             if (x < rangeRect.left || x > rangeRect.right) {
               x = rangeRect.right + window.scrollX;
               y = rangeRect.bottom + window.scrollY;

@@ -11,7 +11,8 @@ chrome.runtime.onInstalled.addListener(async () => {
   );
 });
 
-// Track extension icon pinning action
+// Track extension icon pinning action (V3 only)
+// This API is not available in V2
 if (chrome.action && chrome.action.onUserSettingsChanged) {
   chrome.action.onUserSettingsChanged.addListener(async userSettings => {
     if (userSettings.isOnToolbar !== undefined) {
@@ -22,20 +23,50 @@ if (chrome.action && chrome.action.onUserSettingsChanged) {
   });
 }
 
-self.addEventListener('unhandledrejection', e => {
-  e.preventDefault();
-  console.log(e);
-});
+// Handle unhandled promise rejections for both V2 and V3
+if (typeof self !== 'undefined' && self.addEventListener) {
+  // V3 Service Worker
+  self.addEventListener('unhandledrejection', e => {
+    e.preventDefault();
+    console.log(e);
+  });
+} else if (typeof window !== 'undefined' && window.addEventListener) {
+  // V2 Background Page
+  window.addEventListener('unhandledrejection', e => {
+    e.preventDefault();
+    console.log(e);
+  });
+}
 
 // Handle action icon click to toggle popup in content script
-chrome.action.onClicked.addListener(() => {
-  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-    const tab = tabs[0];
-    if (tab?.id && tab.url && !isInternalUrl(tab.url)) {
-      chrome.tabs.sendMessage(tab.id, { action: 'toggle-popup' });
-    }
+// Support both V2 (browserAction) and V3 (action)
+const actionAPI =
+  chrome.action ||
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (chrome as any).browserAction;
+if (actionAPI && actionAPI.onClicked) {
+  actionAPI.onClicked.addListener(() => {
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      const tab = tabs[0];
+      if (tab?.id && tab.url && !isInternalUrl(tab.url)) {
+        const tabId = tab.id;
+        chrome.tabs.sendMessage(tabId, { action: 'toggle-popup' }, () => {
+          // Check if there was an error sending the message
+          const lastError = chrome.runtime.lastError;
+          if (lastError) {
+            // If the receiving end does not exist (content script not loaded),
+            // reload the tab to inject the content script
+            if (lastError.message?.includes('Receiving end does not exist')) {
+              chrome.tabs.reload(tabId);
+            } else {
+              console.error('Error sending message to content script:', lastError);
+            }
+          }
+        });
+      }
+    });
   });
-});
+}
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'collect') {
