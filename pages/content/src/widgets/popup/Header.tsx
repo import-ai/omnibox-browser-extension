@@ -13,17 +13,17 @@ export default function Header(props: IProps) {
   const { baseUrl, namespaceId } = props;
   const { container } = useApp();
   const [target, onTarget] = useState<HTMLElement | null>(null);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const handleNamespace = () => {
     chrome.runtime.sendMessage({
       action: 'create-tab',
-      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/${namespaceId}/chat`,
+      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/${namespaceId}/chat?lang=${i18n.language}`,
     });
   };
   const handleFeedback = () => {
     chrome.runtime.sendMessage({
       action: 'create-tab',
-      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/feedback`,
+      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/feedback?lang=${i18n.language}`,
     });
   };
   const handleSetting = () => {
