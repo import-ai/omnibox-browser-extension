@@ -25,5 +25,6 @@
   "error_occurred": "发生错误",
   "shortcut_placeholder": "输入快捷键",
   "hold_option_key": "按住",
-  "save": "保存"
+  "save": "保存",
+  "save_success": "保存成功"
 }

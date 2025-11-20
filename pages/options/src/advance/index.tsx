@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import { axios } from '@extension/shared';
 import { Input, Button } from '@extension/ui';
@@ -18,6 +19,7 @@ export function Advance(props: IProps) {
       resourceId: '',
     });
     axios(`${value.endsWith('/') ? value.slice(0, -1) : value}/api/v1/user/me`);
+    toast(t('save_success'), { position: 'bottom-right' });
   };
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const val = event.target.value;
