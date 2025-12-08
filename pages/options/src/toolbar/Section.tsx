@@ -33,7 +33,11 @@ export function Section(props: IProps) {
             ))}
           </KbdGroup>
         </div>
-        <Switch className="scale-[0.8]" checked={!!data.sectionEnabled} onCheckedChange={handleSectionToggle} />
+        <Switch
+          className="scale-[0.8] dark:data-[state=unchecked]:bg-gray-600 dark:data-[state=checked]:bg-white"
+          checked={!!data.sectionEnabled}
+          onCheckedChange={handleSectionToggle}
+        />
       </div>
     </div>
   );

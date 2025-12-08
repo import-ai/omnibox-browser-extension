@@ -27,9 +27,9 @@ export default function FormResource(props: IProps) {
     <DropdownMenuItem
       onClick={handleClick}
       className={cn(
-        'py-2 cursor-pointer justify-between rounded-[8px] dark:text-white hover:bg-gray-100 dark:hover:bg-gray-400',
+        'py-2 cursor-pointer justify-between rounded-[8px] dark:text-white hover:bg-gray-100 dark:hover:bg-[#171717]',
         {
-          'bg-gray-100 dark:bg-gray-400': data.id === resourceId,
+          'bg-gray-100 dark:bg-[#171717]': data.id === resourceId,
         },
       )}>
       <div className="flex items-center gap-[8px]">

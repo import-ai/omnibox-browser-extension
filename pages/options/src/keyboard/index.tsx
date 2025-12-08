@@ -8,9 +8,9 @@ export function Keyboard(props: IProps) {
   return (
     <>
       <Section {...props} />
-      <Separator className="my-[24px] bg-[#F2F2F2] dark:bg-gray-600" />
+      <Separator className="my-[24px] bg-[#F2F2F2] dark:bg-background" />
       <Activation {...props} />
-      <Separator className="my-[24px] bg-[#F2F2F2] dark:bg-gray-600" />
+      <Separator className="my-[24px] bg-[#F2F2F2] dark:bg-background" />
       <Save {...props} />
     </>
   );

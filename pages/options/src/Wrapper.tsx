@@ -28,11 +28,11 @@ export function Wrapper(props: IProps) {
 
   if (!user.id) {
     return (
-      <div className="flex flex-col bg-[#F3F3F3] dark:bg-gray-900 min-h-dvh">
+      <div className="flex flex-col bg-[#F3F3F3] dark:bg-[#1f1f1f] min-h-dvh">
         <Toaster />
         <Header profile={false} user={user} baseUrl={baseUrl} refetch={refetch} namespaceId={namespaceId} />
         <div className="max-w-[628px] w-full mx-auto mt-[192px]">
-          <div className="mb-[36px] bg-white dark:bg-black rounded-[16px] p-[24px]">
+          <div className="mb-[36px] bg-white dark:bg-[#262626] rounded-[16px] p-[24px]">
             <Advance loading={loading} data={data} onChange={onChange} refetch={refetch} />
           </div>
           <div className="flex-1 flex items-center justify-center">
@@ -46,7 +46,7 @@ export function Wrapper(props: IProps) {
   }
 
   return (
-    <div className="bg-[#F3F3F3] dark:bg-gray-900 min-h-dvh">
+    <div className="bg-[#F3F3F3] dark:bg-[#1f1f1f] min-h-dvh">
       <Toaster />
       <Header
         user={user}

@@ -63,7 +63,7 @@ export default function FieldLanguage(props: IProps) {
             <ChevronDown className="size-4 ml-2" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[200px]">
+        <DropdownMenuContent className="w-[200px] dark:border-neutral-800">
           {dataSource.map(item => (
             <DropdownMenuItem
               key={item.value}

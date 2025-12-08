@@ -155,7 +155,7 @@ export function KeyboardHandler(props: IProps) {
         <div className="size-[20px]">
           <img src={chrome.runtime.getURL('icon-128.png')} alt="logo" />
         </div>
-        <span className="text-sm font-[600] text-[#171717]">{t('saving')}</span>
+        <span className="text-sm font-[600] text-white">{t('saving')}</span>
       </div>
       <Progress value={progress} className="h-[3px] absolute bottom-0 left-0 w-full" />
     </div>
