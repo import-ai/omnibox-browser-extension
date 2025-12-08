@@ -45,7 +45,7 @@ export default function Header(props: IProps) {
         <div className="size-[16px]">
           <img src={chrome.runtime.getURL('icon-128.png')} alt="logo" />
         </div>
-        <div className="text-sm font-[600] text-foreground">{t('name')}</div>
+        <div className="text-sm font-[600] text-foreground dark:text-white">{t('name')}</div>
       </div>
       <div className="flex items-center gap-[12px]">
         <TooltipProvider>

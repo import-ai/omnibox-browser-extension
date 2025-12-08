@@ -51,7 +51,11 @@ export function Section(props: IProps) {
                   ))}
                 </KbdGroup>
               </div>
-              <Switch className="scale-[0.8]" checked={!!data.sectionEnabled} onCheckedChange={handleSectionToggle} />
+              <Switch
+                className="scale-[0.8] data-[state=unchecked]:bg-gray-600 data-[state=checked]:bg-white"
+                checked={!!data.sectionEnabled}
+                onCheckedChange={handleSectionToggle}
+              />
             </div>
           </TooltipTrigger>
           <TooltipContent container={target}>{t('hold_option_tooltip', { Kbd: sectionKeyBoard })}</TooltipContent>

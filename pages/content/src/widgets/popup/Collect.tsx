@@ -50,7 +50,7 @@ export default function Collect(props: IProps) {
       variant="default"
       loading={loading}
       onClick={handleCollect}
-      className="w-full flex h-[38px] items-center rounded-[8px] mt-[20px]">
+      className="w-full flex h-[38px] items-center rounded-[8px] mt-[20px] dark:text-white dark:bg-[#404040]">
       {!loading && <BoxIcon />}
       <span>{t(loading ? 'saving' : 'save_to_omnibox')}</span>
     </Button>

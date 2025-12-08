@@ -126,9 +126,9 @@ export function Namespace(props: IProps) {
               key={item.id}
               onClick={() => handleChange(item.id)}
               className={cn(
-                'py-2 cursor-pointer justify-between rounded-[8px] hover:bg-gray-100 dark:hover:bg-gray-400',
+                'py-2 cursor-pointer justify-between rounded-[8px] hover:bg-gray-100 dark:hover:bg-[#171717]',
                 {
-                  'bg-gray-100 dark:bg-gray-400': item.id === namespaceId,
+                  'bg-gray-100 dark:hover:bg-[#171717]': item.id === namespaceId,
                 },
               )}>
               <span

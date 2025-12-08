@@ -143,17 +143,17 @@ export function Toolbars(props: IProps) {
           <DropdownMenuContent side="bottom" align="start" container={target} className="min-w-[126px] rounded-[6px]">
             <DropdownMenuItem
               onClick={handleDisableTemp}
-              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-400">
+              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-[#171717]">
               {t('hide_until_next_visit')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleDisableSite}
-              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-400">
+              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-[#171717]">
               {t('disable_for_site')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleDisabled}
-              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-400">
+              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-[#171717]">
               {t('disable_globally')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />

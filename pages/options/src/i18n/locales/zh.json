@@ -24,6 +24,8 @@
   "loading": "加载中...",
   "error_occurred": "发生错误",
   "shortcut_placeholder": "输入快捷键",
+  "shortcut_click_to_set": "点击设置",
+  "shortcut_press_keys": "按下快捷键",
   "hold_option_key": "按住",
   "save": "保存",
   "save_success": "保存成功"

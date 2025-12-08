@@ -123,7 +123,7 @@ export function Resource(props: IProps) {
         side="bottom"
         align="end"
         container={container}
-        className="rounded-[12px] border-none w-[200px] min-w-[200px]">
+        className="rounded-[12px] border-none w-[200px] min-w-[200px] dark:bg-[#262626]">
         {open && (
           <ChooseResource
             loading={loading}

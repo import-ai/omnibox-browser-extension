@@ -48,9 +48,9 @@ export function ChooseWrapper(props: IProps) {
       <DropdownMenuItem
         onClick={handleTeamClick}
         className={cn(
-          'py-2 gap-[6px] rounded-[8px] justify-between cursor-pointer dark:text-white hover:bg-gray-100 dark:hover:bg-gray-400',
+          'py-2 gap-[6px] rounded-[8px] justify-between cursor-pointer dark:text-white hover:bg-gray-100 dark:hover:bg-[#171717]',
           {
-            'bg-gray-100 dark:bg-gray-400': teamRootId === resourceId,
+            'bg-gray-100 dark:bg-[#171717]': teamRootId === resourceId,
           },
         )}>
         <div className="flex items-center gap-[8px]">

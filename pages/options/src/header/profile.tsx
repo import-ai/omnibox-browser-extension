@@ -81,14 +81,14 @@ export function Profile(props: IProps) {
         <span className="text-[#333333] dark:text-gray-200">{user.username || '--'}</span>
         <ChevronDown className="size-[16px] text-[#37352F] dark:text-gray-400 opacity-[0.35]" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent side="bottom" align="end" className="w-[200px]">
+      <DropdownMenuContent side="bottom" align="end" className="w-[200px] dark:border-neutral-800">
         <DropdownMenuItem
-          className="cursor-pointer justify-between hover:bg-gray-100 dark:hover:bg-gray-400"
+          className="cursor-pointer justify-between hover:bg-gray-100 dark:hover:bg-[#171717]"
           onClick={handleOmnibox}>
           {t('my_omnibox')}
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="cursor-pointer justify-between hover:bg-gray-100 dark:hover:bg-gray-400"
+          className="cursor-pointer justify-between hover:bg-gray-100 dark:hover:bg-[#171717]"
           onClick={handleLogout}>
           {t('logout_button')}
         </DropdownMenuItem>
