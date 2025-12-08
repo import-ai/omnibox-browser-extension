@@ -28,13 +28,13 @@ export function ChooseWrapper(props: IProps) {
     chrome.runtime.sendMessage(
       {
         action: 'fetch',
-        url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/members`,
+        url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/api/v1/namespaces/${namespaceId}/members/count`,
       },
       response => {
         if (!response.data) {
           return;
         }
-        onOpen(response.data.length > 1);
+        onOpen(response.data.count > 1);
       },
     );
   }, [baseUrl, namespaceId]);
