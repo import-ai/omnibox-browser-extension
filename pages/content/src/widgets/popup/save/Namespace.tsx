@@ -128,7 +128,7 @@ export function Namespace(props: IProps) {
               className={cn(
                 'py-2 cursor-pointer justify-between rounded-[8px] hover:bg-gray-100 dark:hover:bg-[#171717]',
                 {
-                  'bg-gray-100 dark:hover:bg-[#171717]': item.id === namespaceId,
+                  'bg-gray-100 dark:bg-[#171717]': item.id === namespaceId,
                 },
               )}>
               <span

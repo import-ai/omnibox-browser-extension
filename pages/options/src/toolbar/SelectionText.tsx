@@ -17,7 +17,7 @@ export function SectionText(props: IProps) {
         <span className="font-[500]">{t('selection_menu')}</span>
       </div>
       <Switch
-        className="scale-[0.8] data-[state=unchecked]:bg-gray-600 data-[state=checked]:bg-white"
+        className="scale-[0.8] dark:data-[state=unchecked]:bg-gray-600 dark:data-[state=checked]:bg-white"
         checked={!!data.selectionTextEnabled}
         onCheckedChange={handleSelectionTextToggle}
       />
