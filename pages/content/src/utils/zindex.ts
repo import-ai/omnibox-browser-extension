@@ -21,8 +21,8 @@ export default function zIndex() {
         }
       }
     });
-    if (value <= 0) {
-      return 1000;
+    if (value <= 9000) {
+      value = 9000;
     }
     value++;
     document._zindex = value;
