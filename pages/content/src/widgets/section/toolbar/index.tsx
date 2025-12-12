@@ -28,7 +28,7 @@ export function Toolbar(props: IProps) {
     onToolbar(value);
   }, [popup, value, onToolbar]);
 
-  if (!data.selectionTextEnabled || index >= 0 || disableTemp) {
+  if (index >= 0 || disableTemp) {
     return null;
   }
 
