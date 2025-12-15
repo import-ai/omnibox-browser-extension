@@ -57,7 +57,9 @@ if (actionAPI && actionAPI.onClicked) {
             // If the receiving end does not exist (content script not loaded),
             // reload the tab to inject the content script
             if (lastError.message?.includes('Receiving end does not exist')) {
-              chrome.tabs.reload(tabId);
+              if (!tab.url?.includes('omnibox.pro')) {
+                chrome.tabs.reload(tabId);
+              }
             } else {
               console.error('Error sending message to content script:', lastError);
             }
