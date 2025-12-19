@@ -1,6 +1,6 @@
 import zIndex from '@src/utils/zindex';
 import useApp from '@src/hooks/useApp';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getSelectionText, clearSelection } from './utils';
 
 interface Position {
@@ -22,6 +22,7 @@ export function Wrapper(props: IProps) {
   const { popup, toolbar, onToolbar, children, selection, onSelection } = props;
   const { shadow } = useApp();
   const [position, setPosition] = useState<Position>({ x: 0, y: 0, isTop: true });
+  const showToolbarTimer = useRef<number | null>(null);
   const zIndexValue = zIndex();
   const hanldeClose = () => {
     onToolbar('');
@@ -86,9 +87,16 @@ export function Wrapper(props: IProps) {
           }
         }
 
-        setPosition({ x, y, isTop });
-        onToolbar(selectionText);
-        onSelection(selectionText);
+        if (showToolbarTimer.current) {
+          clearTimeout(showToolbarTimer.current);
+        }
+        showToolbarTimer.current = window.setTimeout(() => {
+          if (!getSelectionText()) return;
+
+          setPosition({ x, y, isTop });
+          onToolbar(selectionText);
+          onSelection(selectionText);
+        }, 400);
       }
     };
     window.addEventListener('scroll', handleScroll);
@@ -97,6 +105,9 @@ export function Wrapper(props: IProps) {
     return () => {
       window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('mouseup', handleMouseUp);
+      if (showToolbarTimer.current) {
+        clearTimeout(showToolbarTimer.current);
+      }
     };
   }, [popup, shadow, toolbar, onToolbar, onSelection]);
 
