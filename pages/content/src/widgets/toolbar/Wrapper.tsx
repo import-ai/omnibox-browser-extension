@@ -61,40 +61,28 @@ export function Wrapper(props: IProps) {
             }
 
             const TOOLBAR_GAP = 8;
+            const toolbarHeight = 40;
             const selectionMidY = rangeRect.top + rangeRect.height / 2;
 
-            if (x < rangeRect.left || x > rangeRect.right) {
-              x = rangeRect.right + window.scrollX + TOOLBAR_GAP;
+            // Y position: based on mouse position (top/bottom half of selection)
+            isTop = event.clientY < selectionMidY;
+            y = isTop ? rangeRect.top + window.scrollY - TOOLBAR_GAP : rangeRect.bottom + window.scrollY + TOOLBAR_GAP;
+
+            // X boundary check: move to selection boundary when mouse is outside selection
+            if (x < rangeRect.left + window.scrollX) {
+              x = rangeRect.left + window.scrollX;
+            } else if (x > rangeRect.right + window.scrollX) {
+              x = rangeRect.right + window.scrollX;
+            }
+
+            // Y boundary check: switch direction when out of screen
+            if (isTop && y - toolbarHeight < window.scrollY) {
               y = rangeRect.bottom + window.scrollY + TOOLBAR_GAP;
               isTop = false;
-            } else {
-              // Check top/bottom based on mouse position
-              isTop = event.clientY < selectionMidY;
-              y = isTop
-                ? rangeRect.top + window.scrollY - TOOLBAR_GAP
-                : rangeRect.bottom + window.scrollY + TOOLBAR_GAP;
+            } else if (!isTop && y + toolbarHeight > window.innerHeight + window.scrollY) {
+              y = rangeRect.top + window.scrollY - TOOLBAR_GAP;
+              isTop = true;
             }
-          }
-        }
-
-        // Basic edge adjustment to keep toolbar on screen
-        const toolbarWidth = 70;
-        const toolbarHeight = 40; // Approximate height
-
-        // Adjust if too close to edges (considering scroll position)
-        if (x + toolbarWidth / 2 > window.innerWidth + window.scrollX) {
-          x = window.innerWidth + window.scrollX - toolbarWidth / 2 - 10;
-        } else if (x - toolbarWidth / 2 < window.scrollX) {
-          x = window.scrollX + toolbarWidth / 2 + 10;
-        }
-
-        if (isTop) {
-          if (y - toolbarHeight < window.scrollY) {
-            y = window.scrollY + toolbarHeight + 10;
-          }
-        } else {
-          if (y + toolbarHeight > window.innerHeight + window.scrollY) {
-            y = window.innerHeight + window.scrollY - toolbarHeight - 10;
           }
         }
 
