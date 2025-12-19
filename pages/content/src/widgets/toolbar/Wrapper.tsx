@@ -6,6 +6,7 @@ import { getSelectionText, clearSelection } from './utils';
 interface Position {
   x: number;
   y: number;
+  isTop: boolean;
 }
 
 interface IProps {
@@ -20,7 +21,7 @@ interface IProps {
 export function Wrapper(props: IProps) {
   const { popup, toolbar, onToolbar, children, selection, onSelection } = props;
   const { shadow } = useApp();
-  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
+  const [position, setPosition] = useState<Position>({ x: 0, y: 0, isTop: true });
   const zIndexValue = zIndex();
   const hanldeClose = () => {
     onToolbar('');
@@ -48,6 +49,7 @@ export function Wrapper(props: IProps) {
         }
         let x = event.pageX;
         let y = event.pageY;
+        let isTop = true;
         const selection = window.getSelection();
         if (selection) {
           const range = selection.getRangeAt(0);
@@ -57,9 +59,20 @@ export function Wrapper(props: IProps) {
               // Dealing with nested shadowdom, https://www.bilibili.com/video/BV1LN15BLE6f
               return;
             }
+
+            const TOOLBAR_GAP = 8;
+            const selectionMidY = rangeRect.top + rangeRect.height / 2;
+
             if (x < rangeRect.left || x > rangeRect.right) {
-              x = rangeRect.right + window.scrollX;
-              y = rangeRect.bottom + window.scrollY;
+              x = rangeRect.right + window.scrollX + TOOLBAR_GAP;
+              y = rangeRect.bottom + window.scrollY + TOOLBAR_GAP;
+              isTop = false;
+            } else {
+              // Check top/bottom based on mouse position
+              isTop = event.clientY < selectionMidY;
+              y = isTop
+                ? rangeRect.top + window.scrollY - TOOLBAR_GAP
+                : rangeRect.bottom + window.scrollY + TOOLBAR_GAP;
             }
           }
         }
@@ -75,11 +88,17 @@ export function Wrapper(props: IProps) {
           x = window.scrollX + toolbarWidth / 2 + 10;
         }
 
-        if (y - toolbarHeight < window.scrollY) {
-          y = window.scrollY + toolbarHeight + 10;
+        if (isTop) {
+          if (y - toolbarHeight < window.scrollY) {
+            y = window.scrollY + toolbarHeight + 10;
+          }
+        } else {
+          if (y + toolbarHeight > window.innerHeight + window.scrollY) {
+            y = window.innerHeight + window.scrollY - toolbarHeight - 10;
+          }
         }
 
-        setPosition({ x, y });
+        setPosition({ x, y, isTop });
         onToolbar(selectionText);
         onSelection(selectionText);
       }
@@ -112,7 +131,7 @@ export function Wrapper(props: IProps) {
           zIndex: zIndexValue + 1,
           top: `${position.y}px`,
           left: `${position.x}px`,
-          transform: 'translate(-50%, -100%)',
+          transform: position.isTop ? 'translate(-50%,-100%)' : 'translate(-50%,0)',
         }}>
         {children}
       </div>
