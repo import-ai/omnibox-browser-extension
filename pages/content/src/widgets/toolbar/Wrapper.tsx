@@ -116,24 +116,15 @@ export function Wrapper(props: IProps) {
   }
 
   return (
-    <>
-      <div
-        onClick={hanldeClose}
-        className="fixed left-0 top-0 w-full h-full"
-        style={{
-          zIndex: zIndexValue,
-        }}
-      />
-      <div
-        className={`js-toolbar absolute top-0 bottom-auto left-0 right-auto min-w-[70px] text-foreground bg-background rounded-[8px] shadow-[0px_4px_18px_0px_rgba(0,0,0,0.1)]`}
-        style={{
-          zIndex: zIndexValue + 1,
-          top: `${position.y}px`,
-          left: `${position.x}px`,
-          transform: position.isTop ? 'translate(-50%,-100%)' : 'translate(-50%,0)',
-        }}>
-        {children}
-      </div>
-    </>
+    <div
+      className={`js-toolbar absolute top-0 bottom-auto left-0 right-auto min-w-[70px] text-foreground bg-background rounded-[8px] shadow-[0px_4px_18px_0px_rgba(0,0,0,0.1)]`}
+      style={{
+        zIndex: zIndexValue,
+        top: `${position.y}px`,
+        left: `${position.x}px`,
+        transform: position.isTop ? 'translate(-50%,-100%)' : 'translate(-50%,0)',
+      }}>
+      {children}
+    </div>
   );
 }
