@@ -35,6 +35,10 @@ export function Wrapper(props: IProps) {
       if (!open) {
         return;
       }
+      // Don't clear toolbar if Option-selected elements exist
+      if (shadow.querySelector('.js-omnibox-overlay')) {
+        return;
+      }
       onToolbar('');
     };
     const handleMouseUp = (event: MouseEvent) => {

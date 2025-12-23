@@ -19,23 +19,32 @@ export function Toolbar(props: IProps) {
   const disableSites = Array.isArray(data.disabledSites) ? data.disabledSites : [];
   const index = disableSites.findIndex(item => item.host === location.hostname);
   const showToolbarTimer = useRef<number | null>(null);
+  const hasShownOnce = useRef(false);
 
   useEffect(() => {
     clearSelection();
 
     if (popup || value.length <= 0) {
       onToolbar('');
+      hasShownOnce.current = false;
       return;
     }
 
-    // Add 400ms delay before showing toolbar
+    // If toolbar has been shown once, update immediately without delay
+    if (hasShownOnce.current) {
+      onToolbar(value);
+      return;
+    }
+
     showToolbarTimer.current = window.setTimeout(() => {
       onToolbar(value);
+      hasShownOnce.current = true;
     }, 400);
 
     return () => {
       if (showToolbarTimer.current) {
         clearTimeout(showToolbarTimer.current);
+        showToolbarTimer.current = null;
       }
     };
   }, [popup, value, onToolbar]);

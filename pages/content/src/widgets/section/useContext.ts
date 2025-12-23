@@ -67,10 +67,10 @@ export function useContext(props: IProps) {
   }, [saveSection]);
 
   useEffect(() => {
-    window.addEventListener('scroll', onDestory);
+    // Only clear selection on resize, not on scroll
+    // Scroll: absolute positioned elements follow page naturally
     window.addEventListener('resize', onDestory);
     return () => {
-      window.removeEventListener('scroll', onDestory);
       window.removeEventListener('resize', onDestory);
     };
   }, [onDestory]);

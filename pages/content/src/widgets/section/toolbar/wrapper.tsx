@@ -13,13 +13,18 @@ export function Wrapper(props: IProps) {
     return null;
   }
 
+  // Use absolute positioning so toolbar scrolls with page
+  // point is clientX/clientY, add scroll offset to get document position
+  const x = point.x + window.scrollX;
+  const y = point.y + window.scrollY;
+
   return (
     <div
-      className={`js-toolbar fixed top-0 bottom-auto left-0 right-auto min-w-[70px] text-foreground bg-background rounded-[8px] shadow-[0px_4px_18px_0px_rgba(0,0,0,0.1)]`}
+      className={`js-toolbar absolute min-w-[70px] text-foreground bg-background rounded-[8px] shadow-[0px_4px_18px_0px_rgba(0,0,0,0.1)]`}
       style={{
         zIndex: zIndex(),
-        top: `${point.y}px`,
-        left: `${point.x}px`,
+        left: x,
+        top: y,
         transform: 'translate(-50%, -100%)',
       }}>
       {children}
