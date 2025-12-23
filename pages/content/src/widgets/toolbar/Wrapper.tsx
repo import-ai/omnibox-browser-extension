@@ -90,7 +90,11 @@ export function Wrapper(props: IProps) {
           clearTimeout(showToolbarTimer.current);
         }
         showToolbarTimer.current = window.setTimeout(() => {
-          if (!getSelectionText()) return;
+          if (!getSelectionText()) {
+            onToolbar('');
+            onSelection('');
+            return;
+          }
 
           setPosition({ x, y, isTop });
           onToolbar(selectionText);
@@ -101,14 +105,6 @@ export function Wrapper(props: IProps) {
         // Don't close if Option-selected elements exist
         if (shadow.querySelector('.js-omnibox-overlay')) {
           return;
-        }
-        // Don't close if clicking on toolbar itself
-        const toolbarElement = shadow.querySelector('.js-toolbar');
-        if (toolbarElement) {
-          const clickedElement = shadow.elementFromPoint(event.clientX, event.clientY);
-          if (clickedElement && toolbarElement.contains(clickedElement)) {
-            return;
-          }
         }
         // Close toolbar
         onToolbar('');
