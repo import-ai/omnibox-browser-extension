@@ -27,11 +27,16 @@ export function Wrapper(props: IProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!open) {
+      // Don't clear if toolbar is not shown
+      if (toolbar.length <= 0) {
         return;
       }
       // Don't clear toolbar if Option-selected elements exist
       if (shadow.querySelector('.js-omnibox-overlay')) {
+        return;
+      }
+      // Don't clear if text is still selected
+      if (getSelectionText()) {
         return;
       }
       onToolbar('');

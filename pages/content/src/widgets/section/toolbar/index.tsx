@@ -23,7 +23,6 @@ export function Toolbar(props: IProps) {
 
   useEffect(() => {
     clearSelection();
-
     if (popup || value.length <= 0) {
       onToolbar('');
       hasShownOnce.current = false;
@@ -36,6 +35,9 @@ export function Toolbar(props: IProps) {
       return;
     }
 
+    if (showToolbarTimer.current) {
+      clearTimeout(showToolbarTimer.current);
+    }
     showToolbarTimer.current = window.setTimeout(() => {
       onToolbar(value);
       hasShownOnce.current = true;
