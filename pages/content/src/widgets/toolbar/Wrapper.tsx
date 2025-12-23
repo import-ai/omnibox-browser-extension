@@ -1,7 +1,7 @@
 import zIndex from '@src/utils/zindex';
 import useApp from '@src/hooks/useApp';
 import { useState, useEffect, useRef } from 'react';
-import { getSelectionText, clearSelection } from './utils';
+import { getSelectionText } from './utils';
 
 interface Position {
   x: number;
@@ -24,11 +24,6 @@ export function Wrapper(props: IProps) {
   const [position, setPosition] = useState<Position>({ x: 0, y: 0, isTop: true });
   const showToolbarTimer = useRef<number | null>(null);
   const zIndexValue = zIndex();
-  const hanldeClose = () => {
-    onToolbar('');
-    onSelection('');
-    clearSelection();
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -101,6 +96,23 @@ export function Wrapper(props: IProps) {
           onToolbar(selectionText);
           onSelection(selectionText);
         }, 400);
+      } else {
+        // No text selected - check if should close toolbar
+        // Don't close if Option-selected elements exist
+        if (shadow.querySelector('.js-omnibox-overlay')) {
+          return;
+        }
+        // Don't close if clicking on toolbar itself
+        const toolbarElement = shadow.querySelector('.js-toolbar');
+        if (toolbarElement) {
+          const clickedElement = shadow.elementFromPoint(event.clientX, event.clientY);
+          if (clickedElement && toolbarElement.contains(clickedElement)) {
+            return;
+          }
+        }
+        // Close toolbar
+        onToolbar('');
+        onSelection('');
       }
     };
     window.addEventListener('scroll', handleScroll);
