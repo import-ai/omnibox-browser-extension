@@ -61,6 +61,7 @@ export function useContext(props: IProps) {
         return;
       }
       onCursor(true);
+      dragMoveRef.current = false;
       // Keep confirmed selections (active: true), only clear temporary highlights
       onSelected(val => val.filter(item => item.active));
     };
