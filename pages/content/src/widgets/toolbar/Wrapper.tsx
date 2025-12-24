@@ -35,6 +35,22 @@ export function Wrapper(props: IProps) {
   };
 
   useEffect(() => {
+    const handleSelectionChange = () => {
+      const selection = document.getSelection();
+      if (selection && selection.isCollapsed) {
+        onToolbar('');
+        onSelection('');
+      }
+    };
+
+    document.addEventListener('selectionchange', handleSelectionChange);
+
+    return () => {
+      document.removeEventListener('selectionchange', handleSelectionChange);
+    };
+  }, [onToolbar, onSelection]);
+
+  useEffect(() => {
     const handleScroll = () => {
       // Don't clear if toolbar is not shown
       if (toolbar.length <= 0) {
@@ -50,6 +66,7 @@ export function Wrapper(props: IProps) {
       }
       clearToolbarImmediately();
     };
+
     const handleMouseUp = (event: MouseEvent) => {
       const selectionText = getSelectionText();
       // Show toolbar only when mouse is released and text is selected

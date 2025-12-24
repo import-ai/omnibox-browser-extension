@@ -1,5 +1,5 @@
 import { Wrapper } from './wrapper';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Toolbars } from '../../toolbar/toolbars';
 import type { Storage } from '@extension/shared';
 import { clearSelection } from '../../toolbar/utils';
@@ -18,7 +18,7 @@ export function Toolbar(props: IProps) {
   const { popup, toolbar, onToolbar, disableTemp, onDisableTemp } = useAction();
   const disableSites = Array.isArray(data.disabledSites) ? data.disabledSites : [];
   const index = disableSites.findIndex(item => item.host === location.hostname);
-  const showToolbarTimer = useRef<number | null>(null);
+  const [showToolbarTimer, setShowToolbarTimer] = useState<number | null>(null);
   const hasShownOnce = useRef(false);
 
   useEffect(() => {
@@ -35,18 +35,19 @@ export function Toolbar(props: IProps) {
       return;
     }
 
-    if (showToolbarTimer.current) {
-      clearTimeout(showToolbarTimer.current);
+    if (showToolbarTimer) {
+      clearTimeout(showToolbarTimer);
     }
-    showToolbarTimer.current = window.setTimeout(() => {
+    const timerId = window.setTimeout(() => {
       onToolbar(value);
       hasShownOnce.current = true;
     }, 400);
+    setShowToolbarTimer(timerId);
 
     return () => {
-      if (showToolbarTimer.current) {
-        clearTimeout(showToolbarTimer.current);
-        showToolbarTimer.current = null;
+      if (showToolbarTimer) {
+        clearTimeout(showToolbarTimer);
+        setShowToolbarTimer(null);
       }
     };
   }, [popup, value, onToolbar]);
