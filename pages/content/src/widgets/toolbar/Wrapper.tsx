@@ -25,6 +25,15 @@ export function Wrapper(props: IProps) {
   const showToolbarTimer = useRef<number | null>(null);
   const zIndexValue = zIndex();
 
+  const clearToolbarImmediately = () => {
+    if (showToolbarTimer.current) {
+      clearTimeout(showToolbarTimer.current);
+      showToolbarTimer.current = null;
+    }
+    onToolbar('');
+    onSelection('');
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       // Don't clear if toolbar is not shown
@@ -39,7 +48,7 @@ export function Wrapper(props: IProps) {
       if (getSelectionText()) {
         return;
       }
-      onToolbar('');
+      clearToolbarImmediately();
     };
     const handleMouseUp = (event: MouseEvent) => {
       const selectionText = getSelectionText();
@@ -93,11 +102,11 @@ export function Wrapper(props: IProps) {
 
         if (showToolbarTimer.current) {
           clearTimeout(showToolbarTimer.current);
+          showToolbarTimer.current = null;
         }
         showToolbarTimer.current = window.setTimeout(() => {
           if (!getSelectionText()) {
-            onToolbar('');
-            onSelection('');
+            clearToolbarImmediately();
             return;
           }
 
@@ -106,14 +115,11 @@ export function Wrapper(props: IProps) {
           onSelection(selectionText);
         }, 400);
       } else {
-        // No text selected - check if should close toolbar
-        // Don't close if Option-selected elements exist
+        // No text selected - close toolbar immediately
         if (shadow.querySelector('.js-omnibox-overlay')) {
           return;
         }
-        // Close toolbar
-        onToolbar('');
-        onSelection('');
+        clearToolbarImmediately();
       }
     };
     window.addEventListener('scroll', handleScroll);
@@ -124,6 +130,7 @@ export function Wrapper(props: IProps) {
       document.removeEventListener('mouseup', handleMouseUp);
       if (showToolbarTimer.current) {
         clearTimeout(showToolbarTimer.current);
+        showToolbarTimer.current = null;
       }
     };
   }, [popup, shadow, toolbar, onToolbar, onSelection]);
