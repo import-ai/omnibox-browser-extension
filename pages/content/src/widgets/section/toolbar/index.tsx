@@ -8,47 +8,30 @@ import { useAction } from '@src/provider/useAction';
 export interface IProps {
   data: Storage;
   value: string;
-  onDestory: () => void;
+  onDestroy: () => void;
   point: { x: number; y: number };
   onChange: (val: unknown, key?: string) => void;
 }
 
 export function Toolbar(props: IProps) {
-  const { data, point, value, onChange, onDestory } = props;
+  const { data, point, value, onChange, onDestroy } = props;
   const { popup, toolbar, onToolbar, disableTemp, onDisableTemp } = useAction();
   const disableSites = Array.isArray(data.disabledSites) ? data.disabledSites : [];
   const index = disableSites.findIndex(item => item.host === location.hostname);
-  const [showToolbarTimer, setShowToolbarTimer] = useState<number | null>(null);
-  const hasShownOnce = useRef(false);
 
   useEffect(() => {
     clearSelection();
     if (popup || value.length <= 0) {
       onToolbar('');
-      hasShownOnce.current = false;
       return;
     }
 
-    // If toolbar has been shown once, update immediately without delay
-    if (hasShownOnce.current) {
-      onToolbar(value);
-      return;
-    }
-
-    if (showToolbarTimer) {
-      clearTimeout(showToolbarTimer);
-    }
     const timerId = window.setTimeout(() => {
       onToolbar(value);
-      hasShownOnce.current = true;
     }, 400);
-    setShowToolbarTimer(timerId);
 
     return () => {
-      if (showToolbarTimer) {
-        clearTimeout(showToolbarTimer);
-        setShowToolbarTimer(null);
-      }
+      clearTimeout(timerId);
     };
   }, [popup, value, onToolbar]);
 
@@ -63,7 +46,7 @@ export function Toolbar(props: IProps) {
         selectionAction={true}
         onChange={onChange}
         toolbar={toolbar}
-        onDestory={onDestory}
+        onDestory={onDestroy}
         onToolbar={onToolbar}
         onDisableTemp={onDisableTemp}
       />
