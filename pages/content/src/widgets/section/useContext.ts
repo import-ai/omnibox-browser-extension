@@ -203,6 +203,11 @@ export function useContext(props: IProps) {
             return;
           }
         }
+        //Check if the click is on the highlighted overlay of the selected element.
+        const overlayElement = shadow.elementFromPoint(e.clientX, e.clientY);
+        if (overlayElement && overlayElement.classList.contains('js-omnibox-overlay')) {
+          return;
+        }
         onSelected([]);
         return;
       }
