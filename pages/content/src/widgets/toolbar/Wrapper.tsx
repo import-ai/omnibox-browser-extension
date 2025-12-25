@@ -22,14 +22,9 @@ export function Wrapper(props: IProps) {
   const { popup, toolbar, onToolbar, children, selection, onSelection } = props;
   const { shadow } = useApp();
   const [position, setPosition] = useState<Position>({ x: 0, y: 0, isTop: true });
-  const showToolbarTimer = useRef<number | null>(null);
   const zIndexValue = zIndex();
 
   const clearToolbarImmediately = () => {
-    if (showToolbarTimer.current) {
-      clearTimeout(showToolbarTimer.current);
-      showToolbarTimer.current = null;
-    }
     onToolbar('');
     onSelection('');
   };
@@ -51,6 +46,7 @@ export function Wrapper(props: IProps) {
   }, [onToolbar, onSelection]);
 
   useEffect(() => {
+    let timerId: number | undefined = undefined;
     const handleScroll = () => {
       // Don't clear if toolbar is not shown
       if (toolbar.length <= 0) {
@@ -117,11 +113,7 @@ export function Wrapper(props: IProps) {
           }
         }
 
-        if (showToolbarTimer.current) {
-          clearTimeout(showToolbarTimer.current);
-          showToolbarTimer.current = null;
-        }
-        showToolbarTimer.current = window.setTimeout(() => {
+        timerId = window.setTimeout(() => {
           if (!getSelectionText()) {
             clearToolbarImmediately();
             return;
@@ -145,9 +137,8 @@ export function Wrapper(props: IProps) {
     return () => {
       window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('mouseup', handleMouseUp);
-      if (showToolbarTimer.current) {
-        clearTimeout(showToolbarTimer.current);
-        showToolbarTimer.current = null;
+      if (timerId) {
+        clearTimeout(timerId);
       }
     };
   }, [popup, shadow, toolbar, onToolbar, onSelection]);
