@@ -1,5 +1,5 @@
 import { Wrapper } from './wrapper';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { Toolbars } from '../../toolbar/toolbars';
 import type { Storage } from '@extension/shared';
 import { clearSelection } from '../../toolbar/utils';

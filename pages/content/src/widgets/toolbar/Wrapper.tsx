@@ -1,6 +1,6 @@
 import zIndex from '@src/utils/zindex';
 import useApp from '@src/hooks/useApp';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { getSelectionText } from './utils';
 
 interface Position {
