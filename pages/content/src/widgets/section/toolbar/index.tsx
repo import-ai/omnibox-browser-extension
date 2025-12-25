@@ -4,6 +4,7 @@ import { Toolbars } from '../../toolbar/toolbars';
 import type { Storage } from '@extension/shared';
 import { clearSelection } from '../../toolbar/utils';
 import { useAction } from '@src/provider/useAction';
+import { POPUP_TIMEOUT_MS } from '@src/widgets/consts';
 
 export interface IProps {
   data: Storage;
@@ -28,7 +29,7 @@ export function Toolbar(props: IProps) {
 
     const timerId = window.setTimeout(() => {
       onToolbar(value);
-    }, 400);
+    }, POPUP_TIMEOUT_MS);
 
     return () => {
       clearTimeout(timerId);

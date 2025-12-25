@@ -2,6 +2,7 @@ import zIndex from '@src/utils/zindex';
 import useApp from '@src/hooks/useApp';
 import { useState, useEffect } from 'react';
 import { getSelectionText } from './utils';
+import { POPUP_TIMEOUT_MS } from '@src/widgets/consts';
 
 interface Position {
   x: number;
@@ -122,7 +123,7 @@ export function Wrapper(props: IProps) {
           setPosition({ x, y, isTop });
           onToolbar(selectionText);
           onSelection(selectionText);
-        }, 400);
+        }, POPUP_TIMEOUT_MS);
       } else {
         // No text selected - close toolbar immediately
         if (shadow.querySelector('.js-omnibox-overlay')) {
