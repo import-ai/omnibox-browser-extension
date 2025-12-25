@@ -17,6 +17,7 @@ interface State {
   text?: string;
   active?: boolean;
   element: Element;
+  firstElement?: Element; // For merged items, stores the first element
 }
 
 export interface IProps {
@@ -55,8 +56,14 @@ export function useContext(props: IProps) {
       if (e.key !== saveSection) {
         return;
       }
+      // Ignore key repeat events (when holding down the key)
+      if (e.repeat) {
+        return;
+      }
       onCursor(true);
-      onSelected([]);
+      dragMoveRef.current = false;
+      // Keep confirmed selections (active: true), only clear temporary highlights
+      onSelected(val => val.filter(item => item.active));
     };
     window.addEventListener('keyup', handleKeyUp);
     window.addEventListener('keydown', handleKeyDown);
@@ -67,13 +74,47 @@ export function useContext(props: IProps) {
   }, [saveSection]);
 
   useEffect(() => {
-    window.addEventListener('scroll', onDestory);
+    // Only clear on resize, not scroll (so selection persists during scroll)
     window.addEventListener('resize', onDestory);
     return () => {
-      window.removeEventListener('scroll', onDestory);
       window.removeEventListener('resize', onDestory);
     };
   }, [onDestory]);
+
+  // Update selected positions on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      onSelected(val => {
+        if (val.length === 0) return val;
+        return val.map(item => {
+          if (!document.contains(item.element)) return item;
+          const rect = item.element.getBoundingClientRect();
+          // Handle merged items with firstElement
+          if (item.firstElement && document.contains(item.firstElement)) {
+            const firstRect = item.firstElement.getBoundingClientRect();
+            return {
+              ...item,
+              x: firstRect.x,
+              y: firstRect.y,
+              w: rect.width,
+              h: rect.bottom - firstRect.top,
+            };
+          }
+          return {
+            ...item,
+            x: rect.x,
+            y: rect.y,
+            w: rect.width,
+            h: rect.height,
+          };
+        });
+      });
+    };
+    window.addEventListener('scroll', handleScroll, true);
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+    };
+  }, []);
 
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
@@ -150,6 +191,10 @@ export function useContext(props: IProps) {
     };
     const handleMouseUp = (e: MouseEvent) => {
       draggingRef.current = false;
+      // Only handle left button release, ignore right-click
+      if (e.button !== 0) {
+        return;
+      }
       if (!cursor) {
         const containerRef = shadow.querySelector('.js-toolbar') as HTMLElement;
         if (containerRef) {
@@ -157,6 +202,11 @@ export function useContext(props: IProps) {
           if (toolbarElement && containerRef.contains(toolbarElement)) {
             return;
           }
+        }
+        //Check if the click is on the highlighted overlay of the selected element.
+        const overlayElement = shadow.elementFromPoint(e.clientX, e.clientY);
+        if (overlayElement && overlayElement.classList.contains('js-omnibox-overlay')) {
+          return;
         }
         onSelected([]);
         return;
@@ -217,6 +267,7 @@ export function useContext(props: IProps) {
             y: firstRect.y,
             w: lastRect.width,
             element: last.element,
+            firstElement: first.element,
             h: lastRect.bottom - firstRect.top,
             id: getElementId(last.element),
             text: sorted.map(i => i.element.outerHTML).join(''),

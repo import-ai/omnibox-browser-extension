@@ -4,17 +4,18 @@ import { Toolbars } from '../../toolbar/toolbars';
 import type { Storage } from '@extension/shared';
 import { clearSelection } from '../../toolbar/utils';
 import { useAction } from '@src/provider/useAction';
+import { POPUP_TIMEOUT_MS } from '@src/widgets/consts';
 
 export interface IProps {
   data: Storage;
   value: string;
-  onDestory: () => void;
+  onDestroy: () => void;
   point: { x: number; y: number };
   onChange: (val: unknown, key?: string) => void;
 }
 
 export function Toolbar(props: IProps) {
-  const { data, point, value, onChange, onDestory } = props;
+  const { data, point, value, onChange, onDestroy } = props;
   const { popup, toolbar, onToolbar, disableTemp, onDisableTemp } = useAction();
   const disableSites = Array.isArray(data.disabledSites) ? data.disabledSites : [];
   const index = disableSites.findIndex(item => item.host === location.hostname);
@@ -25,7 +26,14 @@ export function Toolbar(props: IProps) {
       onToolbar('');
       return;
     }
-    onToolbar(value);
+
+    const timerId = window.setTimeout(() => {
+      onToolbar(value);
+    }, POPUP_TIMEOUT_MS);
+
+    return () => {
+      clearTimeout(timerId);
+    };
   }, [popup, value, onToolbar]);
 
   if (index >= 0 || disableTemp) {
@@ -39,7 +47,7 @@ export function Toolbar(props: IProps) {
         selectionAction={true}
         onChange={onChange}
         toolbar={toolbar}
-        onDestory={onDestory}
+        onDestory={onDestroy}
         onToolbar={onToolbar}
         onDisableTemp={onDisableTemp}
       />

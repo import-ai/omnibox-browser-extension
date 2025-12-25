@@ -1,11 +1,13 @@
 import zIndex from '@src/utils/zindex';
 import useApp from '@src/hooks/useApp';
 import { useState, useEffect } from 'react';
-import { getSelectionText, clearSelection } from './utils';
+import { getSelectionText } from './utils';
+import { POPUP_TIMEOUT_MS } from '@src/widgets/consts';
 
 interface Position {
   x: number;
   y: number;
+  isTop: boolean;
 }
 
 interface IProps {
@@ -20,21 +22,48 @@ interface IProps {
 export function Wrapper(props: IProps) {
   const { popup, toolbar, onToolbar, children, selection, onSelection } = props;
   const { shadow } = useApp();
-  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
+  const [position, setPosition] = useState<Position>({ x: 0, y: 0, isTop: true });
   const zIndexValue = zIndex();
-  const hanldeClose = () => {
+
+  const clearToolbarImmediately = () => {
     onToolbar('');
     onSelection('');
-    clearSelection();
   };
 
   useEffect(() => {
+    const handleSelectionChange = () => {
+      const selection = document.getSelection();
+      if (selection && selection.isCollapsed) {
+        onToolbar('');
+        onSelection('');
+      }
+    };
+
+    document.addEventListener('selectionchange', handleSelectionChange);
+
+    return () => {
+      document.removeEventListener('selectionchange', handleSelectionChange);
+    };
+  }, [onToolbar, onSelection]);
+
+  useEffect(() => {
+    let timerId: number | undefined = undefined;
     const handleScroll = () => {
-      if (!open) {
+      // Don't clear if toolbar is not shown
+      if (toolbar.length <= 0) {
         return;
       }
-      onToolbar('');
+      // Don't clear toolbar if Option-selected elements exist
+      if (shadow.querySelector('.js-omnibox-overlay')) {
+        return;
+      }
+      // Don't clear if text is still selected
+      if (getSelectionText()) {
+        return;
+      }
+      clearToolbarImmediately();
     };
+
     const handleMouseUp = (event: MouseEvent) => {
       const selectionText = getSelectionText();
       // Show toolbar only when mouse is released and text is selected
@@ -48,6 +77,7 @@ export function Wrapper(props: IProps) {
         }
         let x = event.pageX;
         let y = event.pageY;
+        let isTop = true;
         const selection = window.getSelection();
         if (selection) {
           const range = selection.getRangeAt(0);
@@ -57,31 +87,49 @@ export function Wrapper(props: IProps) {
               // Dealing with nested shadowdom, https://www.bilibili.com/video/BV1LN15BLE6f
               return;
             }
-            if (x < rangeRect.left || x > rangeRect.right) {
+
+            const TOOLBAR_GAP = 8;
+            const toolbarHeight = 40;
+            const selectionMidY = rangeRect.top + rangeRect.height / 2;
+
+            // Y position: based on mouse position (top/bottom half of selection)
+            isTop = event.clientY < selectionMidY;
+            y = isTop ? rangeRect.top + window.scrollY - TOOLBAR_GAP : rangeRect.bottom + window.scrollY + TOOLBAR_GAP;
+
+            // X boundary check: move to selection boundary when mouse is outside selection
+            if (x < rangeRect.left + window.scrollX) {
+              x = rangeRect.left + window.scrollX;
+            } else if (x > rangeRect.right + window.scrollX) {
               x = rangeRect.right + window.scrollX;
-              y = rangeRect.bottom + window.scrollY;
+            }
+
+            // Y boundary check: switch direction when out of screen
+            if (isTop && y - toolbarHeight < window.scrollY) {
+              y = rangeRect.bottom + window.scrollY + TOOLBAR_GAP;
+              isTop = false;
+            } else if (!isTop && y + toolbarHeight > window.innerHeight + window.scrollY) {
+              y = rangeRect.top + window.scrollY - TOOLBAR_GAP;
+              isTop = true;
             }
           }
         }
 
-        // Basic edge adjustment to keep toolbar on screen
-        const toolbarWidth = 70;
-        const toolbarHeight = 40; // Approximate height
+        timerId = window.setTimeout(() => {
+          if (!getSelectionText()) {
+            clearToolbarImmediately();
+            return;
+          }
 
-        // Adjust if too close to edges (considering scroll position)
-        if (x + toolbarWidth / 2 > window.innerWidth + window.scrollX) {
-          x = window.innerWidth + window.scrollX - toolbarWidth / 2 - 10;
-        } else if (x - toolbarWidth / 2 < window.scrollX) {
-          x = window.scrollX + toolbarWidth / 2 + 10;
+          setPosition({ x, y, isTop });
+          onToolbar(selectionText);
+          onSelection(selectionText);
+        }, POPUP_TIMEOUT_MS);
+      } else {
+        // No text selected - close toolbar immediately
+        if (shadow.querySelector('.js-omnibox-overlay')) {
+          return;
         }
-
-        if (y - toolbarHeight < window.scrollY) {
-          y = window.scrollY + toolbarHeight + 10;
-        }
-
-        setPosition({ x, y });
-        onToolbar(selectionText);
-        onSelection(selectionText);
+        clearToolbarImmediately();
       }
     };
     window.addEventListener('scroll', handleScroll);
@@ -90,6 +138,9 @@ export function Wrapper(props: IProps) {
     return () => {
       window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('mouseup', handleMouseUp);
+      if (timerId) {
+        clearTimeout(timerId);
+      }
     };
   }, [popup, shadow, toolbar, onToolbar, onSelection]);
 
@@ -98,24 +149,15 @@ export function Wrapper(props: IProps) {
   }
 
   return (
-    <>
-      <div
-        onClick={hanldeClose}
-        className="fixed left-0 top-0 w-full h-full"
-        style={{
-          zIndex: zIndexValue,
-        }}
-      />
-      <div
-        className={`js-toolbar absolute top-0 bottom-auto left-0 right-auto min-w-[70px] text-foreground bg-background rounded-[8px] shadow-[0px_4px_18px_0px_rgba(0,0,0,0.1)]`}
-        style={{
-          zIndex: zIndexValue + 1,
-          top: `${position.y}px`,
-          left: `${position.x}px`,
-          transform: 'translate(-50%, -100%)',
-        }}>
-        {children}
-      </div>
-    </>
+    <div
+      className={`js-toolbar absolute top-0 bottom-auto left-0 right-auto min-w-[70px] text-foreground bg-background rounded-[8px] shadow-[0px_4px_18px_0px_rgba(0,0,0,0.1)]`}
+      style={{
+        zIndex: zIndexValue,
+        top: `${position.y}px`,
+        left: `${position.x}px`,
+        transform: position.isTop ? 'translate(-50%,-100%)' : 'translate(-50%,0)',
+      }}>
+      {children}
+    </div>
   );
 }

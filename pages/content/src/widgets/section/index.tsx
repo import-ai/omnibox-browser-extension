@@ -30,7 +30,7 @@ export function SectionContainer(props: IProps) {
           <ActiveElement {...item} key={item.id} />
         ))}
       </Wrapper>
-      <Toolbar {...props} point={point} value={selectedText} onDestory={onDestory} />
+      <Toolbar {...props} point={point} value={selectedText} onDestroy={onDestory} />
     </>
   );
 }
