@@ -1,23 +1,33 @@
+const INTERNAL_URL_PREFIXES = [
+  'chrome://',
+  'chrome-extension://',
+  'moz-extension://',
+  'about:',
+  'edge://',
+  'opera://',
+  'safari-extension://',
+];
+
+const INTERNAL_URL_PATTERNS = ['microsoftedge.microsoft.com/addons', 'addons.mozilla.org', 'addons.opera.com'];
+
 export function isInternalUrl(url: string): boolean {
   if (!url) {
     return true;
   }
-  return (
-    url.startsWith('chrome://') ||
-    url.startsWith('chrome-extension://') ||
-    url.startsWith('moz-extension://') ||
-    url.startsWith('about:') ||
-    url.startsWith('edge://') ||
-    url.startsWith('extension://') ||
-    url.startsWith('opera://') ||
-    url.startsWith('safari-extension://') ||
-    url.startsWith('safari-web-extension://') ||
-    url.includes('chrome.google.com/webstore') ||
-    url.includes('microsoftedge.microsoft.com/addons') ||
-    url.includes('addons.mozilla.org') ||
-    url.includes('addons.opera.com') ||
-    url.includes('omnibox.pro')
-  );
+
+  for (const prefix of INTERNAL_URL_PREFIXES) {
+    if (url.startsWith(prefix)) {
+      return true;
+    }
+  }
+
+  for (const pattern of INTERNAL_URL_PATTERNS) {
+    if (url.includes(pattern)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export function compress(html: string, encoding: 'gzip') {
