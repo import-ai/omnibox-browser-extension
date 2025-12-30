@@ -6,5 +6,13 @@
   "extensionDescription": {
     "description": "扩展描述",
     "message": "一键收藏整页/选区，支持自定义空间与文件夹、主题切换、中英双语，让你的浏览器秒变个人知识管家。"
+  },
+  "restrictedPageTitle": {
+    "description": "受限页面显示的标题",
+    "message": "当前页面不支持使用此插件"
+  },
+  "restrictedPageMessage": {
+    "description": "受限页面显示的消息",
+    "message": "请在其他网页上使用此插件功能。"
   }
 }
