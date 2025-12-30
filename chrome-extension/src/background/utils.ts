@@ -8,8 +8,15 @@ export function isInternalUrl(url: string): boolean {
     url.startsWith('moz-extension://') ||
     url.startsWith('about:') ||
     url.startsWith('edge://') ||
+    url.startsWith('extension://') ||
     url.startsWith('opera://') ||
-    url.startsWith('safari-extension://')
+    url.startsWith('safari-extension://') ||
+    url.startsWith('safari-web-extension://') ||
+    url.includes('chrome.google.com/webstore') ||
+    url.includes('microsoftedge.microsoft.com/addons') ||
+    url.includes('addons.mozilla.org') ||
+    url.includes('addons.opera.com') ||
+    url.includes('omnibox.pro')
   );
 }
 
