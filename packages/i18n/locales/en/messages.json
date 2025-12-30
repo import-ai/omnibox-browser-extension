@@ -6,5 +6,13 @@
   "extensionDescription": {
     "description": "Extension description",
     "message": "With a single click, save the page and turn your browser into a personal knowledge hub."
+  },
+  "restrictedPageTitle": {
+    "description": "Title shown on restricted pages",
+    "message": "Extension not available on this page"
+  },
+  "restrictedPageMessage": {
+    "description": "Message shown on restricted pages",
+    "message": "Please use this extension on other web pages."
   }
 }

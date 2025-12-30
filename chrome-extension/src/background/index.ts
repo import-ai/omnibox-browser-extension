@@ -44,11 +44,41 @@ const actionAPI =
   chrome.action ||
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (chrome as any).browserAction;
+
+// Update pop-up windows based on URL
+function updatePopupForUrl(url: string) {
+  if (actionAPI && typeof actionAPI.setPopup === 'function') {
+    const popup = isInternalUrl(url) ? 'restricted-popup.html' : '';
+    actionAPI.setPopup({ popup });
+  }
+}
+
+// Pop up window for dynamic settings of restricted pages
+if (actionAPI && typeof actionAPI.setPopup === 'function') {
+  chrome.tabs.onActivated.addListener(async activeInfo => {
+    const tab = await chrome.tabs.get(activeInfo.tabId);
+    if (tab.url) {
+      updatePopupForUrl(tab.url);
+    }
+  });
+
+  // Listen for tab URL updates
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.url) {
+      chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+        if (tabs[0]?.id === tabId && changeInfo.url) {
+          updatePopupForUrl(changeInfo.url);
+        }
+      });
+    }
+  });
+}
+
 if (actionAPI && actionAPI.onClicked) {
   actionAPI.onClicked.addListener(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
       const tab = tabs[0];
-      if (tab?.id && tab.url && !isInternalUrl(tab.url)) {
+      if (tab?.id && tab.url) {
         const tabId = tab.id;
         chrome.tabs.sendMessage(tabId, { action: 'toggle-popup' }, () => {
           // Check if there was an error sending the message
