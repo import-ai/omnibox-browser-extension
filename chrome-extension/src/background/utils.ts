@@ -8,7 +8,13 @@ const INTERNAL_URL_PREFIXES = [
   'safari-extension://',
 ];
 
-const INTERNAL_URL_PATTERNS = ['microsoftedge.microsoft.com/addons', 'addons.mozilla.org', 'addons.opera.com'];
+const INTERNAL_URL_PATTERNS = [
+  'chromewebstore.google.com',
+  'microsoftedge.microsoft.com/addons',
+  'addons.mozilla.org',
+  'addons.opera.com',
+  'omnibox.pro',
+];
 
 export function isInternalUrl(url: string): boolean {
   if (!url) {
