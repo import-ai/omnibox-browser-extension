@@ -10,7 +10,7 @@ export interface IProps {
 }
 
 export function SectionContainer(props: IProps) {
-  const { cursor, selected, point, onDestory } = useContext(props);
+  const { cursor, selected, point, onDestory, isSelecting } = useContext(props);
   const merged = selected.find(item => !!item.text);
   const selectedText = merged
     ? merged.text || ''
@@ -30,7 +30,7 @@ export function SectionContainer(props: IProps) {
           <ActiveElement {...item} key={item.id} />
         ))}
       </Wrapper>
-      <Toolbar {...props} point={point} value={selectedText} onDestroy={onDestory} />
+      <Toolbar {...props} point={point} value={selectedText} onDestroy={onDestory} isSelecting={isSelecting} />
     </>
   );
 }

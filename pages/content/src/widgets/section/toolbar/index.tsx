@@ -12,17 +12,18 @@ export interface IProps {
   onDestroy: () => void;
   point: { x: number; y: number };
   onChange: (val: unknown, key?: string) => void;
+  isSelecting: boolean;
 }
 
 export function Toolbar(props: IProps) {
-  const { data, point, value, onChange, onDestroy } = props;
+  const { data, point, value, onChange, onDestroy, isSelecting } = props;
   const { popup, toolbar, onToolbar, disableTemp, onDisableTemp } = useAction();
   const disableSites = Array.isArray(data.disabledSites) ? data.disabledSites : [];
   const index = disableSites.findIndex(item => item.host === location.hostname);
 
   useEffect(() => {
     clearSelection();
-    if (popup || value.length <= 0) {
+    if (popup || value.length <= 0 || isSelecting) {
       onToolbar('');
       return;
     }
@@ -34,7 +35,7 @@ export function Toolbar(props: IProps) {
     return () => {
       clearTimeout(timerId);
     };
-  }, [popup, value, onToolbar]);
+  }, [popup, value, onToolbar, isSelecting]);
 
   if (index >= 0 || disableTemp) {
     return null;

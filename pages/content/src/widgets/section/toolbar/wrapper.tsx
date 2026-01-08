@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 interface IProps {
   toolbar: string;
-  point: { x: number; y: number };
+  point: { x: number; y: number; isTop?: boolean };
   children: React.ReactNode;
 }
 
@@ -44,6 +44,8 @@ export function Wrapper(props: IProps) {
   const viewportX = docPos.x - scrollOffset.x;
   const viewportY = docPos.y - scrollOffset.y;
 
+  const isTop = point.isTop ?? true;
+
   return (
     <div
       className={`js-toolbar fixed min-w-[70px] text-foreground bg-background rounded-[8px] shadow-[0px_4px_18px_0px_rgba(0,0,0,0.1)]`}
@@ -51,7 +53,7 @@ export function Wrapper(props: IProps) {
         zIndex: zIndex(),
         top: `${viewportY}px`,
         left: `${viewportX}px`,
-        transform: 'translate(-50%, -100%)',
+        transform: isTop ? 'translate(-50%, -100%)' : 'translate(-50%, 0)',
       }}>
       {children}
     </div>

@@ -8,13 +8,21 @@ export function useStore<T>() {
   const [status, onStatus] = useState(''); //'' | 'pending' | 'error' | 'done'
 
   useEffect(() => {
-    chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+    const handleMessage = (
+      request: { action: string },
+      _sender: chrome.runtime.MessageSender,
+      sendResponse: () => void,
+    ) => {
       sendResponse();
       if (request.action === 'toggle-popup') {
         onPopup(val => !val);
       }
       return true;
-    });
+    };
+    chrome.runtime.onMessage.addListener(handleMessage);
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleMessage);
+    };
   }, []);
 
   return {

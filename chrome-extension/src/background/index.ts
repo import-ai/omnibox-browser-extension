@@ -1,6 +1,9 @@
 import 'webextension-polyfill';
-import { isInternalUrl, compress } from './utils';
+import { canInjectScripts, compress } from './utils';
 import { axios, track } from '@extension/shared';
+
+// Track ready content scripts by tab ID
+const readyTabs = new Set<number>();
 
 // Track uninstall event
 chrome.runtime.onInstalled.addListener(async () => {
@@ -45,34 +48,37 @@ const actionAPI =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (chrome as any).browserAction;
 
-// Update pop-up windows based on URL
-function updatePopupForUrl(url: string) {
+// Update pop-up windows based on whether scripts can be injected
+async function updatePopupForTab(tabId: number) {
   if (actionAPI && typeof actionAPI.setPopup === 'function') {
-    const popup = isInternalUrl(url) ? 'restricted-popup.html' : '';
-    actionAPI.setPopup({ popup });
+    const canInject = await canInjectScripts(tabId, readyTabs);
+    const popup = canInject ? '' : 'restricted-popup.html';
+    actionAPI.setPopup({ popup, tabId });
   }
 }
 
 // Pop up window for dynamic settings of restricted pages
 if (actionAPI && typeof actionAPI.setPopup === 'function') {
   chrome.tabs.onActivated.addListener(async activeInfo => {
-    const tab = await chrome.tabs.get(activeInfo.tabId);
-    if (tab.url) {
-      updatePopupForUrl(tab.url);
-    }
+    await updatePopupForTab(activeInfo.tabId);
   });
 
   // Listen for tab URL updates
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    // Clear ready state when URL changes (page navigation)
     if (changeInfo.url) {
-      chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-        if (tabs[0]?.id === tabId && changeInfo.url) {
-          updatePopupForUrl(changeInfo.url);
-        }
-      });
+      readyTabs.delete(tabId);
+    }
+    if (tab.active && (changeInfo.url || changeInfo.status === 'complete')) {
+      updatePopupForTab(tabId);
     }
   });
 }
+
+// Clean up readyTabs when tab is closed
+chrome.tabs.onRemoved.addListener(tabId => {
+  readyTabs.delete(tabId);
+});
 
 if (actionAPI && actionAPI.onClicked) {
   actionAPI.onClicked.addListener(() => {
@@ -101,6 +107,13 @@ if (actionAPI && actionAPI.onClicked) {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === '__content_ready__') {
+    if (sender.tab?.id) {
+      readyTabs.add(sender.tab.id);
+      updatePopupForTab(sender.tab.id);
+    }
+    return;
+  }
   if (request.action === 'collect') {
     compress(request.data, 'gzip').then(compressedHtml => {
       const formData = new FormData();
