@@ -7,6 +7,17 @@ import './index.css';
 import App from './App';
 import './i18n';
 
+// Register __ping__ listener immediately for background detection
+// This must be registered BEFORE React renders to ensure it's always available
+// Fixes race condition in Firefox and other browsers
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+  if (request.action === '__ping__') {
+    sendResponse({ ok: true });
+    return true;
+  }
+  // Let other listeners handle other messages
+});
+
 function bootstrap() {
   const { root, shadow } = generateShadow();
   const link = document.createElement('link');
@@ -25,4 +36,6 @@ function bootstrap() {
 
 if (!location.hostname.includes('omnibox.pro')) {
   bootstrap();
+  // Notify background that content script is ready
+  chrome.runtime.sendMessage({ action: '__content_ready__' });
 }
