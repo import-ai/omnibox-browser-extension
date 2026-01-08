@@ -1,39 +1,53 @@
-const INTERNAL_URL_PREFIXES = [
-  'chrome://',
-  'chrome-extension://',
-  'moz-extension://',
-  'about:',
-  'edge://',
-  'opera://',
-  'safari-extension://',
-];
+export async function canInjectScripts(tabId: number, readyTabs?: Set<number>): Promise<boolean> {
+  try {
+    // Get the tab's URL
+    const tab = await chrome.tabs.get(tabId);
+    if (!tab.url) {
+      return false;
+    }
 
-const INTERNAL_URL_PATTERNS = [
-  'chromewebstore.google.com',
-  'microsoftedge.microsoft.com/addons',
-  'addons.mozilla.org',
-  'addons.opera.com',
-  'omnibox.pro',
-];
+    // Get user's configured apiBaseUrl from storage
+    const storage = await chrome.storage.sync.get('apiBaseUrl');
+    const apiBaseUrl = storage.apiBaseUrl || 'https://www.omnibox.pro';
 
-export function isInternalUrl(url: string): boolean {
-  if (!url) {
-    return true;
-  }
+    try {
+      const tabUrl = new URL(tab.url);
+      const configUrl = new URL(apiBaseUrl);
 
-  for (const prefix of INTERNAL_URL_PREFIXES) {
-    if (url.startsWith(prefix)) {
+      // Rule 1: If current page origin matches configured apiBaseUrl, restrict it
+      if (tabUrl.origin === configUrl.origin) {
+        return false;
+      }
+
+      // Rule 2: Always restrict omnibox.pro domain (including all subdomains)
+      if (tabUrl.hostname.includes('omnibox.pro')) {
+        return false;
+      }
+    } catch (e) {
+      // Invalid URL, will be caught by ping check below
+    }
+
+    // Rule 3: Check if content script has reported ready
+    if (readyTabs?.has(tabId)) {
       return true;
     }
-  }
 
-  for (const pattern of INTERNAL_URL_PATTERNS) {
-    if (url.includes(pattern)) {
-      return true;
-    }
+    // Rule 4: Fallback to ping for compatibility
+    return new Promise(resolve => {
+      chrome.tabs.sendMessage(tabId, { action: '__ping__' }, () => {
+        const err = chrome.runtime.lastError;
+        if (err) {
+          // Cannot inject scripts (browser restricted page)
+          resolve(false);
+        } else {
+          // Content script is loaded and responded
+          resolve(true);
+        }
+      });
+    });
+  } catch (error) {
+    return false;
   }
-
-  return false;
 }
 
 export function compress(html: string, encoding: 'gzip') {

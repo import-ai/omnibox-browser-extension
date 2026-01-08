@@ -3,9 +3,12 @@ import type { Storage } from '@extension/shared';
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { availableElements, getElementId, isElementIntersection } from './utils';
 
+const TOOLBAR_GAP = 8;
+
 interface Point {
   x: number;
   y: number;
+  isTop?: boolean;
 }
 
 interface State {
@@ -25,15 +28,40 @@ export interface IProps {
   onChange: (val: unknown, key?: string) => void;
 }
 
+/**
+ * Calculate toolbar position based on selection bounds and mouse position
+ */
+function calculateToolbarPosition(
+  mouseX: number,
+  mouseY: number,
+  top: number,
+  bottom: number,
+  left: number,
+  right: number,
+): Point {
+  const midY = top + (bottom - top) / 2;
+  const isTop = mouseY < midY;
+  let x = mouseX;
+  if (x < left) {
+    x = left;
+  } else if (x > right) {
+    x = right;
+  }
+  const y = isTop ? top - TOOLBAR_GAP : bottom + TOOLBAR_GAP;
+  return { x, y, isTop };
+}
+
 export function useContext(props: IProps) {
   const { data } = props;
   const { shadow } = useApp();
   const timer = useRef<number>(0);
   const draggingRef = useRef(false);
   const dragMoveRef = useRef(false);
+  const dragElementsRef = useRef<Element[]>([]);
   const [cursor, onCursor] = useState(false);
   const [selected, onSelected] = useState<State[]>([]);
   const [point, onPoint] = useState<Point>({ x: 0, y: 0 });
+  const [isSelecting, setIsSelecting] = useState(false);
   const saveSection = data.keyboardShortcuts?.saveSection;
   const onDestory = useCallback(() => {
     dragMoveRef.current = false;
@@ -81,7 +109,7 @@ export function useContext(props: IProps) {
     };
   }, [onDestory]);
 
-  // Update selected positions on scroll
+  // Update selected positions on scroll (kept for state consistency)
   useEffect(() => {
     const handleScroll = () => {
       onSelected(val => {
@@ -126,6 +154,8 @@ export function useContext(props: IProps) {
       }
       dragMoveRef.current = false;
       draggingRef.current = true;
+      dragElementsRef.current = [];
+      setIsSelecting(true);
     };
     const handleMouseMove = (e: MouseEvent) => {
       if (!cursor) {
@@ -151,6 +181,10 @@ export function useContext(props: IProps) {
       if (draggingRef.current) {
         if (!dragMoveRef.current) {
           dragMoveRef.current = true;
+        }
+        // Track dragged elements in ref for position calculation
+        if (!dragElementsRef.current.includes(element)) {
+          dragElementsRef.current.push(element);
         }
         onSelected(val => {
           const rect = element.getBoundingClientRect();
@@ -193,9 +227,11 @@ export function useContext(props: IProps) {
       draggingRef.current = false;
       // Only handle left button release, ignore right-click
       if (e.button !== 0) {
+        setIsSelecting(false);
         return;
       }
       if (!cursor) {
+        setIsSelecting(false);
         const containerRef = shadow.querySelector('.js-toolbar') as HTMLElement;
         if (containerRef) {
           const toolbarElement = shadow.elementFromPoint(e.clientX, e.clientY);
@@ -214,23 +250,31 @@ export function useContext(props: IProps) {
       if (!dragMoveRef.current) {
         const elements = document.elementsFromPoint(e.clientX, e.clientY);
         if (elements.length <= 0) {
+          setIsSelecting(false);
           return;
         }
         const element = availableElements(elements);
         if (!element) {
+          setIsSelecting(false);
           return;
         }
         const returnValue = isElementIntersection(shadow, element);
         if (returnValue.intersection) {
           onSelected(val => val.filter(item => item.id !== returnValue.id));
+          setIsSelecting(false);
           return;
         }
+
+        // Calculate toolbar position based on current clicked element
+        const rect = element.getBoundingClientRect();
+        const toolbarPos = calculateToolbarPosition(e.clientX, e.clientY, rect.top, rect.bottom, rect.left, rect.right);
+
         onSelected(val => {
           const item = val.find(item => item.active && item.element === element);
           if (item) {
             return val.filter(item => item.element !== element);
           }
-          const rect = element.getBoundingClientRect();
+
           return [
             ...val.filter(item => item.active || item.element !== element),
             {
@@ -244,37 +288,58 @@ export function useContext(props: IProps) {
             },
           ];
         });
-        onPoint({ x: e.clientX, y: e.clientY });
+
+        onPoint(toolbarPos);
+        setIsSelecting(false);
         return;
       }
-      onSelected(val => {
-        if (val.length <= 0) {
-          return val;
-        }
-        const sorted = val.sort((a, b) => {
-          const ra = a.element.getBoundingClientRect();
-          const rb = b.element.getBoundingClientRect();
-          return ra.top > rb.top ? 1 : -1;
-        });
-        const first = sorted[0];
-        const last = sorted[sorted.length - 1];
-        const firstRect = first.element.getBoundingClientRect();
-        const lastRect = last.element.getBoundingClientRect();
-        return [
-          {
-            active: true,
-            x: firstRect.x,
-            y: firstRect.y,
-            w: lastRect.width,
-            element: last.element,
-            firstElement: first.element,
-            h: lastRect.bottom - firstRect.top,
-            id: getElementId(last.element),
-            text: sorted.map(i => i.element.outerHTML).join(''),
-          },
-        ];
+
+      // Drag selection: calculate position using dragElementsRef before updating state
+      const elements = dragElementsRef.current;
+      if (elements.length <= 0) {
+        setIsSelecting(false);
+        return;
+      }
+
+      // Sort elements by vertical position
+      const sorted = [...elements].sort((a, b) => {
+        const ra = a.getBoundingClientRect();
+        const rb = b.getBoundingClientRect();
+        return ra.top > rb.top ? 1 : -1;
       });
-      onPoint({ x: e.clientX, y: e.clientY });
+
+      const first = sorted[0];
+      const last = sorted[sorted.length - 1];
+      const firstRect = first.getBoundingClientRect();
+      const lastRect = last.getBoundingClientRect();
+
+      // Calculate toolbar position
+      const toolbarPos = calculateToolbarPosition(
+        e.clientX,
+        e.clientY,
+        firstRect.top,
+        lastRect.bottom,
+        Math.min(firstRect.left, lastRect.left),
+        Math.max(firstRect.right, lastRect.right),
+      );
+
+      // Update selected state with merged selection
+      onSelected([
+        {
+          active: true,
+          x: firstRect.x,
+          y: firstRect.y,
+          w: lastRect.width,
+          element: last,
+          firstElement: first,
+          h: lastRect.bottom - firstRect.top,
+          id: getElementId(last),
+          text: sorted.map(i => i.outerHTML).join(''),
+        },
+      ]);
+
+      onPoint(toolbarPos);
+      setIsSelecting(false);
     };
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mousedown', handleMouseDown);
@@ -291,5 +356,6 @@ export function useContext(props: IProps) {
     cursor,
     selected,
     onDestory,
+    isSelecting,
   };
 }
