@@ -1,5 +1,3 @@
-
-
 export async function canInjectScripts(tabId: number, readyTabs?: Set<number>): Promise<boolean> {
   try {
     // Get the tab's URL

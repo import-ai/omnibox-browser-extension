@@ -45,7 +45,7 @@ export function Wrapper(props: IProps) {
   const viewportY = docPos.y - scrollOffset.y;
 
   const isTop = point.isTop ?? true;
-  
+
   return (
     <div
       className={`js-toolbar fixed min-w-[70px] text-foreground bg-background rounded-[8px] shadow-[0px_4px_18px_0px_rgba(0,0,0,0.1)]`}

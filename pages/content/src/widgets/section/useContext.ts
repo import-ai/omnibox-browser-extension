@@ -267,14 +267,7 @@ export function useContext(props: IProps) {
 
         // Calculate toolbar position based on current clicked element
         const rect = element.getBoundingClientRect();
-        const toolbarPos = calculateToolbarPosition(
-          e.clientX,
-          e.clientY,
-          rect.top,
-          rect.bottom,
-          rect.left,
-          rect.right,
-        );
+        const toolbarPos = calculateToolbarPosition(e.clientX, e.clientY, rect.top, rect.bottom, rect.left, rect.right);
 
         onSelected(val => {
           const item = val.find(item => item.active && item.element === element);

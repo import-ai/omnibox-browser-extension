@@ -8,7 +8,11 @@ export function useStore<T>() {
   const [status, onStatus] = useState(''); //'' | 'pending' | 'error' | 'done'
 
   useEffect(() => {
-    const handleMessage = (request: { action: string }, _sender: chrome.runtime.MessageSender, sendResponse: () => void) => {
+    const handleMessage = (
+      request: { action: string },
+      _sender: chrome.runtime.MessageSender,
+      sendResponse: () => void,
+    ) => {
       sendResponse();
       if (request.action === 'toggle-popup') {
         onPopup(val => !val);
