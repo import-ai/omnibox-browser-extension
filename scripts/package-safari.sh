@@ -73,7 +73,7 @@ xcrun safari-web-extension-packager \
     --bundle-identifier pro.omnibox.safari \
     --macos-only \
     --project-location ~/desktop/safari \
-    ./dist > /dev/null 2>&1
+    ./dist
 
 echo -e "${GREEN}✓ Safari extension project created${NC}"
 
