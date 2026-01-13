@@ -7,23 +7,32 @@ import { Button, Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from
 interface IProps {
   baseUrl: string;
   namespaceId: string;
+  isLoggedIn: boolean;
 }
 
 export default function Header(props: IProps) {
-  const { baseUrl, namespaceId } = props;
+  const { baseUrl, namespaceId, isLoggedIn } = props;
   const { container } = useApp();
   const [target, onTarget] = useState<HTMLElement | null>(null);
   const { t, i18n } = useTranslation();
+  const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
   const handleNamespace = () => {
+    if (!isLoggedIn) {
+      chrome.runtime.sendMessage({
+        action: 'create-tab',
+        url: `${normalizedBaseUrl}/user/login?from=extension`,
+      });
+      return;
+    }
     chrome.runtime.sendMessage({
       action: 'create-tab',
-      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/${namespaceId}/chat?lang=${i18n.language}`,
+      url: `${normalizedBaseUrl}/${namespaceId}/chat?lang=${i18n.language}`,
     });
   };
   const handleFeedback = () => {
     chrome.runtime.sendMessage({
       action: 'create-tab',
-      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/feedback?lang=${i18n.language}`,
+      url: `${normalizedBaseUrl}/feedback?lang=${i18n.language}`,
     });
   };
   const handleSetting = () => {
