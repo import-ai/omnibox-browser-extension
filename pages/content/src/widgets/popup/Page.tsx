@@ -114,7 +114,7 @@ export function Page(props: IProps) {
 
   return (
     <Wrapper onPopup={onPopup}>
-      <Header baseUrl={data.apiBaseUrl} namespaceId={data.namespaceId} />
+      <Header baseUrl={data.apiBaseUrl} namespaceId={data.namespaceId} isLoggedIn={!!user.id} />
       {user.id ? (
         <>
           <Collect data={data} />
