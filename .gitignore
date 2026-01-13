@@ -26,3 +26,4 @@ tsconfig.tsbuildinfo
 
 # compiled
 **/tailwind-output.css
+CLAUDE.md
