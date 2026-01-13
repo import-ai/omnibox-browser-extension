@@ -36,9 +36,9 @@ export function Advance(props: IProps) {
 
   return (
     <div className="flex items-center justify-between">
-      <span className="font-[500]">{t('access')}</span>
+      <span className="font-medium">{t('access')}</span>
       <div className="flex items-center justify-center gap-2">
-        <Input type="url" className="w-[200px] dark:bg-background" value={value} onChange={handleChange} />
+        <Input type="url" className="w-52" value={value} onChange={handleChange} />
         <Button variant="default" onClick={handleApiBaseUrlChange}>
           {t('save')}
         </Button>

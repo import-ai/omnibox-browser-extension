@@ -31,12 +31,12 @@ export function Wrapper(props: IProps) {
       <div className="flex flex-col bg-[#F3F3F3] dark:bg-[#1f1f1f] min-h-dvh">
         <Toaster />
         <Header profile={false} user={user} baseUrl={baseUrl} refetch={refetch} namespaceId={namespaceId} />
-        <div className="max-w-[628px] w-full mx-auto mt-[192px]">
-          <div className="mb-[36px] bg-white dark:bg-[#262626] rounded-[16px] p-[24px]">
+        <div className="max-w-2xl w-full mx-auto mt-48">
+          <div className="mb-9 bg-white dark:bg-[#262626] rounded-2xl p-6">
             <Advance loading={loading} data={data} onChange={onChange} refetch={refetch} />
           </div>
           <div className="flex-1 flex items-center justify-center">
-            <Button variant="default" onClick={handleLogin} className="w-[256px] h-[38px] bg-[#171717] rounded-[8px]">
+            <Button variant="default" onClick={handleLogin} className="w-64">
               {t('login_now')}
             </Button>
           </div>
