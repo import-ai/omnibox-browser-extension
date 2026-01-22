@@ -140,30 +140,34 @@ export function Toolbars(props: IProps) {
               <X className="size-[10px]" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="bottom" align="start" container={target} className="min-w-[126px] rounded-[6px]">
+          <DropdownMenuContent
+            side="bottom"
+            align="start"
+            container={target}
+            className="min-w-[126px] rounded-[6px] w-[200px] border-none bg-white dark:bg-neutral-800 shadow-md">
             <DropdownMenuItem
               onClick={handleDisableTemp}
-              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-[#171717]">
+              className="cursor-pointer text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900">
               {t('hide_until_next_visit')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleDisableSite}
-              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-[#171717]">
+              className="cursor-pointer text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900">
               {t('disable_for_site')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleDisabled}
-              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-[#171717]">
+              className="cursor-pointer text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900">
               {t('disable_globally')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-[12px] gap-0">
+            <DropdownMenuItem className="gap-1 text-neutral-400 hover:!text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-900">
               {t('re_enable_prefix')}
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={openOptionsPage}
-                className="p-0 h-auto w-auto text-[12px] text-[#1167FE]">
+                className="p-0 h-auto w-auto text-sm font-normal text-neutral-900 dark:text-white hover:opacity-100">
                 {t('settings')}
               </Button>
               {t('re_enable_suffix')}

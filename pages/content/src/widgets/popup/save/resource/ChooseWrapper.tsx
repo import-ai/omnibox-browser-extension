@@ -54,7 +54,7 @@ export function ChooseWrapper(props: IProps) {
           },
         )}>
         <div className="flex items-center gap-[8px]">
-          <Users className="size-4" />
+          <Users className="size-4 text-neutral-500" />
           <span className="text-[#171717] dark:text-white">{t('team')}</span>
         </div>
         {teamRootId === resourceId && <Check className="size-5 text-[#171717" />}

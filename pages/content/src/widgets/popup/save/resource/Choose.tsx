@@ -92,7 +92,7 @@ export function ChooseResource(props: IProps) {
         />
       </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <div className="max-h-[291px] overflow-y-auto no-scrollbar ">
+      <div className="flex flex-col gap-1 max-h-[291px] overflow-y-auto no-scrollbar">
         <DropdownMenuItem
           onClick={handlePrivateClick}
           className={cn(
@@ -102,7 +102,7 @@ export function ChooseResource(props: IProps) {
             },
           )}>
           <div className="flex items-center gap-[8px]">
-            <User className="size-4" />
+            <User className="size-4 text-neutral-500" />
             <span className="text-[#171717] dark:text-white">{t('personal')}</span>
           </div>
           {data.privateRootId === resourceId && <Check className="size-5 text-[#171717" />}
