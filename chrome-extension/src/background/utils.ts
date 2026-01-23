@@ -8,6 +8,39 @@ const INTERNAL_URL_PREFIXES = [
   'safari-extension://',
 ];
 
+// Truly restricted page prefixes (cannot inject Content Script)
+const TRULY_RESTRICTED_PREFIXES = [
+  'chrome://',
+  'chrome-extension://',
+  'moz-extension://',
+  'about:',
+  'edge://',
+  'opera://',
+  'safari-extension://',
+  'devtools://',
+];
+
+// Extension store pages - browsers block content script injection on these pages
+const TRULY_RESTRICTED_PATTERNS = [
+  'chromewebstore.google.com',
+  'microsoftedge.microsoft.com',
+  'addons.mozilla.org',
+  'addons.opera.com',
+];
+
+export function isTrulyRestricted(url: string): boolean {
+  if (!url) return true;
+  // Check prefixes - these are pages where content scripts absolutely cannot be injected
+  if (TRULY_RESTRICTED_PREFIXES.some(prefix => url.startsWith(prefix))) {
+    return true;
+  }
+  // Check patterns - extension store pages where browsers block content script injection
+  if (TRULY_RESTRICTED_PATTERNS.some(pattern => url.includes(pattern))) {
+    return true;
+  }
+  return false;
+}
+
 const INTERNAL_URL_PATTERNS = [
   'microsoftedge.microsoft.com',
   'chromewebstore.google.com',

@@ -31,5 +31,9 @@
   "default_link": "链接",
   "search_placeholder": "搜索",
   "saving": "保存中...",
-  "open_namespace": "打开空间"
+  "open_namespace": "打开空间",
+  "restrictedTitle": "当前页面不支持保存",
+  "restrictedBrowserInternal": "不支持浏览器内置页面",
+  "restrictedOmniboxPro": "不支持 OmniBox 产品页面",
+  "restrictedCurrentPage": "不支持当前网页"
 }

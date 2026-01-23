@@ -8,8 +8,13 @@ import { ToolbarContainer } from '@src/widgets/toolbar';
 import { FeedbackContainer } from '@src/widgets/feedback';
 import { SectionContainer } from '@src/widgets/section';
 import { KeyboardHandler } from '@src/widgets/keyboard';
+import { RestrictedPopupContainer } from '@src/widgets/restricted-popup/Container';
 
-export default function Page() {
+interface PageProps {
+  isOmniboxPro?: boolean;
+}
+
+export default function Page({ isOmniboxPro = false }: PageProps) {
   const { shadow, container } = useApp();
   const { i18n } = useTranslation();
   const { data, loading, refetch, onChange } = useOption();
@@ -40,6 +45,15 @@ export default function Page() {
     }
   }, [i18n, data.language]);
 
+  // On omnibox.pro pages, only render the restricted popup
+  if (isOmniboxPro) {
+    return (
+      <Provider>
+        <RestrictedPopupContainer baseUrl={data.apiBaseUrl} />
+      </Provider>
+    );
+  }
+
   return (
     <Provider>
       <PopupContainer data={data} loading={loading} refetch={refetch} onChange={onChange} />
@@ -47,6 +61,7 @@ export default function Page() {
       <FeedbackContainer data={data} />
       {data.sectionEnabled && <SectionContainer data={data} onChange={onChange} />}
       <KeyboardHandler data={data} />
+      <RestrictedPopupContainer baseUrl={data.apiBaseUrl} />
     </Provider>
   );
 }

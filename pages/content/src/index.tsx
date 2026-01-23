@@ -7,6 +7,9 @@ import './index.css';
 import App from './App';
 import './i18n';
 
+// Check if current page is omnibox.pro (restricted but injectable)
+const isOmniboxPro = location.hostname.includes('omnibox.pro');
+
 // Register __ping__ listener immediately for background detection
 // This must be registered BEFORE React renders to ensure it's always available
 // Fixes race condition in Firefox and other browsers
@@ -29,13 +32,13 @@ function bootstrap() {
   const reactDOMRoot = createRoot(container);
   reactDOMRoot.render(
     <AppContext.Provider value={{ root, shadow, container }}>
-      <App />
+      <App isOmniboxPro={isOmniboxPro} />
     </AppContext.Provider>,
   );
 }
 
-if (!location.hostname.includes('omnibox.pro')) {
-  bootstrap();
-  // Notify background that content script is ready
-  chrome.runtime.sendMessage({ action: '__content_ready__' });
-}
+// Bootstrap on all pages including omnibox.pro
+// omnibox.pro pages will only show restricted popup
+bootstrap();
+// Notify background that content script is ready
+chrome.runtime.sendMessage({ action: '__content_ready__' });

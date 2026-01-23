@@ -1,5 +1,5 @@
 import 'webextension-polyfill';
-import { canInjectScripts, compress, isInternalUrl } from './utils';
+import { canInjectScripts, compress, isInternalUrl, isTrulyRestricted } from './utils';
 import { axios, track } from '@extension/shared';
 
 // Track ready content scripts by tab ID
@@ -66,8 +66,17 @@ async function updatePopupForTab(tabId: number) {
 
     let popup = '';
     if (!pageInfo.canInject && pageInfo.restrictionType) {
-      // Add restriction type as URL parameter
-      popup = `restricted-popup.html?type=${pageInfo.restrictionType}`;
+      // Only truly restricted pages use Browser Action Popup
+      // Injectable restricted pages (webstore, omnibox.pro) trigger Content Script via onClicked
+      try {
+        const tab = await chrome.tabs.get(tabId);
+        if (isTrulyRestricted(tab.url || '')) {
+          popup = `restricted-popup.html?type=${pageInfo.restrictionType}`;
+        }
+      } catch {
+        // Tab may not exist
+        popup = `restricted-popup.html?type=${pageInfo.restrictionType}`;
+      }
     }
 
     actionAPI.setPopup({ popup, tabId });
@@ -106,12 +115,23 @@ chrome.tabs.onRemoved.addListener(tabId => {
 });
 
 if (actionAPI && actionAPI.onClicked) {
-  actionAPI.onClicked.addListener(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-      const tab = tabs[0];
-      if (tab?.id && tab.url && !isInternalUrl(tab.url)) {
-        const tabId = tab.id;
-        chrome.tabs.sendMessage(tabId, { action: 'toggle-popup' }, () => {
+  actionAPI.onClicked.addListener(async () => {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    const tab = tabs[0];
+    if (!tab?.id || !tab.url) return;
+
+    const tabId = tab.id;
+    const pageInfo = await canInjectScripts(tabId, readyTabs);
+
+    // Handle injectable restricted pages (webstore, omnibox.pro)
+    if (!pageInfo.canInject && pageInfo.restrictionType && !isTrulyRestricted(tab.url)) {
+      chrome.tabs.sendMessage(
+        tabId,
+        {
+          action: 'show-restricted-popup',
+          restrictionType: pageInfo.restrictionType,
+        },
+        () => {
           // Check if there was an error sending the message
           const lastError = chrome.runtime.lastError;
           if (lastError) {
@@ -123,9 +143,27 @@ if (actionAPI && actionAPI.onClicked) {
               console.error('Error sending message to content script:', lastError);
             }
           }
-        });
-      }
-    });
+        },
+      );
+      return;
+    }
+
+    // Normal page → toggle main popup
+    if (!isInternalUrl(tab.url)) {
+      chrome.tabs.sendMessage(tabId, { action: 'toggle-popup' }, () => {
+        // Check if there was an error sending the message
+        const lastError = chrome.runtime.lastError;
+        if (lastError) {
+          // If the receiving end does not exist (content script not loaded),
+          // reload the tab to inject the content script
+          if (lastError.message?.includes('Receiving end does not exist')) {
+            chrome.tabs.reload(tabId);
+          } else {
+            console.error('Error sending message to content script:', lastError);
+          }
+        }
+      });
+    }
   });
 }
 
