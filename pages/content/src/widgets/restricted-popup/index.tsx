@@ -17,19 +17,63 @@ export function RestrictedPopup({ restrictionType, onClose, baseUrl }: Props) {
   const { container } = useApp();
   const zIndexValue = zIndex();
   const [target, onTarget] = useState<HTMLElement | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
 
-  const subtitleKey = {
-    'browser-internal': 'restrictedBrowserInternal',
-    webstore: 'restrictedBrowserInternal',
-    'omnibox-pro': 'restrictedOmniboxPro',
-  }[restrictionType];
+  const subtitleKey =
+    {
+      'browser-internal': 'restrictedBrowserInternal',
+      webstore: 'restrictedBrowserInternal',
+      'omnibox-pro': 'restrictedOmniboxPro',
+    }[restrictionType] || 'restrictedCurrentPage';
 
   const handleNamespace = () => {
-    chrome.runtime.sendMessage({
-      action: 'create-tab',
-      url: `${normalizedBaseUrl}/user/login?from=extension`,
-    });
+    // Use cached login status instead of re-fetching
+    if (isLoggedIn === false) {
+      chrome.runtime.sendMessage({
+        action: 'create-tab',
+        url: `${normalizedBaseUrl}/user/login?from=extension`,
+      });
+      return;
+    }
+
+    chrome.runtime.sendMessage(
+      {
+        action: 'storage',
+        args: ['namespaceId'],
+      },
+      (storageResponse: { data: { namespaceId?: string } }) => {
+        const namespaceId = storageResponse.data?.namespaceId || '';
+
+        if (namespaceId) {
+          chrome.runtime.sendMessage({
+            action: 'create-tab',
+            url: `${normalizedBaseUrl}/${namespaceId}/chat?lang=${i18n.language}`,
+          });
+        } else {
+          chrome.runtime.sendMessage(
+            {
+              action: 'fetch',
+              url: `${normalizedBaseUrl}/api/v1/namespaces`,
+            },
+            (nsResponse: { data?: { id: string }[] }) => {
+              if (nsResponse.data && nsResponse.data.length > 0) {
+                const fetchedNamespaceId = nsResponse.data[0].id;
+                chrome.runtime.sendMessage({
+                  action: 'create-tab',
+                  url: `${normalizedBaseUrl}/${fetchedNamespaceId}/chat?lang=${i18n.language}`,
+                });
+              } else {
+                chrome.runtime.sendMessage({
+                  action: 'create-tab',
+                  url: normalizedBaseUrl,
+                });
+              }
+            },
+          );
+        }
+      },
+    );
   };
 
   const handleFeedback = () => {
@@ -45,12 +89,32 @@ export function RestrictedPopup({ restrictionType, onClose, baseUrl }: Props) {
     });
   };
 
+  const handleLogin = () => {
+    chrome.runtime.sendMessage({
+      action: 'create-tab',
+      url: `${normalizedBaseUrl}/user/login?from=extension_login`,
+    });
+  };
+
   useEffect(() => {
     const containerRef = container.querySelector('.js-restricted-popup') as HTMLElement;
     if (containerRef) {
       onTarget(containerRef);
     }
   }, [container]);
+
+  // Check login status on mount
+  useEffect(() => {
+    chrome.runtime.sendMessage(
+      {
+        action: 'fetch',
+        url: `${normalizedBaseUrl}/api/v1/user/me`,
+      },
+      (response: { data?: { id?: string }; error?: string }) => {
+        setIsLoggedIn(!!(response.data && response.data.id));
+      },
+    );
+  }, [normalizedBaseUrl]);
 
   useEffect(() => {
     chrome.runtime.sendMessage({
@@ -112,8 +176,19 @@ export function RestrictedPopup({ restrictionType, onClose, baseUrl }: Props) {
 
         {/* Content */}
         <div className="flex flex-col items-center justify-center text-center py-5">
-          <div className="text-base font-semibold text-foreground dark:text-white mb-3">{t('restrictedTitle')}</div>
-          <div className="text-sm text-[#B8BCC8]">{t(subtitleKey)}</div>
+          {isLoggedIn === false ? (
+            <>
+              <p className="text-sm text-[#585D65] mb-4">{t('login_required')}</p>
+              <Button variant="default" onClick={handleLogin} className="w-full flex items-center rounded-lg">
+                {t('login_now')}
+              </Button>
+            </>
+          ) : (
+            <>
+              <div className="text-base font-semibold text-foreground dark:text-white mb-3">{t('restrictedTitle')}</div>
+              <div className="text-sm text-[#B8BCC8]">{t(subtitleKey)}</div>
+            </>
+          )}
         </div>
       </div>
     </>

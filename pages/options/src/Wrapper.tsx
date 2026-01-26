@@ -22,7 +22,7 @@ export function Wrapper(props: IProps) {
   const { user, refetch: userRefetch } = useUser({ baseUrl });
   const handleLogin = () => {
     chrome.tabs.create({
-      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/user/login?from=extension`,
+      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/user/login?from=extension_login`,
     });
   };
 

@@ -13,6 +13,8 @@ const messages = {
     tooltipOpenNamespace: '打开空间',
     tooltipFeedback: '意见反馈',
     tooltipSettings: '设置',
+    loginRequired: '登录后即可使用',
+    loginNow: '立即登录',
   },
   en: {
     extensionName: 'OmniBox',
@@ -23,6 +25,8 @@ const messages = {
     tooltipOpenNamespace: 'Open Namespace',
     tooltipFeedback: 'Feedback',
     tooltipSettings: 'Settings',
+    loginRequired: 'Login required to use this feature',
+    loginNow: 'Login now',
   },
 };
 
@@ -32,6 +36,15 @@ let currentLanguage = 'zh';
 // Get message based on current language
 function getMessage(key) {
   return messages[currentLanguage]?.[key] || messages.en[key] || '';
+}
+
+// Get normalized base URL from storage
+function getBaseUrl(callback) {
+  chrome.storage.sync.get('apiBaseUrl', storage => {
+    const baseUrl = storage.apiBaseUrl || 'https://www.omnibox.pro';
+    const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    callback(normalizedBaseUrl);
+  });
 }
 
 // Initialize the popup
@@ -46,6 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load restriction message based on type
     loadRestrictionMessage();
+
+    // Check login status and show login section if needed
+    checkLoginStatus();
 
     // Setup button click handlers
     setupButtonHandlers();
@@ -178,9 +194,6 @@ function loadRestrictionMessage() {
     case 'omnibox-pro':
       subtitleKey = 'restrictedOmniboxPro';
       break;
-    default:
-      subtitleKey = 'restrictedCurrentPage';
-      break;
   }
 
   if (mainTitle) {
@@ -192,34 +205,110 @@ function loadRestrictionMessage() {
   }
 }
 
+// Check login status and show login section if not logged in
+function checkLoginStatus() {
+  getBaseUrl(normalizedBaseUrl => {
+    chrome.runtime.sendMessage(
+      {
+        action: 'fetch',
+        url: `${normalizedBaseUrl}/api/v1/user/me`,
+      },
+      response => {
+        const isLoggedIn = !!(response.data && response.data.id);
+        const loginSection = document.getElementById('login-section');
+        const loginRequired = loginSection?.querySelector('.login-required');
+        const loginButton = document.getElementById('btn-login');
+        const mainTitle = document.querySelector('.main-title');
+        const subtitle = document.querySelector('.subtitle');
+
+        if (!isLoggedIn) {
+          // Hide restricted message, show login section
+          if (mainTitle) mainTitle.style.display = 'none';
+          if (subtitle) subtitle.style.display = 'none';
+          if (loginSection) {
+            loginSection.style.display = 'block';
+
+            // Update login section text
+            if (loginRequired) {
+              loginRequired.textContent = getMessage('loginRequired');
+            }
+            if (loginButton) {
+              loginButton.textContent = getMessage('loginNow');
+              loginButton.addEventListener('click', () => {
+                chrome.tabs.create({
+                  url: `${normalizedBaseUrl}/user/login?from=extension_login`,
+                });
+                window.close();
+              });
+            }
+          }
+        }
+      },
+    );
+  });
+}
+
 // Setup button click handlers
 function setupButtonHandlers() {
-  // Get base URL from storage
-  chrome.storage.sync.get('apiBaseUrl', storage => {
-    const baseUrl = storage.apiBaseUrl || 'https://www.omnibox.pro';
-    const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-
+  getBaseUrl(normalizedBaseUrl => {
     // Get user language
     const lang = chrome.i18n.getUILanguage().replace('-', '_');
 
     const btnNamespace = document.getElementById('btn-namespace');
     if (btnNamespace) {
       btnNamespace.addEventListener('click', () => {
-        chrome.storage.sync.get(['namespaceId', 'accessToken'], data => {
-          const isLoggedIn = !!data.accessToken;
-          const namespaceId = data.namespaceId || '';
+        // Check login status via API (same as Header.tsx useUser hook)
+        chrome.runtime.sendMessage(
+          {
+            action: 'fetch',
+            url: `${normalizedBaseUrl}/api/v1/user/me`,
+          },
+          response => {
+            const isLoggedIn = !!(response.data && response.data.id);
 
-          if (!isLoggedIn) {
-            chrome.tabs.create({
-              url: `${normalizedBaseUrl}/user/login?from=extension`,
+            if (!isLoggedIn) {
+              chrome.tabs.create({
+                url: `${normalizedBaseUrl}/user/login?from=extension`,
+              });
+              window.close();
+              return;
+            }
+
+            chrome.storage.sync.get('namespaceId', data => {
+              const namespaceId = data.namespaceId || '';
+
+              if (namespaceId) {
+                // namespaceId exists, navigate directly
+                chrome.tabs.create({
+                  url: `${normalizedBaseUrl}/${namespaceId}/chat?lang=${lang}`,
+                });
+                window.close();
+              } else {
+                // namespaceId is empty, fetch from API (same as Page.tsx)
+                chrome.runtime.sendMessage(
+                  {
+                    action: 'fetch',
+                    url: `${normalizedBaseUrl}/api/v1/namespaces`,
+                  },
+                  nsResponse => {
+                    if (nsResponse.data && nsResponse.data.length > 0) {
+                      const fetchedNamespaceId = nsResponse.data[0].id;
+                      chrome.tabs.create({
+                        url: `${normalizedBaseUrl}/${fetchedNamespaceId}/chat?lang=${lang}`,
+                      });
+                    } else {
+                      // No namespace found, go to base URL
+                      chrome.tabs.create({
+                        url: normalizedBaseUrl,
+                      });
+                    }
+                    window.close();
+                  },
+                );
+              }
             });
-          } else {
-            chrome.tabs.create({
-              url: `${normalizedBaseUrl}/${namespaceId}/chat?lang=${lang}`,
-            });
-          }
-          window.close();
-        });
+          },
+        );
       });
     }
 

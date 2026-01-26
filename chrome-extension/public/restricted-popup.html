@@ -166,6 +166,38 @@
       line-height: 1.6;
     }
 
+    .login-section {
+      width: 100%;
+    }
+
+    .login-required {
+      font-size: 14px;
+      color: #585D65;
+      margin-bottom: 24px;
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #ffffff;
+      background: #171717;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .login-button:hover {
+      opacity: 0.9;
+    }
+
+    html.dark .login-button {
+      background: #f8fafc;
+      color: #171717;
+    }
+
     html.dark {
       background: #262626 !important;
     }
@@ -234,6 +266,11 @@
     <div class="content">
       <div class="main-title" data-i18n="restrictedTitle"></div>
       <div class="subtitle" data-i18n="restrictedCurrentPage"></div>
+      <!-- Login Section (hidden by default, shown when not logged in) -->
+      <div id="login-section" class="login-section" style="display: none;">
+        <p class="login-required" data-i18n="loginRequired"></p>
+        <button id="btn-login" class="login-button" data-i18n="loginNow"></button>
+      </div>
     </div>
   </div>
 
