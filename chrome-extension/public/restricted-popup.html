@@ -9,39 +9,271 @@
       padding: 0;
       box-sizing: border-box;
     }
+    
+    html {
+      width: 288px;
+      min-height: 122px;
+      background: #ffffff !important;
+      overflow: hidden;
+      border: none !important;
+      outline: none !important;
+    }
+
     body {
-      width: 280px;
-      padding: 24px 20px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: #ffffff;
-      color: #333;
+      width: 288px;
+      min-height: 122px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: #ffffff !important;
+      color: #1a1a1a;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      border: none !important;
+      outline: none !important;
+      border-radius: 12px;
     }
+
     .container {
-      text-align: center;
+      padding: 16px 16px 14px 16px;
+      min-height: 122px;
+      border-radius: 12px;
+      background: inherit;
     }
-    .icon {
-      font-size: 48px;
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 16px;
-      line-height: 1;
     }
-    .title {
-      font-size: 16px;
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-logo {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .header-logo img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .header-title {
+      font-size: 14px;
       font-weight: 600;
-      margin-bottom: 12px;
       color: #1a1a1a;
     }
-    .message {
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-button {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: opacity 0.2s;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .icon-button:hover {
+      background: hsl(210, 40%, 96.1%);
+    }
+
+    .icon-button svg {
+      width: 16px;
+      height: 16px;
+      stroke: #8F959E;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .tooltip {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a1a;
+      color: #ffffff;
+      font-size: 12px;
+      line-height: 1.5;
+      padding: 6px 12px;
+      border-radius: 6px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out;
+      z-index: 1000;
+    }
+
+    .icon-button:hover .tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    html.dark .tooltip {
+      background: #f8fafc;
+      color: #1a1a1a;
+    }
+
+    /* Settings button tooltip - align right to prevent overflow */
+    #btn-settings .tooltip {
+      left: auto;
+      right: -10px;
+      transform: none;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .main-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .subtitle {
       font-size: 14px;
-      color: #666;
+      color: #B8BCC8;
       line-height: 1.6;
+    }
+
+    .login-section {
+      width: 100%;
+    }
+
+    .login-required {
+      font-size: 14px;
+      color: #585D65;
+      margin-bottom: 24px;
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #ffffff;
+      background: #171717;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .login-button:hover {
+      opacity: 0.9;
+    }
+
+    html.dark .login-button {
+      background: #f8fafc;
+      color: #171717;
+    }
+
+    html.dark {
+      background: #262626 !important;
+    }
+
+    html.dark body {
+      background: #262626 !important;
+      color: #ffffff;
+    }
+
+    html.dark .container {
+      background: #262626;
+      box-shadow: 0px 4px 20px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    html.dark .header-title {
+      color: #ffffff;
+    }
+
+    html.dark .main-title {
+      color: #ffffff;
+    }
+
+    html.dark .icon-button:hover {
+      background: hsl(216, 34%, 17%);
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="title" data-i18n="restrictedPageTitle"></div>
-    <div class="message" data-i18n="restrictedPageMessage"></div>
+    <div class="header">
+    <div class="header-left">
+      <div class="header-logo">
+        <img id="logo" alt="logo">
+      </div>
+      <div class="header-title" data-i18n="extensionName"></div>
+    </div>
+    <div class="header-right">
+      <button class="icon-button" id="btn-namespace">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
+          <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        </svg>
+        <span class="tooltip" data-tooltip="namespace"></span>
+      </button>
+
+      <button class="icon-button" id="btn-feedback">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
+          <path d="M12 8v4"/>
+          <path d="M12 16h.01"/>
+        </svg>
+        <span class="tooltip" data-tooltip="feedback"></span>
+      </button>
+      
+      <button class="icon-button" id="btn-settings">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <circle cx="12" cy="12" r="4"/>
+        </svg>
+        <span class="tooltip" data-tooltip="settings"></span>
+      </button>
+    </div>
   </div>
+
+    <!-- Content Area -->
+    <div class="content">
+      <div class="main-title" data-i18n="restrictedTitle"></div>
+      <div class="subtitle" data-i18n="restrictedCurrentPage"></div>
+      <!-- Login Section (hidden by default, shown when not logged in) -->
+      <div id="login-section" class="login-section" style="display: none;">
+        <p class="login-required" data-i18n="loginRequired"></p>
+        <button id="btn-login" class="login-button" data-i18n="loginNow"></button>
+      </div>
+    </div>
+  </div>
+
   <script src="restricted-popup.js"></script>
 </body>
 </html>

@@ -1,3 +1,5 @@
+import type { RestrictionType } from '@src/widgets/restricted-popup/types';
+
 export type Status = '' | 'pending' | 'done' | 'error';
 
 export interface State {
@@ -11,4 +13,6 @@ export interface State {
   onToolbar: (toolbar: string) => void;
   disableTemp: boolean;
   onDisableTemp: (disableTemp: boolean) => void;
+  restrictedPopup: RestrictionType | null;
+  onRestrictedPopup: (restrictedPopup: RestrictionType | null) => void;
 }

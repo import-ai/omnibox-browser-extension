@@ -1,5 +1,5 @@
 import 'webextension-polyfill';
-import { canInjectScripts, compress } from './utils';
+import { canInjectScripts, compress, isInternalUrl, isTrulyRestricted } from './utils';
 import { axios, track } from '@extension/shared';
 
 // Track ready content scripts by tab ID
@@ -12,6 +12,17 @@ chrome.runtime.onInstalled.addListener(async () => {
   chrome.runtime.setUninstallURL(
     `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/feedback?from=extension&reason=uninstall`,
   );
+
+  // Initialize popup state for all existing tabs
+  // This ensures that tabs opened before the extension was installed/updated
+  // will have the correct popup state without requiring a page refresh
+  chrome.tabs.query({}, tabs => {
+    tabs.forEach(tab => {
+      if (tab.id) {
+        updatePopupForTab(tab.id);
+      }
+    });
+  });
 });
 
 // Track extension icon pinning action (V3 only)
@@ -51,8 +62,23 @@ const actionAPI =
 // Update pop-up windows based on whether scripts can be injected
 async function updatePopupForTab(tabId: number) {
   if (actionAPI && typeof actionAPI.setPopup === 'function') {
-    const canInject = await canInjectScripts(tabId, readyTabs);
-    const popup = canInject ? '' : 'restricted-popup.html';
+    const pageInfo = await canInjectScripts(tabId, readyTabs);
+
+    let popup = '';
+    if (!pageInfo.canInject && pageInfo.restrictionType) {
+      // Only truly restricted pages use Browser Action Popup
+      // Injectable restricted pages (webstore, omnibox.pro) trigger Content Script via onClicked
+      try {
+        const tab = await chrome.tabs.get(tabId);
+        if (isTrulyRestricted(tab.url || '')) {
+          popup = `restricted-popup.html?type=${pageInfo.restrictionType}`;
+        }
+      } catch {
+        // Tab may not exist
+        popup = `restricted-popup.html?type=${pageInfo.restrictionType}`;
+      }
+    }
+
     actionAPI.setPopup({ popup, tabId });
   }
 }
@@ -73,6 +99,14 @@ if (actionAPI && typeof actionAPI.setPopup === 'function') {
       updatePopupForTab(tabId);
     }
   });
+
+  // Initialize popup state for current active tab on startup
+  // This handles the case when the service worker is woken up
+  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+    if (tabs[0]?.id) {
+      updatePopupForTab(tabs[0].id);
+    }
+  });
 }
 
 // Clean up readyTabs when tab is closed
@@ -81,28 +115,55 @@ chrome.tabs.onRemoved.addListener(tabId => {
 });
 
 if (actionAPI && actionAPI.onClicked) {
-  actionAPI.onClicked.addListener(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-      const tab = tabs[0];
-      if (tab?.id && tab.url) {
-        const tabId = tab.id;
-        chrome.tabs.sendMessage(tabId, { action: 'toggle-popup' }, () => {
+  actionAPI.onClicked.addListener(async () => {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    const tab = tabs[0];
+    if (!tab?.id || !tab.url) return;
+
+    const tabId = tab.id;
+    const pageInfo = await canInjectScripts(tabId, readyTabs);
+
+    // Handle injectable restricted pages (webstore, omnibox.pro)
+    if (!pageInfo.canInject && pageInfo.restrictionType && !isTrulyRestricted(tab.url)) {
+      chrome.tabs.sendMessage(
+        tabId,
+        {
+          action: 'show-restricted-popup',
+          restrictionType: pageInfo.restrictionType,
+        },
+        () => {
           // Check if there was an error sending the message
           const lastError = chrome.runtime.lastError;
           if (lastError) {
             // If the receiving end does not exist (content script not loaded),
             // reload the tab to inject the content script
             if (lastError.message?.includes('Receiving end does not exist')) {
-              if (!tab.url?.includes('omnibox.pro')) {
-                chrome.tabs.reload(tabId);
-              }
+              chrome.tabs.reload(tabId);
             } else {
               console.error('Error sending message to content script:', lastError);
             }
           }
-        });
-      }
-    });
+        },
+      );
+      return;
+    }
+
+    // Normal page → toggle main popup
+    if (!isInternalUrl(tab.url)) {
+      chrome.tabs.sendMessage(tabId, { action: 'toggle-popup' }, () => {
+        // Check if there was an error sending the message
+        const lastError = chrome.runtime.lastError;
+        if (lastError) {
+          // If the receiving end does not exist (content script not loaded),
+          // reload the tab to inject the content script
+          if (lastError.message?.includes('Receiving end does not exist')) {
+            chrome.tabs.reload(tabId);
+          } else {
+            console.error('Error sending message to content script:', lastError);
+          }
+        }
+      });
+    }
   });
 }
 

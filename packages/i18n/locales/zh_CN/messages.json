@@ -14,5 +14,33 @@
   "restrictedPageMessage": {
     "description": "受限页面显示的消息",
     "message": "请在其他网页上使用此插件功能。"
+  },
+  "restrictedTitle": {
+    "description": "受限页面统一标题",
+    "message": "当前页面不支持保存"
+  },
+  "restrictedBrowserInternal": {
+    "description": "浏览器内置页面副标题",
+    "message": "不支持浏览器内置页面"
+  },
+  "restrictedOmniboxPro": {
+    "description": "OmniBox 产品页面副标题",
+    "message": "不支持 OmniBox 产品页面"
+  },
+  "restrictedCurrentPage": {
+    "description": "当前网页副标题",
+    "message": "不支持当前网页"
+  },
+  "tooltipOpenNamespace": {
+    "description": "打开空间图标提示",
+    "message": "打开空间"
+  },
+  "tooltipFeedback": {
+    "description": "意见反馈图标提示",
+    "message": "意见反馈"
+  },
+  "tooltipSettings": {
+    "description": "设置图标提示",
+    "message": "设置"
   }
 }

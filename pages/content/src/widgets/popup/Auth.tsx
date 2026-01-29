@@ -11,7 +11,7 @@ export function Auth(props: IProps) {
   const handleAuth = () => {
     chrome.runtime.sendMessage({
       action: 'create-tab',
-      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/user/login?from=extension`,
+      url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/user/login?from=extension_login`,
     });
   };
 

@@ -24,6 +24,7 @@ export function Wrapper(props: IProps) {
   const { shadow } = useApp();
   const [position, setPosition] = useState<Position>({ x: 0, y: 0, isTop: true });
   const zIndexValue = zIndex();
+  const [isInteractingToolbar, setIsInteractingToolbar] = useState(false);
 
   const clearToolbarImmediately = () => {
     onToolbar('');
@@ -32,6 +33,10 @@ export function Wrapper(props: IProps) {
 
   useEffect(() => {
     const handleSelectionChange = () => {
+      // Don't close toolbar if user is clicking on toolbar buttons
+      if (isInteractingToolbar) {
+        return;
+      }
       const selection = document.getSelection();
       if (selection && selection.isCollapsed) {
         onToolbar('');
@@ -44,7 +49,7 @@ export function Wrapper(props: IProps) {
     return () => {
       document.removeEventListener('selectionchange', handleSelectionChange);
     };
-  }, [onToolbar, onSelection]);
+  }, [onToolbar, onSelection, isInteractingToolbar]);
 
   useEffect(() => {
     let timerId: number | undefined = undefined;
@@ -65,6 +70,13 @@ export function Wrapper(props: IProps) {
     };
 
     const handleMouseUp = (event: MouseEvent) => {
+      const toolbarEl = shadow.querySelector('.js-toolbar');
+      const path = event.composedPath();
+      const isClickInsideToolbar = path.some(node => node instanceof Node && toolbarEl?.contains(node));
+      if (isClickInsideToolbar) {
+        return;
+      }
+
       const selectionText = getSelectionText();
       // Show toolbar only when mouse is released and text is selected
       if (selectionText) {
@@ -151,6 +163,8 @@ export function Wrapper(props: IProps) {
   return (
     <div
       className={`js-toolbar absolute top-0 bottom-auto left-0 right-auto min-w-[70px] text-foreground bg-background rounded-[8px] shadow-[0px_4px_18px_0px_rgba(0,0,0,0.1)]`}
+      onMouseDown={() => setIsInteractingToolbar(true)}
+      onMouseUp={() => setIsInteractingToolbar(false)}
       style={{
         zIndex: zIndexValue,
         top: `${position.y}px`,

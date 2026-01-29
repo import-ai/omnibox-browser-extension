@@ -14,5 +14,33 @@
   "restrictedPageMessage": {
     "description": "Message shown on restricted pages",
     "message": "Please use this extension on other web pages."
+  },
+  "restrictedTitle": {
+    "description": "Unified restricted page title",
+    "message": "Current page cannot be saved"
+  },
+  "restrictedBrowserInternal": {
+    "description": "Browser internal pages subtitle",
+    "message": "Browser internal pages are not supported"
+  },
+  "restrictedOmniboxPro": {
+    "description": "OmniBox product page subtitle",
+    "message": "OmniBox product pages are not supported"
+  },
+  "restrictedCurrentPage": {
+    "description": "Current webpage subtitle",
+    "message": "Current webpage is not supported"
+  },
+  "tooltipOpenNamespace": {
+    "description": "Open namespace icon tooltip",
+    "message": "Open Namespace"
+  },
+  "tooltipFeedback": {
+    "description": "Feedback icon tooltip",
+    "message": "Feedback"
+  },
+  "tooltipSettings": {
+    "description": "Settings icon tooltip",
+    "message": "Settings"
   }
 }

@@ -31,5 +31,9 @@
   "default_link": "Link",
   "search_placeholder": "Search",
   "saving": "Saving...",
-  "open_namespace": "Open Namespace"
+  "open_namespace": "Open Namespace",
+  "restrictedTitle": "Current page cannot be saved",
+  "restrictedBrowserInternal": "Browser internal pages are not supported",
+  "restrictedOmniboxPro": "OmniBox product pages are not supported",
+  "restrictedCurrentPage": "Current webpage is not supported"
 }

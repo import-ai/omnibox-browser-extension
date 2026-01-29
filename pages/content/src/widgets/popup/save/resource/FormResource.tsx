@@ -33,7 +33,7 @@ export default function FormResource(props: IProps) {
         },
       )}>
       <div className="flex items-center gap-[8px]">
-        <Folder className="size-4" />
+        <Folder className="size-4 text-neutral-500" />
         <span
           className={cn('text-[#171717] max-w-[128px] dark:text-white truncate', {
             'max-w-[152px]': data.id !== resourceId,
