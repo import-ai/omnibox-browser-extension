@@ -102,7 +102,17 @@ export function axios(
         if (response.status === 401) {
           chrome.storage.sync.remove(['namespaceId', 'resourceId']);
         }
-        return Promise.reject(new Error(`HTTP error! status: ${response.status}`));
+        return response.text().then(text => {
+          try {
+            const body = text ? JSON.parse(text) : null;
+            if (body && typeof body.message === 'string') {
+              return Promise.reject(new Error(body.message));
+            }
+          } catch {
+            // ignore parse error
+          }
+          return Promise.reject(new Error(`HTTP error! status: ${response.status}`));
+        });
       } else {
         return response.text().then(data => {
           if (!data) {

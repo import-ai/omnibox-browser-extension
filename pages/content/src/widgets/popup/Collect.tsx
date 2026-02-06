@@ -16,11 +16,12 @@ export default function Collect(props: IProps) {
   const { t } = useTranslation();
   const handleCollect = () => {
     onLoading(true);
-    const { apiBaseUrl, resourceId, namespaceId } = data;
+    const { apiBaseUrl, resourceId, namespaceId, language } = data;
     chrome.runtime.sendMessage(
       {
         resourceId,
         namespaceId,
+        language,
         action: 'collect',
         baseUrl: apiBaseUrl,
         pageUrl: document.URL,

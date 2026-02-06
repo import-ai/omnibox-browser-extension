@@ -26,7 +26,7 @@ export function Notification(props: IProps) {
   };
 
   useEffect(() => {
-    if (status !== 'done') {
+    if (status !== 'done' && status !== 'error') {
       return;
     }
     const timer = setInterval(() => {
@@ -55,7 +55,7 @@ export function Notification(props: IProps) {
 
   if (status === 'error') {
     return (
-      <div className="flex text-sm gap-2 items-center px-[16px] py-[8px] bg-[#171717] rounded-[16px] text-red-600">
+      <div className="flex text-sm gap-2 items-center justify-center px-[16px] py-[8px] bg-[#171717] rounded-[16px] text-red-600">
         <AlertCircleIcon className="size-4" />
         <span className="text-sm text-white">{result}</span>
       </div>

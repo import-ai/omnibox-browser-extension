@@ -12,7 +12,7 @@ export function Wrapper(props: IProps) {
   return (
     <div
       ref={ref}
-      className={`fixed left-[50%] ml-[-130px] top-[50px] rounded-[16px] min-w-[260px] bg-background text-foreground`}
+      className={`fixed left-1/2 -translate-x-1/2 top-[50px] rounded-[16px] min-w-[260px] bg-background text-foreground`}
       style={{
         zIndex: zIndex(),
       }}>
