@@ -188,14 +188,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         {
           method: 'POST',
           body: formData,
-          headers: {},
+          headers: { 'x-lang': request.language || 'en' },
         },
       )
         .then(data => {
           sendResponse({ data: data });
         })
         .catch(error => {
-          sendResponse({ error: error.toString() });
+          // Prefer the error.message produced by axios (which uses backend's message when available)
+          sendResponse({ error: error?.message ?? error?.toString?.() ?? String(error) });
         });
     });
   } else if (request.action === 'fetch') {

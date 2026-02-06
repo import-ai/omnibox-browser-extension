@@ -26,7 +26,7 @@ export function Notification(props: IProps) {
   };
 
   useEffect(() => {
-    if (status !== 'done') {
+    if (status !== 'done' && status !== 'error') {
       return;
     }
     const timer = setInterval(() => {

@@ -99,11 +99,12 @@ export function KeyboardHandler(props: IProps) {
         if (!handledRef.current) {
           handledRef.current = true;
           startFakeProgress();
-          const { apiBaseUrl, resourceId, namespaceId } = data;
+          const { apiBaseUrl, resourceId, namespaceId, language } = data;
           chrome.runtime.sendMessage(
             {
               resourceId,
               namespaceId,
+              language,
               action: 'collect',
               baseUrl: apiBaseUrl,
               pageUrl: document.URL,

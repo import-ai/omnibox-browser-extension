@@ -66,11 +66,12 @@ export function Toolbars(props: IProps) {
   };
   const handleSave = () => {
     onLoading(true);
-    const { apiBaseUrl, resourceId, namespaceId } = data;
+    const { apiBaseUrl, resourceId, namespaceId, language } = data;
     chrome.runtime.sendMessage(
       {
         resourceId,
         namespaceId,
+        language,
         action: 'collect',
         baseUrl: apiBaseUrl,
         pageUrl: document.URL,
