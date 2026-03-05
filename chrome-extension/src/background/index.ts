@@ -7,11 +7,7 @@ const readyTabs = new Set<number>();
 
 // Track uninstall event
 chrome.runtime.onInstalled.addListener(async () => {
-  const storage = await chrome.storage.sync.get('apiBaseUrl');
-  const baseUrl = storage.apiBaseUrl || 'https://www.omnibox.pro';
-  chrome.runtime.setUninstallURL(
-    `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/feedback?from=extension&reason=uninstall`,
-  );
+  chrome.runtime.setUninstallURL('https://www.omnibox.pro/community/');
 
   // Initialize popup state for all existing tabs
   // This ensures that tabs opened before the extension was installed/updated
