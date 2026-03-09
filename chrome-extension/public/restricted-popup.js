@@ -317,7 +317,7 @@ function setupButtonHandlers() {
     if (btnFeedback) {
       btnFeedback.addEventListener('click', () => {
         chrome.tabs.create({
-          url: `${normalizedBaseUrl}/feedback?lang=${lang}`,
+          url: 'https://www.omnibox.pro/community/',
         });
         window.close();
       });

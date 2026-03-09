@@ -79,7 +79,7 @@ export function RestrictedPopup({ restrictionType, onClose, baseUrl }: Props) {
   const handleFeedback = () => {
     chrome.runtime.sendMessage({
       action: 'create-tab',
-      url: `${normalizedBaseUrl}/feedback?lang=${i18n.language}`,
+      url: 'https://www.omnibox.pro/community/',
     });
   };
 
