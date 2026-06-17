@@ -125,7 +125,7 @@ export function ShortcutInput({ value, onChange, placeholder, className, error }
             <span className="text-muted-foreground">{t('shortcut_click_to_set')}</span>
           )}
         </div>
-        {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+        {error && <p className="mt-1 max-w-[200px] text-xs text-destructive">{t(error)}</p>}
       </div>
     );
   }
@@ -141,7 +141,7 @@ export function ShortcutInput({ value, onChange, placeholder, className, error }
         placeholder={placeholder || t('shortcut_press_keys')}
         readOnly={false}
       />
-      {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+      {error && <p className="mt-1 max-w-[200px] text-xs text-destructive">{t(error)}</p>}
     </div>
   );
 }

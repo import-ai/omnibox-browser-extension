@@ -23,14 +23,13 @@ const isDuplicateShortcut = (shortcuts: Storage['keyboardShortcuts'], currentKey
 
 export function Keyboard(props: IProps) {
   const { data, onChange } = props;
-  const { t } = useTranslation();
-  const [shortcutErrors, setShortcutErrors] = useState<Partial<Record<ShortcutKey, string>>>({});
+  const [shortcutErrors, setShortcutErrors] = useState<Partial<Record<ShortcutKey, 'shortcut_duplicate_error'>>>({});
 
   const handleShortcutChange = (key: ShortcutKey, value: string) => {
     if (isDuplicateShortcut(data.keyboardShortcuts, key, value)) {
       setShortcutErrors(errors => ({
         ...errors,
-        [key]: t('shortcut_duplicate_error'),
+        [key]: 'shortcut_duplicate_error',
       }));
       return false;
     }
