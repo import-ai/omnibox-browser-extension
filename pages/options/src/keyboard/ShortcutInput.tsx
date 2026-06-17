@@ -6,12 +6,13 @@ import { X } from 'lucide-react';
 
 interface ShortcutInputProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: string) => boolean | void;
   placeholder?: string;
   className?: string;
+  error?: string;
 }
 
-export function ShortcutInput({ value, onChange, placeholder, className }: ShortcutInputProps) {
+export function ShortcutInput({ value, onChange, placeholder, className, error }: ShortcutInputProps) {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -41,8 +42,14 @@ export function ShortcutInput({ value, onChange, placeholder, className }: Short
       setDisplayValue('');
       onChange('');
     } else {
+      const accepted = onChange(currentValue);
+      if (accepted === false) {
+        setCurrentValue(value);
+        setDisplayValue(parseShortcutToDisplay(value));
+        return;
+      }
+
       setDisplayValue(parseShortcutToDisplay(currentValue));
-      onChange(currentValue);
     }
   };
 
@@ -87,48 +94,54 @@ export function ShortcutInput({ value, onChange, placeholder, className }: Short
 
   if (!isEditing) {
     return (
-      <div
-        role="button"
-        tabIndex={0}
-        className="flex h-9 w-[200px] items-center rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors hover:bg-accent/50 cursor-text md:text-sm dark:bg-background"
-        onClick={handleFocus}
-        onKeyDown={handleKeyPress}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}>
-        {displayValue ? (
-          <>
-            <KbdGroup className="flex-1">
-              {displayValue.split('+').map((val, index) => (
-                <React.Fragment key={val}>
-                  {index > 0 && <span className="opacity-50">+</span>}
-                  <Kbd>{val}</Kbd>
-                </React.Fragment>
-              ))}
-            </KbdGroup>
-            {isHovered && (
-              <button
-                onClick={handleClear}
-                className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-muted-foreground/20 hover:text-foreground transition-colors cursor-pointer">
-                <X className="h-3 w-3" />
-              </button>
-            )}
-          </>
-        ) : (
-          <span className="text-muted-foreground">{t('shortcut_click_to_set')}</span>
-        )}
+      <div>
+        <div
+          role="button"
+          tabIndex={0}
+          className="flex h-9 w-[200px] items-center rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors hover:bg-accent/50 cursor-text md:text-sm dark:bg-background"
+          onClick={handleFocus}
+          onKeyDown={handleKeyPress}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}>
+          {displayValue ? (
+            <>
+              <KbdGroup className="flex-1">
+                {displayValue.split('+').map((val, index) => (
+                  <React.Fragment key={val}>
+                    {index > 0 && <span className="opacity-50">+</span>}
+                    <Kbd>{val}</Kbd>
+                  </React.Fragment>
+                ))}
+              </KbdGroup>
+              {isHovered && (
+                <button
+                  onClick={handleClear}
+                  className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-muted-foreground/20 hover:text-foreground transition-colors cursor-pointer">
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </>
+          ) : (
+            <span className="text-muted-foreground">{t('shortcut_click_to_set')}</span>
+          )}
+        </div>
+        {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
       </div>
     );
   }
 
   return (
-    <Input
-      ref={inputRef}
-      className={className}
-      value={displayValue}
-      onBlur={handleBlur}
-      onKeyDown={handleKeyDown}
-      placeholder={placeholder || t('shortcut_press_keys')}
-      readOnly={false}
-    />
+    <div>
+      <Input
+        ref={inputRef}
+        className={className}
+        value={displayValue}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder || t('shortcut_press_keys')}
+        readOnly={false}
+      />
+      {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+    </div>
   );
 }
