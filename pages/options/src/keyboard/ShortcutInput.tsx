@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 
 interface ShortcutInputProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: string) => boolean | void;
   placeholder?: string;
   className?: string;
 }
@@ -41,8 +41,14 @@ export function ShortcutInput({ value, onChange, placeholder, className }: Short
       setDisplayValue('');
       onChange('');
     } else {
+      const accepted = onChange(currentValue);
+      if (accepted === false) {
+        setCurrentValue(value);
+        setDisplayValue(parseShortcutToDisplay(value));
+        return;
+      }
+
       setDisplayValue(parseShortcutToDisplay(currentValue));
-      onChange(currentValue);
     }
   };
 

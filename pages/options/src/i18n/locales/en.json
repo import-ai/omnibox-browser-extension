@@ -26,6 +26,7 @@
   "shortcut_placeholder": "Enter shortcut",
   "shortcut_click_to_set": "Click to set",
   "shortcut_press_keys": "Press shortcut keys",
+  "shortcut_duplicate_error": "Shortcut already in use.",
   "hold_option_key": "Hold",
   "save": "Save",
   "save_success": "Saved successfully"

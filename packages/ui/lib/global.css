@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-
   :host,
   :root {
     --background: 0 0% 100%;
@@ -22,7 +21,7 @@
     --secondary-foreground: 222.2 47.4% 11.2%;
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 100% 50%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --ring: 215 20.2% 65.1%;
     --radius: 0.5rem;
@@ -45,7 +44,7 @@
     --primary-foreground: 222.2 47.4% 1.2%;
     --secondary: 222.2 47.4% 11.2%;
     --secondary-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
+    --destructive: 5 73% 62%;
     --destructive-foreground: 210 40% 98%;
     --ring: 216 34% 17%;
   }
