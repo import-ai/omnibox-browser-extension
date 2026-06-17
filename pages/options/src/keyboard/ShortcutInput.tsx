@@ -9,10 +9,9 @@ interface ShortcutInputProps {
   onChange: (value: string) => boolean | void;
   placeholder?: string;
   className?: string;
-  error?: string;
 }
 
-export function ShortcutInput({ value, onChange, placeholder, className, error }: ShortcutInputProps) {
+export function ShortcutInput({ value, onChange, placeholder, className }: ShortcutInputProps) {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -94,54 +93,48 @@ export function ShortcutInput({ value, onChange, placeholder, className, error }
 
   if (!isEditing) {
     return (
-      <div>
-        <div
-          role="button"
-          tabIndex={0}
-          className="flex h-9 w-[200px] items-center rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors hover:bg-accent/50 cursor-text md:text-sm dark:bg-background"
-          onClick={handleFocus}
-          onKeyDown={handleKeyPress}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}>
-          {displayValue ? (
-            <>
-              <KbdGroup className="flex-1">
-                {displayValue.split('+').map((val, index) => (
-                  <React.Fragment key={val}>
-                    {index > 0 && <span className="opacity-50">+</span>}
-                    <Kbd>{val}</Kbd>
-                  </React.Fragment>
-                ))}
-              </KbdGroup>
-              {isHovered && (
-                <button
-                  onClick={handleClear}
-                  className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-muted-foreground/20 hover:text-foreground transition-colors cursor-pointer">
-                  <X className="h-3 w-3" />
-                </button>
-              )}
-            </>
-          ) : (
-            <span className="text-muted-foreground">{t('shortcut_click_to_set')}</span>
-          )}
-        </div>
-        {error && <p className="mt-1 max-w-[200px] text-xs text-destructive">{t(error)}</p>}
+      <div
+        role="button"
+        tabIndex={0}
+        className="flex h-9 w-[200px] items-center rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors hover:bg-accent/50 cursor-text md:text-sm dark:bg-background"
+        onClick={handleFocus}
+        onKeyDown={handleKeyPress}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}>
+        {displayValue ? (
+          <>
+            <KbdGroup className="flex-1">
+              {displayValue.split('+').map((val, index) => (
+                <React.Fragment key={val}>
+                  {index > 0 && <span className="opacity-50">+</span>}
+                  <Kbd>{val}</Kbd>
+                </React.Fragment>
+              ))}
+            </KbdGroup>
+            {isHovered && (
+              <button
+                onClick={handleClear}
+                className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-muted-foreground/20 hover:text-foreground transition-colors cursor-pointer">
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </>
+        ) : (
+          <span className="text-muted-foreground">{t('shortcut_click_to_set')}</span>
+        )}
       </div>
     );
   }
 
   return (
-    <div>
-      <Input
-        ref={inputRef}
-        className={className}
-        value={displayValue}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder || t('shortcut_press_keys')}
-        readOnly={false}
-      />
-      {error && <p className="mt-1 max-w-[200px] text-xs text-destructive">{t(error)}</p>}
-    </div>
+    <Input
+      ref={inputRef}
+      className={className}
+      value={displayValue}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      placeholder={placeholder || t('shortcut_press_keys')}
+      readOnly={false}
+    />
   );
 }

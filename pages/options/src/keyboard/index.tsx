@@ -4,7 +4,8 @@ import { Activation } from './Activation';
 import { Separator } from '@extension/ui';
 import type { IProps } from '@src/types';
 import type { Storage } from '@extension/shared';
-import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 type ShortcutKey = keyof NonNullable<Storage['keyboardShortcuts']>;
 
@@ -22,21 +23,14 @@ const isDuplicateShortcut = (shortcuts: Storage['keyboardShortcuts'], currentKey
 
 export function Keyboard(props: IProps) {
   const { data, onChange } = props;
-  const [shortcutErrors, setShortcutErrors] = useState<Partial<Record<ShortcutKey, 'shortcut_duplicate_error'>>>({});
+  const { t } = useTranslation();
 
   const handleShortcutChange = (key: ShortcutKey, value: string) => {
     if (isDuplicateShortcut(data.keyboardShortcuts, key, value)) {
-      setShortcutErrors(errors => ({
-        ...errors,
-        [key]: 'shortcut_duplicate_error',
-      }));
+      toast(t('shortcut_duplicate_error'), { position: 'bottom-right' });
       return false;
     }
 
-    setShortcutErrors(errors => ({
-      ...errors,
-      [key]: undefined,
-    }));
     onChange(
       {
         ...data.keyboardShortcuts,
@@ -49,7 +43,6 @@ export function Keyboard(props: IProps) {
 
   const createShortcutProps = (key: ShortcutKey) => ({
     ...props,
-    error: shortcutErrors[key],
     onShortcutChange: (value: string) => handleShortcutChange(key, value),
   });
 
