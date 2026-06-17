@@ -5,7 +5,6 @@ import { Separator } from '@extension/ui';
 import type { IProps } from '@src/types';
 import type { Storage } from '@extension/shared';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 type ShortcutKey = keyof NonNullable<Storage['keyboardShortcuts']>;
 
